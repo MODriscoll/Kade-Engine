@@ -277,6 +277,7 @@ class PlayState extends MusicBeatState
 	private var playerFlipStart:Float = -1.0;
 
 	// How long the flip takes TODO: Make Init event for this
+	private var hasFlipEvents:Bool = false;
 	private var flipDuration:Float = 0.4;
 
 	// GF Cheer event
@@ -464,6 +465,10 @@ class PlayState extends MusicBeatState
                 }
 
 				currentIndex++;
+			}
+			else if (i.type == "Flip Character")
+			{
+				hasFlipEvents = true;
 			}
 		}
 
@@ -887,9 +892,17 @@ class PlayState extends MusicBeatState
 			songName.cameras = [camHUD];
 		}
 
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
+		var additonalHealthBarOffsetY = hasFlipEvents ? 20 : 0;
+		healthBarBG = new FlxSprite(0, (FlxG.height * 0.9) + additonalHealthBarOffsetY).loadGraphic(Paths.image('healthBar'));
 		if (PlayStateChangeables.useDownscroll)
-			healthBarBG.y = 50;
+			healthBarBG.y = 50 - additonalHealthBarOffsetY;
+
+		if (hasFlipEvents)
+		{
+			healthBarBG.scale.x *= 0.6;
+			healthBarBG.updateHitbox();
+		}
+
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
@@ -926,7 +939,7 @@ class PlayState extends MusicBeatState
 
 		// Add Kade Engine watermark
 		kadeEngineWatermark = new FlxText(4, healthBarBG.y
-			+ 50, 0,
+			+ (50 - additonalHealthBarOffsetY) , 0,
 			SONG.song
 			+ " - "
 			+ CoolUtil.difficultyFromInt(storyDifficulty)
@@ -938,7 +951,7 @@ class PlayState extends MusicBeatState
 		if (PlayStateChangeables.useDownscroll)
 			kadeEngineWatermark.y = FlxG.height * 0.9 + 45;
 
-		scoreTxt = new FlxText(FlxG.width / 2 - 235, healthBarBG.y + 50, 0, "", 20);
+		scoreTxt = new FlxText(FlxG.width / 2 - 235, healthBarBG.y + (50 - additonalHealthBarOffsetY), 0, "", 20);
 
 		scoreTxt.screenCenter(X);
 
@@ -970,11 +983,23 @@ class PlayState extends MusicBeatState
 		if (PlayStateChangeables.botPlay && !loadRep)
 			add(botPlayState);
 
+		var iconScale:Float = hasFlipEvents ? 0.70 : 1;
+
 		iconP1 = new HealthIcon(boyfriend.curCharacter, true);
+		if (hasFlipEvents)
+		{
+			iconP1.scale.scale(iconScale);
+			iconP1.updateHitbox();
+		}
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
 
 		iconP2 = new HealthIcon(dad.curCharacter, false);
+		if (hasFlipEvents)
+		{
+			iconP2.scale.scale(iconScale);
+			iconP2.updateHitbox();
+		}
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
 
@@ -2420,14 +2445,14 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.50)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.50)));
+		var iconScale:Float = hasFlipEvents ? 0.70 : 1.0;
+		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width * iconScale, 0.50)));
+		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width * iconScale, 0.50)));
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
 
 		var iconOffset:Int = 26;
-
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
@@ -2979,7 +3004,7 @@ class PlayState extends MusicBeatState
 				else if (interpTime > 1.0)
 					interpTime = 1.0;
 
-				var strumTargetflipPos:Float = PlayStateChangeables.useDownscroll ? 10 : FlxG.height - 165;
+				var strumTargetflipPos:Float = PlayStateChangeables.useDownscroll ? 50 : FlxG.height - 165;
 				var strumsFlipPos:Float = FlxMath.lerp(strumLine.y, strumTargetflipPos, interpTime);
 				for (i in cpuStrums)
 				{
@@ -3006,7 +3031,7 @@ class PlayState extends MusicBeatState
 				else if (interpTime > 1.0)
 					interpTime = 1.0;
 
-				var strumTargetflipPos:Float = PlayStateChangeables.useDownscroll ? 10 : FlxG.height - 165;
+				var strumTargetflipPos:Float = PlayStateChangeables.useDownscroll ? 50 : FlxG.height - 165;
 				var strumsFlipPos:Float = FlxMath.lerp(strumLine.y, strumTargetflipPos, interpTime);
 				for (i in playerStrums)
 				{
@@ -5008,10 +5033,12 @@ class PlayState extends MusicBeatState
 				camHUD.zoom += 0.03 / songMultiplier;
 			}
 		}
+
+		var iconScale:Float = hasFlipEvents ? 0.70 : 1.0;
 		if (Conductor.bpm < 340)
-		{
-			iconP1.setGraphicSize(Std.int(iconP1.width + 30));
-			iconP2.setGraphicSize(Std.int(iconP2.width + 30));
+		{	
+			iconP1.setGraphicSize(Std.int((iconP1.width + 30) * iconScale));
+			iconP2.setGraphicSize(Std.int((iconP2.width + 30) * iconScale));
 
 			iconP1.updateHitbox();
 			iconP2.updateHitbox();
@@ -5019,8 +5046,8 @@ class PlayState extends MusicBeatState
 		else
 		{
 	
-			iconP1.setGraphicSize(Std.int(iconP1.width + 4));
-			iconP2.setGraphicSize(Std.int(iconP2.width + 4));
+			iconP1.setGraphicSize(Std.int((iconP1.width + 4) * iconScale));
+			iconP2.setGraphicSize(Std.int((iconP2.width + 4) * iconScale));
 	
 			iconP1.updateHitbox();
 			iconP2.updateHitbox();
