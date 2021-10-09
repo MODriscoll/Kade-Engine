@@ -5043,7 +5043,7 @@ class PlayState extends MusicBeatState
 			}	
 		}
 
-		if (currentSection != null)
+		if (currentSection != null && !endingSong)
 		{
 			// else
 			// Conductor.changeBPM(SONG.bpm);
