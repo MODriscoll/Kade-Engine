@@ -270,6 +270,20 @@ class PlayState extends MusicBeatState
 
 	public static var startTime = 0.0;
 
+	// Flip characters
+	private var cpuIsFlipping:Bool = false;
+	private var cpuFlipStart:Float = -1.0;
+	private var playerIsFlipping:Bool = false;
+	private var playerFlipStart:Float = -1.0;
+
+	// How long the flip takes TODO: Make Init event for this
+	private var flipDuration:Float = 0.4;
+
+	// GF Cheer event
+	private var gfIsCheering:Bool = false;
+	private var gfBeatsToCheerFor:Int = 1;
+	private var gfCheerNumBeats = 0;
+
 	// API stuff
 
 	public function addObject(object:FlxBasic)
@@ -643,6 +657,9 @@ class PlayState extends MusicBeatState
 				dad.x -= 150;
 				dad.y += 100;
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+			case 'viridian':
+				dad.x -= 75;
+				camPos.set(dad.getGraphicMidpoint().x + 250, dad.getGraphicMidpoint().y);
 		}
 
 		// REPOSITIONING PER STAGE
@@ -673,6 +690,24 @@ class PlayState extends MusicBeatState
 				boyfriend.y += 220;
 				gf.x += 180;
 				gf.y += 300;
+			case 'spaceship':
+				boyfriend.x += 200;
+				//gf.x += 75;
+		}
+
+		dad.saveOriginPos();
+		boyfriend.saveOriginPos();
+		gf.saveOriginPos();
+
+
+		switch (Stage.curStage)
+		{
+			case 'stage':
+				boyfriend.offsetFlipPosition(0, -500);
+				dad.offsetFlipPosition(0, -500);
+			case 'spaceship':
+				boyfriend.offsetFlipPosition(0, -600);
+				dad.offsetFlipPosition(0, -500);
 		}
 
 		if (loadRep)
@@ -768,27 +803,33 @@ class PlayState extends MusicBeatState
 						toBeRemoved.push(dunceNote);
 					else 
 					{
-						if (PlayStateChangeables.useDownscroll)
+						// Seems to be fine now
+
+						//if (PlayStateChangeables.useDownscroll)
 						{
+							var isDownScroll:Bool = PlayStateChangeables.useDownscroll != (dunceNote.mustPress ? boyfriend.isFlipped : dad.isFlipped);
+							var noteYOff:Float = isDownScroll ? -dunceNote.noteYOff : dunceNote.noteYOff;
+
 							if (dunceNote.mustPress)
 								dunceNote.y = (playerStrums.members[Math.floor(Math.abs(dunceNote.noteData))].y
 									* (startTime - dunceNote.strumTime) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-										2)) - dunceNote.noteYOff;
+										2)) + noteYOff; // Originally - for downscroll
 							else
-								dunceNote.y = (strumLineNotes.members[Math.floor(Math.abs(dunceNote.noteData))].y
+								dunceNote.y = (cpuStrums.members[Math.floor(Math.abs(dunceNote.noteData))].y
 									* (startTime - dunceNote.strumTime) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-										2)) - dunceNote.noteYOff;
+										2)) + noteYOff; // Originally - for downscroll
 						}
-						else
+						//else
+						if (false)
 						{
-							if (dunceNote.mustPress)
-								dunceNote.y = (playerStrums.members[Math.floor(Math.abs(dunceNote.noteData))].y
-									* (startTime - dunceNote.strumTime) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-										2)) + dunceNote.noteYOff;
-							else
-								dunceNote.y = (strumLineNotes.members[Math.floor(Math.abs(dunceNote.noteData))].y
-									* (startTime - dunceNote.strumTime) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-										2)) + dunceNote.noteYOff;
+							//if (dunceNote.mustPress)
+							//	dunceNote.y = (playerStrums.members[Math.floor(Math.abs(dunceNote.noteData))].y
+							//		* (startTime - dunceNote.strumTime) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+							//			2)) + dunceNote.noteYOff;
+							//else
+							//	dunceNote.y = (strumLineNotes.members[Math.floor(Math.abs(dunceNote.noteData))].y
+							//		* (startTime - dunceNote.strumTime) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+							//			2)) + dunceNote.noteYOff;
 						}
 					}
 				}
@@ -874,6 +915,8 @@ class PlayState extends MusicBeatState
               healthBar.createFilledBar(0xFFF76D6D, 0xFF0097C4);
              case 'spirit':
               healthBar.createFilledBar(0xFFAD0505, 0xFF0097C4);
+			 case 'viridian':
+			  healthBar.createFilledBar(0xFFFFFFFF, 0xFF0097C4);
             }
         }
         else
@@ -1978,6 +2021,8 @@ class PlayState extends MusicBeatState
 	public var updateFrame = 0;
 
 	public var pastScrollChanges:Array<Song.Event> = [];
+	public var pastFlipChanges:Array<Song.Event> = [];
+	public var pastCheers:Array<Song.Event> = [];
 
 
 	var currentLuaIndex = 0;
@@ -1996,6 +2041,14 @@ class PlayState extends MusicBeatState
 				{
 					var dunceNote:Note = unspawnNotes[0];
 					notes.add(dunceNote);
+
+					if (dunceNote.isSustainNote)
+					{
+						if (dunceNote.mustPress)
+							dunceNote.flipY = PlayStateChangeables.useDownscroll != boyfriend.isFlipped;
+						else
+							dunceNote.flipY = PlayStateChangeables.useDownscroll != dad.isFlipped;
+					}
 
 					if (executeModchart)
 					{
@@ -2117,6 +2170,75 @@ class PlayState extends MusicBeatState
 							pastScrollChanges.push(i);
 							trace("SCROLL SPEED CHANGE to " + i.value);
 							newScroll = i.value;
+						}
+					case "Flip Character":
+						if (curDecimalBeat >= i.position && !pastFlipChanges.contains(i))
+						{
+							var flipPos:Float = PlayStateChangeables.useDownscroll ? 10 : FlxG.height - 165;
+
+							var flipType:Int = Math.floor(i.value);
+							if (flipType == 0)
+							{
+								dad.flipSelf();
+								cpuIsFlipping = true;
+								cpuFlipStart = songTime;
+
+								notes.forEachAlive(function(daNote:Note)
+								{
+									if (daNote.isSustainNote && !daNote.mustPress)
+										daNote.flipY = PlayStateChangeables.useDownscroll != dad.isFlipped;
+								});
+							}
+							else if (flipType == 1)
+							{
+								boyfriend.flipSelf();
+								playerIsFlipping = true;
+								playerFlipStart = songTime;
+
+								notes.forEachAlive(function(daNote:Note)
+								{
+									if (daNote.isSustainNote && daNote.mustPress)
+										daNote.flipY = PlayStateChangeables.useDownscroll != boyfriend.isFlipped;
+								});
+							}
+							else
+							{
+								dad.flipSelf();
+								cpuIsFlipping = true;
+								cpuFlipStart = songTime;
+
+								boyfriend.flipSelf();
+								playerIsFlipping = true;
+								playerFlipStart = songTime;
+
+								notes.forEachAlive(function(daNote:Note)
+								{
+									if (daNote.isSustainNote)
+									{
+										if (daNote.mustPress)
+											daNote.flipY = PlayStateChangeables.useDownscroll != boyfriend.isFlipped;
+										else
+											daNote.flipY = PlayStateChangeables.useDownscroll != dad.isFlipped;
+									}
+								});
+							}
+
+							pastFlipChanges.push(i);
+						}
+					case "GF Cheer":
+						// This would be nice to have
+						if (curDecimalBeat >= i.position && !pastCheers.contains(i))
+						{
+							var scoreRequired:Int = Math.floor(i.value);
+							if (scoreRequired <= 0.0 || songScore >= scoreRequired ||
+								PlayStateChangeables.botPlay)
+							{
+								gf.playAnim('cheer');
+								gfCheerNumBeats = 0;
+								gfIsCheering = true;
+							}
+							
+							pastCheers.push(i);
 						}
 				}
 			}
@@ -2594,65 +2716,91 @@ class PlayState extends MusicBeatState
 				luaModchart.setVar("mustHit", currentSection.mustHitSection);
 			#end
 
-			if (camFollow.x != dad.getMidpoint().x + 150 && !currentSection.mustHitSection)
+			// TODO: Currently the offset results in the camera dipping a bit before going to the correct
+			// location when flipping. This is due to using the current position for camFollow.setPos
+			// We should use the originPos or flipPos instead
+			if (!currentSection.mustHitSection)
 			{
-				var offsetX = 0;
-				var offsetY = 0;
-				#if cpp
-				if (luaModchart != null)
+				if (camFollow.x != (dad.getMidpoint().x + 150) ||
+					camFollow.y != (dad.getMidpoint().y + (dad.isFlipped ? 100 : -100)))
 				{
-					offsetX = luaModchart.getVar("followXOffset", "float");
-					offsetY = luaModchart.getVar("followYOffset", "float");
-				}
-				#end
-				camFollow.setPosition(dad.getMidpoint().x + 150 + offsetX, dad.getMidpoint().y - 100 + offsetY);
-				#if cpp
-				if (luaModchart != null)
-					luaModchart.executeState('playerTwoTurn', []);
-				#end
-				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
+					var offsetX = 0;
+					var offsetY = 0;
+					#if cpp
+					if (luaModchart != null)
+					{
+						offsetX = luaModchart.getVar("followXOffset", "float");
+						offsetY = luaModchart.getVar("followYOffset", "float");
+					}
+					#end
+					var camFollowOffsetY = -100;// + offsetY;
+					if (dad.isFlipped)
+						camFollowOffsetY = -camFollowOffsetY;
+					camFollow.setPosition(dad.getMidpoint().x + 150/* + offsetX*/, dad.getMidpoint().y + camFollowOffsetY);
+					#if cpp
+					if (luaModchart != null)
+						luaModchart.executeState('playerTwoTurn', []);
+					#end
+					// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
 
-				switch (dad.curCharacter)
-				{
-					case 'mom' | 'mom-car':
-						camFollow.y = dad.getMidpoint().y;
-					case 'senpai' | 'senpai-angry':
-						camFollow.y = dad.getMidpoint().y - 430;
-						camFollow.x = dad.getMidpoint().x - 100;
+					switch (dad.curCharacter)
+					{
+						case 'mom' | 'mom-car':
+							camFollow.y = dad.getMidpoint().y;
+						case 'senpai' | 'senpai-angry':
+							camFollow.y = dad.getMidpoint().y - 430;
+							camFollow.x = dad.getMidpoint().x - 100;
+					}
 				}
 			}
 
-			if (currentSection.mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
+			// TODO: Currently the offset results in the camera dipping a bit before going to the correct
+			// location when flipping. This is due to using the current position for camFollow.setPos
+			// We should use the originPos or flipPos instead
+			if (currentSection.mustHitSection)
 			{
-				var offsetX = 0;
-				var offsetY = 0;
-				#if cpp
-				if (luaModchart != null)
+				if (camFollow.x != (boyfriend.getMidpoint().x - 100) ||
+					camFollow.y != (boyfriend.getMidpoint().y + (boyfriend.isFlipped ? 100 : -100)))
 				{
-					offsetX = luaModchart.getVar("followXOffset", "float");
-					offsetY = luaModchart.getVar("followYOffset", "float");
-				}
-				#end
-				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + offsetX, boyfriend.getMidpoint().y - 100 + offsetY);
+					var offsetX = 0;
+					var offsetY = 0;
+					#if cpp
+					if (luaModchart != null)
+					{
+						offsetX = luaModchart.getVar("followXOffset", "float");
+						offsetY = luaModchart.getVar("followYOffset", "float");
+					}
+					#end
+					var camFollowOffsetY = -100;// + offsetY;
+					if (boyfriend.isFlipped)
+						camFollowOffsetY = -camFollowOffsetY;
+					camFollow.setPosition(boyfriend.getMidpoint().x - 100/* + offsetX*/, boyfriend.getMidpoint().y + camFollowOffsetY);
 
-				#if cpp
-				if (luaModchart != null)
-					luaModchart.executeState('playerOneTurn', []);
-				#end
-				if (!PlayStateChangeables.Optimize)
-				switch (Stage.curStage)
-				{
-					case 'limo':
-						camFollow.x = boyfriend.getMidpoint().x - 300;
-					case 'mall':
-						camFollow.y = boyfriend.getMidpoint().y - 200;
-					case 'school':
-						camFollow.x = boyfriend.getMidpoint().x - 200;
-						camFollow.y = boyfriend.getMidpoint().y - 200;
-					case 'schoolEvil':
-						camFollow.x = boyfriend.getMidpoint().x - 200;
-						camFollow.y = boyfriend.getMidpoint().y - 200;
+					#if cpp
+					if (luaModchart != null)
+						luaModchart.executeState('playerOneTurn', []);
+					#end
+
+					switch (Stage.curStage)
+					{
+						case 'limo':
+							camFollow.x = boyfriend.getMidpoint().x - 300;
+						case 'mall':
+							camFollow.y = boyfriend.getMidpoint().y - 200;
+						case 'school':
+							camFollow.x = boyfriend.getMidpoint().x - 200;
+							camFollow.y = boyfriend.getMidpoint().y - 200;
+						case 'schoolEvil':
+							camFollow.x = boyfriend.getMidpoint().x - 200;
+							camFollow.y = boyfriend.getMidpoint().y - 200;
+					}
 				}
+			}
+
+			if (dad.isFlipped != boyfriend.isFlipped)
+			{
+				var halfwayPos:Float = (dad.getMidpoint().y - 100) + (boyfriend.getMidpoint().y - 100) * 0.5;
+				camFollow.setPosition(camFollow.x, halfwayPos);
 			}
 		}
 
@@ -2812,6 +2960,77 @@ class PlayState extends MusicBeatState
 		{
 			var holdArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
 
+			// It's been a long day
+			var desiredCamZoomLerp = 0.0;
+			if ((dad.isFlipped && !cpuIsFlipping) ||
+				(boyfriend.isFlipped && !playerIsFlipping))
+			{
+				desiredCamZoomLerp = 1.0;
+			}
+
+			if (cpuIsFlipping)
+			{
+				var endInterpTime:Float = cpuFlipStart + (flipDuration * 1000.0);
+				var interpTime:Float = 	(endInterpTime - songTime) / (flipDuration * 1000.0);
+				interpTime = dad.isFlipped ? (1.0 - interpTime) : interpTime;
+
+				if (interpTime < 0.0)
+					interpTime = 0.0;
+				else if (interpTime > 1.0)
+					interpTime = 1.0;
+
+				var strumTargetflipPos:Float = PlayStateChangeables.useDownscroll ? 10 : FlxG.height - 165;
+				var strumsFlipPos:Float = FlxMath.lerp(strumLine.y, strumTargetflipPos, interpTime);
+				for (i in cpuStrums)
+				{
+					i.y = strumsFlipPos;
+				}
+
+				dad.x = FlxMath.lerp(dad.originXPos, dad.flipXPos, interpTime);
+				dad.y = FlxMath.lerp(dad.originYPos, dad.flipYPos, interpTime);
+
+				if (songTime >= endInterpTime)
+					cpuIsFlipping = false;
+
+				desiredCamZoomLerp = interpTime > desiredCamZoomLerp ? interpTime : desiredCamZoomLerp;
+			}
+
+			if (playerIsFlipping)
+			{
+				var endInterpTime:Float = playerFlipStart + (flipDuration * 1000.0);
+				var interpTime:Float = 	(endInterpTime - songTime) / (flipDuration * 1000.0);
+				interpTime = boyfriend.isFlipped ? (1.0 - interpTime) : interpTime;
+
+				if (interpTime < 0.0)
+					interpTime = 0.0;
+				else if (interpTime > 1.0)
+					interpTime = 1.0;
+
+				var strumTargetflipPos:Float = PlayStateChangeables.useDownscroll ? 10 : FlxG.height - 165;
+				var strumsFlipPos:Float = FlxMath.lerp(strumLine.y, strumTargetflipPos, interpTime);
+				for (i in playerStrums)
+				{
+					i.y = strumsFlipPos;
+				}
+
+				boyfriend.x = FlxMath.lerp(boyfriend.originXPos, boyfriend.flipXPos, interpTime);
+				boyfriend.y = FlxMath.lerp(boyfriend.originYPos, boyfriend.flipYPos, interpTime);
+
+				if (songTime >= endInterpTime)
+					playerIsFlipping = false;
+
+				desiredCamZoomLerp = interpTime > desiredCamZoomLerp ? interpTime : desiredCamZoomLerp;
+			}
+
+			if (desiredCamZoomLerp > 0)
+			{
+				FlxG.camera.zoom = FlxMath.lerp(Stage.camZoom, Stage.flippedCamZoom, desiredCamZoomLerp);
+			}
+			else
+			{
+				FlxG.camera.zoom = Stage.camZoom;
+			}
+
 			notes.forEachAlive(function(daNote:Note)
 			{
 				// instead of doing stupid y > FlxG.height
@@ -2819,21 +3038,58 @@ class PlayState extends MusicBeatState
 
 				if (!daNote.modifiedByLua)
 				{
-					if (PlayStateChangeables.useDownscroll)
+					// We updated normal scroll to work for both, keeping this as reference to original
+					// TODO: Looks like we need to update Conductor.songPosition to Conductor.rawPosition in some
+					if (false)//PlayStateChangeables.useDownscroll)
 					{
 						
+						//if (daNote.mustPress)
+						//{
+						//	daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
+						//		+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * 
+						//		(FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+						//			2) )) 
+						//		- daNote.noteYOff;
+						//}
+						//else
+						//	daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
+						//		+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+						//			2))) - daNote.noteYOff;
+	
 						if (daNote.mustPress)
 						{
+							if (boyfriend.isFlipped)
+								{
+									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
+									- 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+										2))) + daNote.noteYOff;
+								}
+								else
+								{
 							daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-								+ 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * 
+								+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * 
 								(FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
 									2) )) 
 								- daNote.noteYOff;
+								}
 						}
 						else
-							daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
-								+ 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+						{
+							if (dad.isFlipped)
+								{
+									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
+								- 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+									2))) + daNote.noteYOff;
+								}
+								else
+								{
+									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
+								+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
 									2))) - daNote.noteYOff;
+								}
+							
+						}
+	
 						if (daNote.isSustainNote)
 						{
 							// Remember = minus makes notes go up, plus makes them go down
@@ -2845,7 +3101,7 @@ class PlayState extends MusicBeatState
 							{
 								daNote.y += daNote.height / 2;
 							}
-
+	
 							// If not in botplay, only clip sustain notes when properly hit, botplay gets to clip it everytime
 							if (!PlayStateChangeables.botPlay)
 							{
@@ -2858,7 +3114,7 @@ class PlayState extends MusicBeatState
 										+ Note.swagWidth / 2
 										- daNote.y) / daNote.scale.y;
 									swagRect.y = daNote.frameHeight - swagRect.height;
-
+	
 									daNote.clipRect = swagRect;
 								}
 							}
@@ -2869,48 +3125,154 @@ class PlayState extends MusicBeatState
 									+ Note.swagWidth / 2
 									- daNote.y) / daNote.scale.y;
 								swagRect.y = daNote.frameHeight - swagRect.height;
-
+	
 								daNote.clipRect = swagRect;
 							}
 						}
 					}
 					else
 					{
+						//if (daNote.mustPress)
+						//	daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
+						//		- 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+						//			2))) + daNote.noteYOff;
+						//else
+						//	daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
+						//		- 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+						//			2))) + daNote.noteYOff;
 						if (daNote.mustPress)
+						{
+							if (PlayStateChangeables.useDownscroll == boyfriend.isFlipped)
+								{
+									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
+									- 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+										2))) + daNote.noteYOff;
+								}
+								else
+								{
 							daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-								- 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-									2))) + daNote.noteYOff;
+								+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * 
+								(FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+									2) )) 
+								- daNote.noteYOff;
+								}
+						}
 						else
-							daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
-								- 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+						{
+							if (PlayStateChangeables.useDownscroll == dad.isFlipped)
+								{
+									daNote.y = (cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y
+								- 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
 									2))) + daNote.noteYOff;
+								}
+								else
+								{
+									daNote.y = (cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y
+								+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+									2))) - daNote.noteYOff;
+								}
+							
+						}
 						if (daNote.isSustainNote)
 						{
-							daNote.y -= daNote.height / 2;
-
-							if (!PlayStateChangeables.botPlay)
-							{
-								if ((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit || holdArray[Math.floor(Math.abs(daNote.noteData))])
-									&& daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
-								{
+	
+							//if (!PlayStateChangeables.botPlay)
+							//{
+							//	if ((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit || holdArray[Math.floor(Math.abs(daNote.noteData))])
+							//		&& daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
+							//	{
 									// Clip to strumline
-									var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
-									swagRect.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
-										+ Note.swagWidth / 2
-										- daNote.y) / daNote.scale.y;
-									swagRect.height -= swagRect.y;
-
-									daNote.clipRect = swagRect;
+							//		var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
+							//		swagRect.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
+							//			+ Note.swagWidth / 2
+							//			- daNote.y) / daNote.scale.y;
+							//		swagRect.height -= swagRect.y;
+	//
+							//		daNote.clipRect = swagRect;
+							//	}
+							//}
+							//else
+							//{
+							//	var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
+							//	swagRect.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
+							//		+ Note.swagWidth / 2
+							//		- daNote.y) / daNote.scale.y;
+							//	swagRect.height -= swagRect.y;
+	//
+							//	daNote.clipRect = swagRect;
+							//}
+							
+							//if (!PlayStateChangeables.botPlay)
+							{
+								var isDownScrollNow:Bool = PlayStateChangeables.useDownscroll != (daNote.mustPress ? boyfriend.isFlipped : dad.isFlipped);
+	
+								if (isDownScrollNow)
+								{
+									// Remember = minus makes notes go up, plus makes them go down (This was ripped from a pull request, look for it again :/)
+									if (daNote.animation.curAnim.name.endsWith("end") && daNote.prevNote != null)
+									{
+										daNote.y += daNote.prevNote.height;
+									}
+									else
+									{
+										daNote.y += daNote.height / 2;
+									}
+								}
+								else
+								{
+									daNote.y -= daNote.height / 2;
+								}
+								
+								var passesThisStatement:Bool = false;
+								{
+									var strumLineY = daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y : cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y;
+	
+									if (isDownScrollNow)
+										passesThisStatement = daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (/*strumLine.y*/strumLineY + Note.swagWidth / 2);
+									else
+										passesThisStatement = daNote.y + daNote.offset.y * daNote.scale.y <= (/*strumLine.y*/strumLineY + Note.swagWidth / 2);
+								}
+	
+								if ((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit || holdArray[Math.floor(Math.abs(daNote.noteData))])
+									&& passesThisStatement)//daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
+								{
+									var yToUse:Float = daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y : cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y;
+	
+									// Clip to strumline
+									
+									if (isDownScrollNow)
+									{
+										// Clip to strumline
+										var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
+										swagRect.height = (yToUse
+											+ Note.swagWidth / 2
+											- daNote.y) / daNote.scale.y;
+										swagRect.y = daNote.frameHeight - swagRect.height;
+	
+										daNote.clipRect = swagRect;
+									} 
+									else
+									{
+										var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
+										swagRect.y = (yToUse
+											+ Note.swagWidth / 2
+											- daNote.y) / daNote.scale.y;
+										swagRect.height -= swagRect.y;
+	
+										daNote.clipRect = swagRect;
+									}			
 								}
 							}
-							else
+							if (false) // originall was for BotPlay
 							{
+								var yToUse:Float = daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y : cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y;
+	
 								var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
-								swagRect.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
+								swagRect.y = (yToUse
 									+ Note.swagWidth / 2
 									- daNote.y) / daNote.scale.y;
 								swagRect.height -= swagRect.y;
-
+		
 								daNote.clipRect = swagRect;
 							}
 						}
@@ -3204,6 +3566,8 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.ONE)
 			endSong();
 		#end
+
+		updateSpaceStars(elapsed);
 
 		super.update(elapsed);
 	}
@@ -4075,7 +4439,7 @@ class PlayState extends MusicBeatState
 
 	public function backgroundVideo(source:String) // for background videos
 	{
-		#if cpp
+		#if false // cpp
 		useVideo = true;
 
 		FlxG.stage.window.onFocusOut.add(focusOut);
@@ -4334,6 +4698,8 @@ class PlayState extends MusicBeatState
 			{
 				popUpScore(note);
 				combo += 1;
+
+				// TODO: Custom Trinket note here (or somewhere close by)
 			}
 
 			var altAnim:String = "";
@@ -4502,6 +4868,22 @@ class PlayState extends MusicBeatState
 		gf.playAnim('scared', true);
 	}
 
+	function updateSpaceStars(deltaTime:Float):Void
+	{
+		if (Stage.curStage != 'spaceship')
+			return;
+
+		Stage.swagGroup['starsL1'].forEach(function(star:SpaceStar)
+		{
+			star.updatePos(350, deltaTime);
+		});
+
+		Stage.swagGroup['starsL2'].forEach(function(star:SpaceStar)
+		{
+			star.updatePos(600, deltaTime);
+		});
+	}
+
 	var danced:Bool = false;
 
 	override function stepHit()
@@ -4581,6 +4963,22 @@ class PlayState extends MusicBeatState
 					dad.playAnim('danceRight', true);
 			}
 		}
+		else if (gfIsCheering)
+		{
+			if (gf.animation.curAnim != null && gf.animation.curAnim.name.startsWith('cheer'))
+			{
+				++gfCheerNumBeats;
+
+				if (gfCheerNumBeats >= gfBeatsToCheerFor && gf.animation.curAnim.finished)
+				{
+					gfIsCheering = false;
+				}
+			}
+			else
+			{
+				gfIsCheering = false;
+			}	
+		}
 
 		if (currentSection != null)
 		{
@@ -4630,7 +5028,7 @@ class PlayState extends MusicBeatState
 
 		if (!endingSong && currentSection != null)
 		{
-			if (curBeat % gfSpeed == 0)
+			if (!gfIsCheering && curBeat % gfSpeed == 0)
 			{
 				gf.dance();
 			}

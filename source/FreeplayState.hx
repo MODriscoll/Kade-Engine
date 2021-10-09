@@ -93,6 +93,8 @@ class FreeplayState extends MusicBeatState
 
 
 			#if sys
+			if (FileSystem.exists('assets/data/${format}/${format}-extra-hard.json'))
+				diffsThatExist.push("Extra Hard");
 			if (FileSystem.exists('assets/data/${format}/${format}-hard.json'))
 				diffsThatExist.push("Hard");
 			if (FileSystem.exists('assets/data/${format}/${format}-easy.json'))
@@ -106,7 +108,7 @@ class FreeplayState extends MusicBeatState
 				continue;
 			}
 			#else
-			diffsThatExist = ["Easy","Normal","Hard"];
+			diffsThatExist = ["Easy","Normal","Hard", "Extra Hard"];
 			#end
 			if (diffsThatExist.contains("Easy"))
 				FreeplayState.loadDiff(0,format,meta.songName,diffs);
@@ -114,10 +116,12 @@ class FreeplayState extends MusicBeatState
 				FreeplayState.loadDiff(1,format,meta.songName,diffs);
 			if (diffsThatExist.contains("Hard"))
 				FreeplayState.loadDiff(2,format,meta.songName,diffs);
+			if (diffsThatExist.contains("Extra Hard"))
+				FreeplayState.loadDiff(3,format,meta.songName,diffs);
 
 			meta.diffs = diffsThatExist;
 
-			if (diffsThatExist.length != 3)
+			if (diffsThatExist.length < 3)
 				trace("I ONLY FOUND " + diffsThatExist);
 
 			FreeplayState.songData.set(meta.songName,diffs);
@@ -468,9 +472,9 @@ class FreeplayState extends MusicBeatState
 		curDifficulty += change;
 
 		if (curDifficulty < 0)
-			curDifficulty = 2;
-		if (curDifficulty > 2)
 			curDifficulty = 0;
+		else if (curDifficulty >= songs[curSelected].diffs.length)
+			curDifficulty = songs[curSelected].diffs.length - 1;
 
 
 		// adjusting the highscore song name to be compatible (changeDiff)
@@ -506,18 +510,24 @@ class FreeplayState extends MusicBeatState
 		if (curSelected >= songs.length)
 			curSelected = 0;
 
-		if (songs[curSelected].diffs.length != 3)
-		{
-			switch(songs[curSelected].diffs[0])
-			{
-				case "Easy":
-					curDifficulty = 0;
-				case "Normal":
-					curDifficulty = 1;
-				case "Hard":
-					curDifficulty = 2;
-			}
-		}
+		//if (songs[curSelected].diffs.length != 3)
+		//{
+		//	switch(songs[curSelected].diffs[0])
+		//	{
+		//		case "Easy":
+		//			curDifficulty = 0;
+		//		case "Normal":
+		//			curDifficulty = 1;
+		//		case "Hard":
+		//			curDifficulty = 2;
+		//	}
+		//}
+
+		// No Math.clamp?
+		if (curDifficulty < 0)
+			curDifficulty = 0;
+		else if (curDifficulty >= songs[curSelected].diffs.length)
+			curDifficulty = songs[curSelected].diffs.length - 1;
 
 		// selector.y = (70 * curSelected) + 30;
 		

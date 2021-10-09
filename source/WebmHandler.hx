@@ -8,7 +8,7 @@ import webm.*;
 
 class WebmHandler
 {
-	#if desktop
+	#if false //desktop
 	public var webm:WebmPlayer;
 	public var vidPath:String = "";
 	public var io:WebmIo;

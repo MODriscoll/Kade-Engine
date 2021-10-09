@@ -17,6 +17,13 @@ class Character extends FlxSprite
 
 	public var holdTimer:Float = 0;
 
+	// Original position of this character
+	public var originXPos:Float = 0;
+	public var originYPos:Float = 0;
+	// Position character should move to when flipped
+	public var flipXPos:Float = 0;
+	public var flipYPos:Float = 0;
+
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -378,6 +385,20 @@ class Character extends FlxSprite
 				loadOffsetFile(curCharacter);
 
 				playAnim('idle');
+
+			case 'viridian':
+				FlxG.log.add('Character Viridian');
+				tex = Paths.getSparrowAtlas('viridian','shared',true);
+				frames = tex;
+				animation.addByPrefix('idle', 'viridian idle dance', 24, false);
+				animation.addByPrefix('singUP', 'viridian Sing Note UP', 24, false);
+				animation.addByPrefix('singRIGHT', 'viridian Sing Note RIGHT', 24, false);
+				animation.addByPrefix('singDOWN', 'viridian Sing Note DOWN', 24, false);
+				animation.addByPrefix('singLEFT', 'viridian Sing Note LEFT', 24, false);
+
+				loadOffsetFile(curCharacter);
+
+				playAnim('idle');
 		}
 
 		dance();
@@ -526,5 +547,40 @@ class Character extends FlxSprite
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 	{
 		animOffsets[name] = [x, y];
+	}
+
+	// Implies downscroll if true, XOR with PlayStateChangeables.useDownscroll for if to actually use downscroll
+	public var isFlipped:Bool = false;
+
+	public function flipSelf()
+	{
+		isFlipped = !isFlipped;
+		flipY = isFlipped;
+
+		var flipVol:Float = 1;
+		if (isFlipped)
+			FlxG.sound.play(Paths.sound('flipUp'), flipVol);
+		else
+			FlxG.sound.play(Paths.sound('flipDown'), flipVol);
+	}
+
+	public function saveOriginPos()
+	{
+		originXPos = x;
+		originYPos = y;
+	}
+
+	public function offsetFlipPosition(offsetX:Float, offsetY:Float, setInstead:Bool = false)
+	{
+		if (setInstead)
+		{
+			flipXPos = offsetX;
+			flipYPos = offsetY;
+		}
+		else
+		{
+			flipXPos = this.x + offsetX;
+			flipYPos = this.y + offsetY;
+		}
 	}
 }

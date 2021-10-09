@@ -6,12 +6,14 @@ import flixel.FlxBasic;
 import flixel.group.FlxGroup;
 import flixel.system.FlxSound;
 import flixel.addons.effects.chainable.FlxWaveEffect;
+import flixel.math.FlxRandom;
 
 class Stage
 {
     public var curStage:String = '';
     public var halloweenLevel:Bool = false;
     public var camZoom:Float;
+	public var flippedCamZoom:Float = -1.0; // Defaults to camZoom if 0 or less
     public var hideLastBG:Bool = false; // True = hide last BG and show ones from slowBacks on certain step, False = Toggle Visibility of BGs from SlowBacks on certain step
     public var tweenDuration:Float = 2; // How long will it tween hiding/showing BGs, variable above must be set to True for tween to activate
     public var toAdd:Array<Dynamic> = []; // Add BGs on stage startup, load BG in by using "toAdd.push(bgVar);"
@@ -395,6 +397,85 @@ class Stage
 							add(waveSpriteFG);
 						 */
 					}
+				case 'spaceship':
+					{
+						camZoom = 0.65;
+						flippedCamZoom = 0.5;
+						curStage = 'spaceship';
+
+						// Not considering stars in the background a 'distraction'
+
+						// Generate first layer of stars in background
+						{
+							var starsLayer = new FlxTypedGroup<SpaceStar>();
+							swagGroup['starsL1'] = starsLayer;
+                            toAdd.push(starsLayer);
+
+							for (i in 0...15)
+							{
+								var randX:Float = FlxG.random.float(-SpaceStar.spaceshipLimitX, SpaceStar.spaceshipLimitX);
+								var randY:Float = FlxG.random.float(-SpaceStar.spaceshipLimitY, SpaceStar.spaceshipLimitY);
+
+								var star:SpaceStar = new SpaceStar(randX, randY + SpaceStar.spaceshipOffsetY);
+								star.scrollFactor.set(0.9, 0.9);
+								star.alpha = 0.3;
+								star.scale.scale(FlxG.random.float(0.8, 1.2));
+
+								starsLayer.add(star);
+							}
+						}
+
+						// Second layer
+						{
+							var starsLayer = new FlxTypedGroup<SpaceStar>();
+							swagGroup['starsL2'] = starsLayer;
+                            toAdd.push(starsLayer);
+
+							for (i in 0...25)
+							{
+								var randX:Float = FlxG.random.float(-SpaceStar.spaceshipLimitX, SpaceStar.spaceshipLimitX);
+								var randY:Float = FlxG.random.float(-SpaceStar.spaceshipLimitY, SpaceStar.spaceshipLimitY);
+
+								var star:SpaceStar = new SpaceStar(randX, randY + SpaceStar.spaceshipOffsetY);
+								star.scrollFactor.set(0.85, 0.85);
+								star.alpha = 0.6;
+								star.scale.scale(FlxG.random.float(0.8, 1.2));
+
+								starsLayer.add(star);
+							}
+						}
+
+						var middle:FlxSprite = new FlxSprite(-800, -600).loadGraphic(Paths.image('spaceship_middle', 'week7'));
+						middle.antialiasing = FlxG.save.data.antialiasing;
+						middle.scrollFactor.set(0.9, 0.9);
+						middle.active = false;
+						swagBacks['bg'] = middle;
+                        toAdd.push(middle);
+
+						var top:FlxSprite = new FlxSprite(-650, -500).loadGraphic(Paths.image('spaceship_top', 'week7'));
+						top.setGraphicSize(Std.int(middle.width * 1.1));
+						top.updateHitbox();
+						top.antialiasing = FlxG.save.data.antialiasing;
+						top.scrollFactor.set(0.9, 0.9);
+						top.active = false;
+
+						// For now, with better art we probably don't need to do this...
+						layInFront[2].push(top);
+						swagBacks['top'] = top;
+                        toAdd.push(top);
+
+						var bottom:FlxSprite = new FlxSprite(-650, 800).loadGraphic(Paths.image('spaceship_bottom', 'week7'));
+						bottom.setGraphicSize(Std.int(middle.width * 1.1));
+						bottom.updateHitbox();
+						bottom.antialiasing = FlxG.save.data.antialiasing;
+						bottom.scrollFactor.set(0.9, 0.9);
+						bottom.active = false;
+
+						// For now, with better art we probably don't need to do this...
+						layInFront[2].push(bottom);
+						swagBacks['bottom'] = bottom;
+                        toAdd.push(bottom);
+					}
 				default:
 					{
 						camZoom = 0.9;
@@ -426,5 +507,8 @@ class Stage
                         toAdd.push(stageCurtains);
 					}
         }
+
+		if (flippedCamZoom <= 0.0)
+			flippedCamZoom = camZoom;
     }
 }
