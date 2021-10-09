@@ -331,6 +331,7 @@ class PlayState extends MusicBeatState
 		PlayStateChangeables.botPlay = FlxG.save.data.botplay;
 		PlayStateChangeables.Optimize = FlxG.save.data.optimize;
 		PlayStateChangeables.zoom = FlxG.save.data.zoom;
+		PlayStateChangeables.enableFlip = FlxG.save.data.enableFlip;
 
 		// pre lowercasing the song name (create)
 		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
@@ -892,12 +893,12 @@ class PlayState extends MusicBeatState
 			songName.cameras = [camHUD];
 		}
 
-		var additonalHealthBarOffsetY = hasFlipEvents ? 20 : 0;
+		var additonalHealthBarOffsetY = helperHasFlipEvents() ? 20 : 0;
 		healthBarBG = new FlxSprite(0, (FlxG.height * 0.9) + additonalHealthBarOffsetY).loadGraphic(Paths.image('healthBar'));
 		if (PlayStateChangeables.useDownscroll)
 			healthBarBG.y = 50 - additonalHealthBarOffsetY;
 
-		if (hasFlipEvents)
+		if (helperHasFlipEvents())
 		{
 			healthBarBG.scale.x *= 0.6;
 			healthBarBG.updateHitbox();
@@ -983,10 +984,10 @@ class PlayState extends MusicBeatState
 		if (PlayStateChangeables.botPlay && !loadRep)
 			add(botPlayState);
 
-		var iconScale:Float = hasFlipEvents ? 0.70 : 1;
+		var iconScale:Float = helperHasFlipEvents() ? 0.70 : 1;
 
 		iconP1 = new HealthIcon(boyfriend.curCharacter, true);
-		if (hasFlipEvents)
+		if (helperHasFlipEvents())
 		{
 			iconP1.scale.scale(iconScale);
 			iconP1.updateHitbox();
@@ -995,7 +996,7 @@ class PlayState extends MusicBeatState
 		add(iconP1);
 
 		iconP2 = new HealthIcon(dad.curCharacter, false);
-		if (hasFlipEvents)
+		if (helperHasFlipEvents())
 		{
 			iconP2.scale.scale(iconScale);
 			iconP2.updateHitbox();
@@ -2199,53 +2200,56 @@ class PlayState extends MusicBeatState
 					case "Flip Character":
 						if (curDecimalBeat >= i.position && !pastFlipChanges.contains(i))
 						{
-							var flipPos:Float = PlayStateChangeables.useDownscroll ? 10 : FlxG.height - 165;
-
-							var flipType:Int = Math.floor(i.value);
-							if (flipType == 0)
+							if (PlayStateChangeables.enableFlip)
 							{
-								dad.flipSelf();
-								cpuIsFlipping = true;
-								cpuFlipStart = songTime;
+								var flipPos:Float = PlayStateChangeables.useDownscroll ? 10 : FlxG.height - 165;
 
-								notes.forEachAlive(function(daNote:Note)
+								var flipType:Int = Math.floor(i.value);
+								if (flipType == 0)
 								{
-									if (daNote.isSustainNote && !daNote.mustPress)
-										daNote.flipY = PlayStateChangeables.useDownscroll != dad.isFlipped;
-								});
-							}
-							else if (flipType == 1)
-							{
-								boyfriend.flipSelf();
-								playerIsFlipping = true;
-								playerFlipStart = songTime;
+									dad.flipSelf();
+									cpuIsFlipping = true;
+									cpuFlipStart = songTime;
 
-								notes.forEachAlive(function(daNote:Note)
-								{
-									if (daNote.isSustainNote && daNote.mustPress)
-										daNote.flipY = PlayStateChangeables.useDownscroll != boyfriend.isFlipped;
-								});
-							}
-							else
-							{
-								dad.flipSelf();
-								cpuIsFlipping = true;
-								cpuFlipStart = songTime;
-
-								boyfriend.flipSelf();
-								playerIsFlipping = true;
-								playerFlipStart = songTime;
-
-								notes.forEachAlive(function(daNote:Note)
-								{
-									if (daNote.isSustainNote)
+									notes.forEachAlive(function(daNote:Note)
 									{
-										if (daNote.mustPress)
-											daNote.flipY = PlayStateChangeables.useDownscroll != boyfriend.isFlipped;
-										else
+										if (daNote.isSustainNote && !daNote.mustPress)
 											daNote.flipY = PlayStateChangeables.useDownscroll != dad.isFlipped;
-									}
-								});
+									});
+								}
+								else if (flipType == 1)
+								{
+									boyfriend.flipSelf();
+									playerIsFlipping = true;
+									playerFlipStart = songTime;
+
+									notes.forEachAlive(function(daNote:Note)
+									{
+										if (daNote.isSustainNote && daNote.mustPress)
+											daNote.flipY = PlayStateChangeables.useDownscroll != boyfriend.isFlipped;
+									});
+								}
+								else
+								{
+									dad.flipSelf();
+									cpuIsFlipping = true;
+									cpuFlipStart = songTime;
+
+									boyfriend.flipSelf();
+									playerIsFlipping = true;
+									playerFlipStart = songTime;
+
+									notes.forEachAlive(function(daNote:Note)
+									{
+										if (daNote.isSustainNote)
+										{
+											if (daNote.mustPress)
+												daNote.flipY = PlayStateChangeables.useDownscroll != boyfriend.isFlipped;
+											else
+												daNote.flipY = PlayStateChangeables.useDownscroll != dad.isFlipped;
+										}
+									});
+								}
 							}
 
 							pastFlipChanges.push(i);
@@ -2445,7 +2449,7 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		var iconScale:Float = hasFlipEvents ? 0.70 : 1.0;
+		var iconScale:Float = helperHasFlipEvents() ? 0.70 : 1.0;
 		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width * iconScale, 0.50)));
 		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width * iconScale, 0.50)));
 
@@ -5034,7 +5038,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		var iconScale:Float = hasFlipEvents ? 0.70 : 1.0;
+		var iconScale:Float = helperHasFlipEvents() ? 0.70 : 1.0;
 		if (Conductor.bpm < 340)
 		{	
 			iconP1.setGraphicSize(Std.int((iconP1.width + 30) * iconScale));
@@ -5270,5 +5274,11 @@ class PlayState extends MusicBeatState
 		}
 
 	var curLight:Int = 0;
+
+	// Returns false if flipping is disabled
+	function helperHasFlipEvents():Bool
+	{
+		return PlayStateChangeables.enableFlip && hasFlipEvents;
+	}
 }
 //u looked :O -ides

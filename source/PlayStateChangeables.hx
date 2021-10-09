@@ -6,4 +6,5 @@ class PlayStateChangeables
     public static var botPlay:Bool;
     public static var Optimize:Bool;
     public static var zoom:Float;
+    public static var enableFlip:Bool; // No support for changing this during a song
 }

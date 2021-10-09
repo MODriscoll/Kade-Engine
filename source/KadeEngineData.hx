@@ -121,6 +121,9 @@ class KadeEngineData
 		if (FlxG.save.data.zoom == null)
 			FlxG.save.data.zoom = 1;
 
+		if (FlxG.save.data.enableFlip == null)
+			FlxG.save.data.enableFlip = true;
+
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 		
 		KeyBinds.gamepad = gamepad != null;

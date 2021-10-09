@@ -916,6 +916,27 @@ class ResetScoreOption extends Option
 	}
 }
 
+class EnableFlipOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.enableFlip = !FlxG.save.data.enableFlip;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return FlxG.save.data.enableFlip ? "Flip Mechanic: Enabled" : "Flip Mechanic: Disabled";
+	}
+}
+
 class ResetSettings extends Option
 {
 	var confirm:Bool = false;
@@ -967,6 +988,7 @@ class ResetSettings extends Option
 		FlxG.save.data.optimize = null;
 		FlxG.save.data.cacheImages = null;
 		FlxG.save.data.editor = null;
+		FlxG.save.data.enableFlip = null;
 
 		KadeEngineData.initSave();
 		confirm = false;
