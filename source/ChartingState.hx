@@ -1339,6 +1339,7 @@ class ChartingState extends MusicBeatState
 	}
 	
 	public var check_naltAnim:FlxUICheckBox;
+	public var check_isTrinket:FlxUICheckBox;
 
 	function addNoteUI():Void
 	{
@@ -1371,6 +1372,24 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
+		check_isTrinket = new FlxUICheckBox(10, 175, null, null, "Is Trinket", 100);
+		check_isTrinket.callback = function()
+		{
+			if (curSelectedNote != null)
+			{
+				for(i in selectedBoxes)
+				{
+					i.connectedNoteData[5] = check_isTrinket.checked;
+					
+					// Refresh for visualization as well
+					{
+						i.connectedNote.isTrinket = i.connectedNoteData[5];
+						i.connectedNote.playNoteAnim();
+					}
+				}
+			}
+		}
+
 		var stepperSusLengthLabel = new FlxText(74,10,'Note Sustain Length');
 
 		var applyLength:FlxButton = new FlxButton(10, 100, 'Apply Data');
@@ -1379,6 +1398,7 @@ class ChartingState extends MusicBeatState
 		tab_group_note.add(stepperSusLengthLabel);
 		tab_group_note.add(applyLength);
 		tab_group_note.add(check_naltAnim);
+		tab_group_note.add(check_isTrinket);
 
 		UI_box.addGroup(tab_group_note);
 
@@ -1410,12 +1430,12 @@ class ChartingState extends MusicBeatState
 					{
 						trace("new strum " + strum + " - at section " + section);
 						// alright we're in this section lets paste the note here.
-						var newData = [strum,i[1],i[2],i[3],i[4]];
+						var newData = [strum,i[1],i[2],i[3],i[4], i[5]];
 						ii.sectionNotes.push(newData);
 
 						var thing = ii.sectionNotes[ii.sectionNotes.length - 1];
 
-						var note:Note = new Note(strum, Math.floor(i[1] % 4),null,false,true,i[3], i[4]);
+						var note:Note = new Note(strum, Math.floor(i[1] % 4),null,false,true,i[3], i[4], i[5]);
 						note.rawNoteData = i[1];
 						note.sustainLength = i[2];
 						note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
@@ -2799,6 +2819,14 @@ class ChartingState extends MusicBeatState
 				curSelectedNote[3] = false;
 				check_naltAnim.checked = false;
 			}
+
+			if (curSelectedNote[5] != null)
+				check_isTrinket.checked = curSelectedNote[5];
+			else
+			{
+				curSelectedNote[5] = false;
+				check_isTrinket.checked = false;
+			}
 		}
 	}
 
@@ -2839,7 +2867,7 @@ class ChartingState extends MusicBeatState
 				var daStrumTime = i[0];
 				var daSus = i[2];
 
-				var note:Note = new Note(daStrumTime, daNoteInfo % 4,null,false,true,i[3], i[4]);
+				var note:Note = new Note(daStrumTime, daNoteInfo % 4,null,false,true,i[3], i[4], i[5]);
 				note.rawNoteData = daNoteInfo;
 				note.sustainLength = daSus;
 				note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
@@ -3179,9 +3207,9 @@ class ChartingState extends MusicBeatState
 		var noteSus = 0;
 
 		if (n != null)
-			section.sectionNotes.push([n.strumTime, n.noteData, n.sustainLength, false, TimingStruct.getBeatFromTime(n.strumTime)]);
+			section.sectionNotes.push([n.strumTime, n.noteData, n.sustainLength, false, TimingStruct.getBeatFromTime(n.strumTime), n.isTrinket]);
 		else
-			section.sectionNotes.push([noteStrum, noteData, noteSus, false, TimingStruct.getBeatFromTime(noteStrum)]);
+			section.sectionNotes.push([noteStrum, noteData, noteSus, false, TimingStruct.getBeatFromTime(noteStrum), false]);
 
 		var thingy = section.sectionNotes[section.sectionNotes.length - 1];
 
@@ -3191,7 +3219,7 @@ class ChartingState extends MusicBeatState
 
 		if (n == null)
 		{
-			var note:Note = new Note(noteStrum, noteData % 4,null,false,true,TimingStruct.getBeatFromTime(noteStrum));
+			var note:Note = new Note(noteStrum, noteData % 4,null,false,true,false, TimingStruct.getBeatFromTime(noteStrum), false);
 			note.rawNoteData = noteData;
 			note.sustainLength = noteSus;
 			note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
@@ -3221,7 +3249,7 @@ class ChartingState extends MusicBeatState
 		}
 		else
 		{
-			var note:Note = new Note(n.strumTime, n.noteData % 4,null,false,true, n.isAlt,TimingStruct.getBeatFromTime(n.strumTime));
+			var note:Note = new Note(n.strumTime, n.noteData % 4,null,false,true, n.isAlt,TimingStruct.getBeatFromTime(n.strumTime), n.isTrinket);
 			note.beat = TimingStruct.getBeatFromTime(n.strumTime);
 			note.rawNoteData = n.noteData;
 			note.sustainLength = noteSus;

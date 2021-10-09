@@ -70,7 +70,10 @@ class Note extends FlxSprite
 
 	public var children:Array<Note> = [];
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false, ?isAlt:Bool = false, ?bet:Float = 0)
+	// Collectable for viridian story week
+	public var isTrinket:Bool = false;
+
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false, ?isAlt:Bool = false, ?bet:Float = 0, ?isTrinket:Bool = false)
 	{
 		super();
 
@@ -79,7 +82,11 @@ class Note extends FlxSprite
 
 		beat = bet;
 
+		if (isTrinket == null)
+			isTrinket = false;
+
 		this.isAlt = isAlt;
+		this.isTrinket = isTrinket;
 
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
@@ -133,51 +140,67 @@ class Note extends FlxSprite
 				animation.addByPrefix(dataColor[i] + 'holdend', dataColor[i] + ' tail'); // Tails
 			}
 
+			animation.addByPrefix('trinket', 'trinket', 24, false);
+
 			setGraphicSize(Std.int(width * 0.7));
 			updateHitbox();
+
 			antialiasing = FlxG.save.data.antialiasing;
 		}
 		else
 		{
-			if (PlayState.SONG.noteStyle == null) {
-				switch(PlayState.storyWeek) {case 6: noteTypeCheck = 'pixel';}
-			} else {noteTypeCheck = PlayState.SONG.noteStyle;}
-			
-			switch (noteTypeCheck)
+			if (isTrinket)
 			{
-				case 'pixel':
-					loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
-					if (isSustainNote)
-						loadGraphic(Paths.image('weeb/pixelUI/arrowEnds', 'week6'), true, 7, 6);
+				frames = Paths.getSparrowAtlas('NOTE_assets');
+				animation.addByPrefix('trinket', 'trinket', 24, false);
 
-					for (i in 0...4)
-					{
-						animation.add(dataColor[i] + 'Scroll', [i + 4]); // Normal notes
-						animation.add(dataColor[i] + 'hold', [i]); // Holds
-						animation.add(dataColor[i] + 'holdend', [i + 4]); // Tails
-					}
+				setGraphicSize(Std.int(width * 0.7));
+				updateHitbox();
 
-					setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-					updateHitbox();
-				default:
-					frames = Paths.getSparrowAtlas('NOTE_assets');
+				antialiasing = FlxG.save.data.antialiasing;
+			}
+			else
+			{
+				if (PlayState.SONG.noteStyle == null) {
+					switch(PlayState.storyWeek) {case 6: noteTypeCheck = 'pixel';}
+				} else {noteTypeCheck = PlayState.SONG.noteStyle;}
+			
+				switch (noteTypeCheck)
+				{
+					case 'pixel':
+						loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
+						if (isSustainNote)
+							loadGraphic(Paths.image('weeb/pixelUI/arrowEnds', 'week6'), true, 7, 6);
 
-					for (i in 0...4)
-					{
-						animation.addByPrefix(dataColor[i] + 'Scroll', dataColor[i] + ' alone'); // Normal notes
-						animation.addByPrefix(dataColor[i] + 'hold', dataColor[i] + ' hold'); // Hold
-						animation.addByPrefix(dataColor[i] + 'holdend', dataColor[i] + ' tail'); // Tails
-					}
+						for (i in 0...4)
+						{
+							animation.add(dataColor[i] + 'Scroll', [i + 4]); // Normal notes
+							animation.add(dataColor[i] + 'hold', [i]); // Holds
+							animation.add(dataColor[i] + 'holdend', [i + 4]); // Tails
+						}
 
-					setGraphicSize(Std.int(width * 0.7));
-					updateHitbox();
-					
-					antialiasing = FlxG.save.data.antialiasing;
+						setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+						updateHitbox();
+					default:
+						frames = Paths.getSparrowAtlas('NOTE_assets');
+
+						for (i in 0...4)
+						{
+							animation.addByPrefix(dataColor[i] + 'Scroll', dataColor[i] + ' alone'); // Normal notes
+							animation.addByPrefix(dataColor[i] + 'hold', dataColor[i] + ' hold'); // Hold
+							animation.addByPrefix(dataColor[i] + 'holdend', dataColor[i] + ' tail'); // Tails
+						}
+
+						setGraphicSize(Std.int(width * 0.7));
+						updateHitbox();
+
+						antialiasing = FlxG.save.data.antialiasing;
+				}
 			}
 		}
 
 		x += swagWidth * noteData;
-		animation.play(dataColor[noteData] + 'Scroll');
+		playNoteAnim();
 		originColor = noteData; // The note's origin color will be checked by its sustain notes
 
 		if (FlxG.save.data.stepMania && !isSustainNote && !PlayState.instance.executeModchart)
@@ -310,5 +333,19 @@ class Note extends FlxSprite
 			if (alpha > 0.3)
 				alpha = 0.3;
 		}
+
+		// Temp
+		if (isTrinket)
+			localAngle += 720 * elapsed;
+		else
+			localAngle = 0;
+	}
+
+	public function playNoteAnim()
+	{
+		if (isTrinket)
+			animation.play('trinket');
+		else
+			animation.play(dataColor[noteData] + 'Scroll');
 	}
 }

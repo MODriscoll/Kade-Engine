@@ -1719,6 +1719,12 @@ class PlayState extends MusicBeatState
 
 			for (songNotes in section.sectionNotes)
 			{
+				var isTrinketNote = songNotes[5] != null ? songNotes[5] : false;
+				if (isTrinketNote)
+				{
+					// TODO: Check if story mode, if so, don't spawn this note
+				}
+
 				var daStrumTime:Float = songNotes[0] - FlxG.save.data.offset - songOffset;
 				if (daStrumTime < 0)
 					daStrumTime = 0;
@@ -1738,7 +1744,7 @@ class PlayState extends MusicBeatState
 				else
 					oldNote = null;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,false,false,false,songNotes[4]);
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,false,false,false,songNotes[4], songNotes[5]);
 
 				if (!gottaHitNote && PlayStateChangeables.Optimize)
 					continue;
@@ -1746,12 +1752,22 @@ class PlayState extends MusicBeatState
 				swagNote.sustainLength = TimingStruct.getTimeFromBeat((TimingStruct.getBeatFromTime(songNotes[2])));
 				swagNote.scrollFactor.set(0, 0);
 
-				var susLength:Float = swagNote.sustainLength;
-
-				susLength = susLength / Conductor.stepCrochet;
-				unspawnNotes.push(swagNote);
-
 				swagNote.isAlt = songNotes[3];
+				unspawnNotes.push(swagNote);
+		
+				swagNote.mustPress = gottaHitNote;
+
+				if (swagNote.mustPress)
+				{
+					swagNote.x += FlxG.width / 2; // general offset
+				}
+
+				// Don't allow trinkets to have any sustain notes
+				if (swagNote.isTrinket)
+					continue;
+
+				var susLength:Float = swagNote.sustainLength;
+				susLength = susLength / Conductor.stepCrochet;				
 
 				if (susLength > 0)
 					swagNote.isParent = true;
@@ -1778,13 +1794,6 @@ class PlayState extends MusicBeatState
 					swagNote.children.push(sustainNote);
 					sustainNote.spotInLine = type;
 					type++;
-				}
-
-				swagNote.mustPress = gottaHitNote;
-
-				if (swagNote.mustPress)
-				{
-					swagNote.x += FlxG.width / 2; // general offset
 				}
 			}
 			daBeats += 1;
@@ -3521,7 +3530,12 @@ class PlayState extends MusicBeatState
 										noteMiss(daNote.noteData, daNote);
 								}
 
-								if (daNote.isParent && daNote.visible)
+								// Is optional to hit trinket
+								if (daNote.isTrinket)
+								{
+									daNote.alpha = 0.3;
+								}
+								else if (daNote.isParent && daNote.visible)
 								{
 									health -= 0.15; // give a health punishment for failing a LN
 									trace("hold fell over at the start");
@@ -3864,6 +3878,9 @@ class PlayState extends MusicBeatState
 
 	private function popUpScore(daNote:Note):Void
 	{
+		if (daNote.isTrinket)
+			return;
+
 		var noteDiff:Float = -(daNote.strumTime - Conductor.songPosition);
 		var wife:Float = EtternaFunctions.wife3(-noteDiff, Conductor.timeScale);
 		// boyfriend.playAnim('hey');
@@ -4336,6 +4353,10 @@ class PlayState extends MusicBeatState
 		if (PlayStateChangeables.botPlay)
 		notes.forEachAlive(function(daNote:Note)
 		{
+			// Bot ignores trinkets
+			if (daNote.isTrinket)
+				return;
+
 			var diff = -((daNote.strumTime - Conductor.songPosition ) / songMultiplier);
 
 			daNote.rating = Ratings.judgeNote(daNote);
@@ -4526,6 +4547,10 @@ class PlayState extends MusicBeatState
 
 	function noteMiss(direction:Int = 1, daNote:Note):Void
 	{
+		// ignore trinket nodes (as they are optional)
+		if (daNote != null && daNote.isTrinket)
+			return;
+
 		if (!boyfriend.stunned)
 		{
 			//health -= 0.2;
@@ -4728,7 +4753,15 @@ class PlayState extends MusicBeatState
 				popUpScore(note);
 				combo += 1;
 
-				// TODO: Custom Trinket note here (or somewhere close by)
+				if (note.isTrinket)
+				{
+					FlxG.log.add('you collected the trinket!');
+
+					note.kill();
+					notes.remove(note, true);
+					note.destroy();
+					return;
+				}
 			}
 
 			var altAnim:String = "";
@@ -4738,7 +4771,8 @@ class PlayState extends MusicBeatState
 					trace("Alt note on BF");
 				}
 
-			boyfriend.playAnim('sing' + dataSuffix[note.noteData] + altAnim, true);
+			if (!note.isTrinket)
+				boyfriend.playAnim('sing' + dataSuffix[note.noteData] + altAnim, true);
 
 			#if cpp
 			if (luaModchart != null)
