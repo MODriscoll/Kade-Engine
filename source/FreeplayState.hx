@@ -418,49 +418,56 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			// adjusting the song name to be compatible
-			var songFormat = StringTools.replace(songs[curSelected].songName, " ", "-");
-			switch (songFormat) {
-				case 'Dad-Battle': songFormat = 'Dadbattle';
-				case 'Philly-Nice': songFormat = 'Philly';
-			}
-			var hmm;
-			try
+			if (Unlocks.hasUnlockedDiffForSong(songs[curSelected].songName, curDifficulty))
 			{
-				hmm = songData.get(songs[curSelected].songName)[curDifficulty];
-				if (hmm == null)
-					return;
-			}
-			catch(ex)
-			{
-				return;
-			}
-
-
-
-			PlayState.SONG = Song.conversionChecks(hmm);
-			PlayState.isStoryMode = false;
-			PlayState.storyDifficulty = curDifficulty;
-			PlayState.storyWeek = songs[curSelected].week;
-			trace('CUR WEEK' + PlayState.storyWeek);
-			#if sys
-			if (songs[curSelected].songCharacter == "sm")
-				{
-					PlayState.isSM = true;
-					PlayState.sm = songs[curSelected].sm;
-					PlayState.pathToSm = songs[curSelected].path;
+				// adjusting the song name to be compatible
+				var songFormat = StringTools.replace(songs[curSelected].songName, " ", "-");
+				switch (songFormat) {
+					case 'Dad-Battle': songFormat = 'Dadbattle';
+					case 'Philly-Nice': songFormat = 'Philly';
 				}
-			else
+				var hmm;
+				try
+				{
+					hmm = songData.get(songs[curSelected].songName)[curDifficulty];
+					if (hmm == null)
+						return;
+				}
+				catch(ex)
+				{
+					return;
+				}
+
+
+
+				PlayState.SONG = Song.conversionChecks(hmm);
+				PlayState.isStoryMode = false;
+				PlayState.storyDifficulty = curDifficulty;
+				PlayState.storyWeek = songs[curSelected].week;
+				trace('CUR WEEK' + PlayState.storyWeek);
+				#if sys
+				if (songs[curSelected].songCharacter == "sm")
+					{
+						PlayState.isSM = true;
+						PlayState.sm = songs[curSelected].sm;
+						PlayState.pathToSm = songs[curSelected].path;
+					}
+				else
+					PlayState.isSM = false;
+				#else
 				PlayState.isSM = false;
-			#else
-			PlayState.isSM = false;
-			#end
+				#end
 
-			PlayState.songMultiplier = rate;
+				PlayState.songMultiplier = rate;
 
-			LoadingState.loadAndSwitchState(new PlayState());
+				LoadingState.loadAndSwitchState(new PlayState());
 
-			clean();
+				clean();
+			}
+			else
+			{
+
+			}
 		}
 	}
 
@@ -490,6 +497,11 @@ class FreeplayState extends MusicBeatState
 		#end
 		diffCalcText.text = 'RATING: ${DiffCalc.CalculateDiff(songData.get(songs[curSelected].songName)[curDifficulty])}';
 		diffText.text = CoolUtil.difficultyFromInt(curDifficulty).toUpperCase();
+
+		if (Unlocks.hasUnlockedDiffForSong(songs[curSelected].songName, curDifficulty))
+			grpSongs.members[curSelected].color = 0xFFFFFF;
+		else
+			grpSongs.members[curSelected].color = 0x6a6a6a;
 	}
 
 	function changeSelection(change:Int = 0)
@@ -599,6 +611,11 @@ class FreeplayState extends MusicBeatState
 			{
 				item.alpha = 1;
 				// item.setGraphicSize(Std.int(item.width));
+
+				if (Unlocks.hasUnlockedDiffForSong(songs[curSelected].songName, curDifficulty))
+					item.color = 0xFFFFFF;
+				else
+					item.color = 0x6a6a6a;
 			}
 		}
 	}

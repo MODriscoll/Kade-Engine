@@ -124,6 +124,8 @@ class KadeEngineData
 		if (FlxG.save.data.enableFlip == null)
 			FlxG.save.data.enableFlip = true;
 
+		Unlocks.initUnlocks();
+
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 		
 		KeyBinds.gamepad = gamepad != null;

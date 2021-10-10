@@ -1002,3 +1002,35 @@ class ResetSettings extends Option
 		return confirm ? "Confirm Settings Reset" : "Reset Settings";
 	}
 }
+
+class ResetUnlocks extends Option
+{
+	var confirm:Bool = false;
+
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+	public override function press():Bool
+	{
+		if(!confirm)
+		{
+			confirm = true;
+			display = updateDisplay();
+			return true;
+		}
+		
+		Unlocks.resetUnlocks();
+
+		confirm = false;
+		trace('All unlocks have been reset');
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return confirm ? "Confirm Unlocks Reset" : "Reset Unlocks";
+	}
+}

@@ -285,6 +285,10 @@ class PlayState extends MusicBeatState
 	private var gfBeatsToCheerFor:Int = 1;
 	private var gfCheerNumBeats = 0;
 
+	// Trinket unlocks
+	private var numTrinketsToCollect = 5; // If less than this trinkets exist, extra hard mode cannot be unlocked
+	private var numTrinketsCollected = 0;
+
 	// API stuff
 
 	public function addObject(object:FlxBasic)
@@ -1712,6 +1716,7 @@ class PlayState extends MusicBeatState
 		#end
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
 
+		var trinketNotes:Array<Note> = [];
 
 		for (section in noteData)
 		{
@@ -1719,11 +1724,12 @@ class PlayState extends MusicBeatState
 
 			for (songNotes in section.sectionNotes)
 			{
+				// Don't spawn trinkets in free play
 				var isTrinketNote = songNotes[5] != null ? songNotes[5] : false;
-				if (isTrinketNote)
-				{
-					// TODO: Check if story mode, if so, don't spawn this note
-				}
+				#if !debug
+				if (isTrinketNote && !isStoryMode)
+					continue;
+				#end
 
 				var daStrumTime:Float = songNotes[0] - FlxG.save.data.offset - songOffset;
 				if (daStrumTime < 0)
@@ -1744,7 +1750,7 @@ class PlayState extends MusicBeatState
 				else
 					oldNote = null;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,false,false,false,songNotes[4], songNotes[5]);
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,false,false,false,songNotes[4], isTrinketNote);
 
 				if (!gottaHitNote && PlayStateChangeables.Optimize)
 					continue;
@@ -1764,7 +1770,10 @@ class PlayState extends MusicBeatState
 
 				// Don't allow trinkets to have any sustain notes
 				if (swagNote.isTrinket)
+				{
+					trinketNotes.push(swagNote);
 					continue;
+				}
 
 				var susLength:Float = swagNote.sustainLength;
 				susLength = susLength / Conductor.stepCrochet;				
@@ -1797,6 +1806,16 @@ class PlayState extends MusicBeatState
 				}
 			}
 			daBeats += 1;
+		}
+
+		// Randomly select which trinkets to actually spawn in
+		if (trinketNotes.length > 0 && trinketNotes.length > numTrinketsToCollect)
+		{
+			FlxG.random.shuffle(trinketNotes);
+			for (i in numTrinketsToCollect...trinketNotes.length)
+			{
+				unspawnNotes.remove(trinketNotes[i]);
+			}
 		}
 
 		// trace(unspawnNotes.length);
@@ -3738,6 +3757,15 @@ class PlayState extends MusicBeatState
 				campaignBads += bads;
 				campaignShits += shits;
 
+				if (numTrinketsCollected >= numTrinketsToCollect)
+				{
+					if (Unlocks.unlockDiffForSong(SONG.song, storyDifficulty + 1))
+					{
+						trace('Unlocked new difficulty for song: ' + SONG.song);
+						FlxG.save.flush();
+					}		
+				}
+
 				storyPlaylist.remove(storyPlaylist[0]);
 
 				if (storyPlaylist.length <= 0)
@@ -4751,16 +4779,20 @@ class PlayState extends MusicBeatState
 			if (!note.isSustainNote)
 			{
 				popUpScore(note);
-				combo += 1;
 
-				if (note.isTrinket)
+				// Just double check if player
+				if (note.isTrinket && note.mustPress)
 				{
-					FlxG.log.add('you collected the trinket!');
+					++numTrinketsCollected;
 
 					note.kill();
 					notes.remove(note, true);
 					note.destroy();
 					return;
+				}
+				else
+				{
+					combo += 1;
 				}
 			}
 

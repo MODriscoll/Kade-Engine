@@ -73,7 +73,8 @@ class OptionsMenu extends MusicBeatState
 			#end
 			new ResetScoreOption("Reset your score on all songs and weeks. This is irreversible!"),
 			new LockWeeksOption("Reset your story mode progress. This is irreversible!"),
-			new ResetSettings("Reset ALL your settings. This is irreversible!")
+			new ResetSettings("Reset ALL your settings. This is irreversible!"),
+			new ResetUnlocks("Reset ALL your unlocked content. This is irreversible!")
 		])
 		
 	];
