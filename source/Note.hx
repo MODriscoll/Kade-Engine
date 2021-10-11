@@ -336,9 +336,12 @@ class Note extends FlxSprite
 
 		// Temp
 		if (isTrinket)
-			localAngle += 720 * elapsed;
-		else
-			localAngle = 0;
+		{
+			var r:Int = 200 - FlxG.random.int(0, 64);
+			var g:Int = 200 - FlxG.random.int(0, 128);
+			var b:Int = 164 + FlxG.random.int(0, 60);
+			color = FlxColor.fromRGB(r, g, b);
+		}
 	}
 
 	public function playNoteAnim()

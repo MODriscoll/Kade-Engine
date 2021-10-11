@@ -90,5 +90,5 @@
 	<SubTexture name="up press0002" x="174" y="419" width="153" height="150"/>
 	<SubTexture name="up press0003" x="174" y="419" width="153" height="150"/>
   <!-- Temp Trinket -->
-  <SubTexture name="trinket0000" x="508" y="416" width="154" height="157"/>
+  <SubTexture name="trinket0000" x="1608" y="480" width="140" height="140"/>
 </TextureAtlas>
