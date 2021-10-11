@@ -99,6 +99,7 @@ class PlayState extends MusicBeatState
 	public static var bads:Int = 0;
 	public static var goods:Int = 0;
 	public static var sicks:Int = 0;
+	public static var versusMode:Bool = false; // If CPU can damage the player
 
 	public static var songPosBG:FlxSprite;
 
@@ -3353,6 +3354,15 @@ class PlayState extends MusicBeatState
 					{
 						altAnim = '-alt';
 						trace("YOO WTF THIS IS AN ALT NOTE????");
+					}
+
+					// Damage player if playing versus mode
+					if (versusMode && !daNote.isSustainNote && !daNote.isTrinket)
+					{
+						health -= 0.025;
+						// Don't allow CPU to end the game
+						if (health < 0.001)
+							health = 0.001;
 					}
 
 					// Accessing the animation name directly to play it

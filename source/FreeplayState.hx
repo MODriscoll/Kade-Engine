@@ -37,12 +37,14 @@ class FreeplayState extends MusicBeatState
 
 	public static var curSelected:Int = 0;
 	public static var curDifficulty:Int = 1;
+	public static var versusEnabled:Bool = false;
 
 	var scoreText:FlxText;
 	var comboText:FlxText;
 	var diffText:FlxText;
 	var diffCalcText:FlxText;
 	var previewtext:FlxText;
+	var versusText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
 	var combo:String = '';
@@ -229,7 +231,7 @@ class FreeplayState extends MusicBeatState
 		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
 		// scoreText.alignment = RIGHT;
 
-		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 135, 0xFF000000);
+		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 163, 0xFF000000);
 		scoreBG.alpha = 0.6;
 		add(scoreBG);
 
@@ -244,6 +246,10 @@ class FreeplayState extends MusicBeatState
 		previewtext = new FlxText(scoreText.x, scoreText.y + 94, 0, "Rate: " + rate + "x", 24);
 		previewtext.font = scoreText.font;
 		add(previewtext);
+
+		versusText = new FlxText(scoreText.x, scoreText.y + 122, 0, "Versus: " + (versusEnabled ? 'True' : 'False') + ' (V)', 24);
+		versusText.font = scoreText.font;
+		add(versusText);
 
 		comboText = new FlxText(diffText.x + 100, diffText.y, 0, "", 24);
 		comboText.font = diffText.font;
@@ -401,7 +407,9 @@ class FreeplayState extends MusicBeatState
 			if (FlxG.keys.justPressed.RIGHT)
 				changeDiff(1);
 		}
-		
+
+		if (FlxG.keys.justPressed.V)
+			setVersusEnabled(!versusEnabled && canEnableVsForSong(songs[curSelected].songName));	
 					
 		#if cpp
 		@:privateAccess
@@ -459,6 +467,8 @@ class FreeplayState extends MusicBeatState
 				#end
 
 				PlayState.songMultiplier = rate;
+
+				PlayState.versusMode = versusEnabled;
 
 				LoadingState.loadAndSwitchState(new PlayState());
 
@@ -618,6 +628,19 @@ class FreeplayState extends MusicBeatState
 					item.color = 0x6a6a6a;
 			}
 		}
+
+		setVersusEnabled(versusEnabled && canEnableVsForSong(songs[curSelected].songName));
+	}
+
+	function setVersusEnabled(enable:Bool)
+	{
+		versusEnabled = enable;
+		versusText.text = 'Versus: ' + (versusEnabled ? 'True' : 'False') + ' (V)';
+	}
+
+	static public function canEnableVsForSong(songName:String):Bool
+	{
+		return songName != 'Tutorial';
 	}
 }
 
