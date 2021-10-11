@@ -3359,7 +3359,8 @@ class PlayState extends MusicBeatState
 					// Damage player if playing versus mode
 					if (versusMode && !daNote.isSustainNote && !daNote.isTrinket)
 					{
-						health -= 0.025;
+						health -= (0.01 + (0.005 * storyDifficulty));
+
 						// Don't allow CPU to end the game
 						if (health < 0.001)
 							health = 0.001;
