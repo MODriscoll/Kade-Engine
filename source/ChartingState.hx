@@ -601,7 +601,6 @@ class ChartingState extends MusicBeatState
 			var valueLabel = new FlxText(150, 45, 'Event Value');
 			var eventValue = new FlxUIInputText(150,60,80,"");
 			var eventSave = new FlxButton(10,155,"Save Event", function() {
-				// TODO: Current issue with this Save Event causing the GF Cheer event to change to BPM Change which fucks with our chart
 				var pog:Song.Event = new Song.Event(currentSelectedEventName,currentEventPosition,HelperFunctions.truncateFloat(Std.parseFloat(savedValue), 3),savedType);
 	
 				trace("trying to save " + currentSelectedEventName);
@@ -908,6 +907,9 @@ class ChartingState extends MusicBeatState
 					eventType.selectedLabel = event.type;
 					currentSelectedEventName = event.name;
 					currentEventPosition = event.position;
+
+					savedType = event.type;
+					savedValue = event.value + "";
 				});
 
 			eventValue.callback = function(string:String, string2:String)
