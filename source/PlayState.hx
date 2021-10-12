@@ -290,6 +290,9 @@ class PlayState extends MusicBeatState
 	private var numTrinketsToCollect = 5; // If less than this trinkets exist, extra hard mode cannot be unlocked
 	private var numTrinketsCollected = 0;
 
+	// If to make Boyfriend/GF cheer when song finishes
+	private var cheerOnVictory:Bool = true;
+
 	// API stuff
 
 	public function addObject(object:FlxBasic)
@@ -3795,6 +3798,7 @@ class PlayState extends MusicBeatState
 						new FlxTimer().start(1, function(tmr:FlxTimer)
 							{
 								inResults = true;
+								cheerForResults();
 							});
 					}
 					else
@@ -3875,6 +3879,7 @@ class PlayState extends MusicBeatState
 					new FlxTimer().start(1, function(tmr:FlxTimer)
 						{
 							inResults = true;
+							cheerForResults();
 						});
 				}
 				else
@@ -5357,6 +5362,19 @@ class PlayState extends MusicBeatState
 	function helperHasFlipEvents():Bool
 	{
 		return PlayStateChangeables.enableFlip && hasFlipEvents;
+	}
+
+	// Tweens zoom in for boyfriend/gf cheer when results creen pops up
+	function cheerForResults():Void
+	{
+		if (!cheerOnVictory)
+			return;
+
+		new FlxTimer().start(0.2, function(tmr:FlxTimer)
+			{
+				boyfriend.playAnim('hey');
+				gf.playAnim('cheer');
+			});
 	}
 }
 //u looked :O -ides
