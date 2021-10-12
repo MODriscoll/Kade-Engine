@@ -949,6 +949,7 @@ class PlayState extends MusicBeatState
 			SONG.song
 			+ " - "
 			+ CoolUtil.difficultyFromInt(storyDifficulty)
+			+ (versusMode ? " (Versus)" : "")
 			+ (Main.watermarks ? " | KE " + MainMenuState.kadeEngineVer : ""), 16);
 		kadeEngineWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		kadeEngineWatermark.scrollFactor.set();
