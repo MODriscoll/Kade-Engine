@@ -608,8 +608,13 @@ class PlayState extends MusicBeatState
 							add(dad);
 							for (bg in array)
 								add(bg);
-						case 2:
-							add(boyfriend);
+						case 2:					
+							{
+								var spookyGhost = boyfriend.trySpawnSpookyGhost();
+								if (spookyGhost != null)
+									add(spookyGhost);
+							}		
+							add(boyfriend);				
 							for (bg in array)
 								add(bg);
 					}
