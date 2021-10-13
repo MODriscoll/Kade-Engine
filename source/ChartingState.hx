@@ -140,6 +140,11 @@ class ChartingState extends MusicBeatState
 
 	public static var latestChartVersion = "2";
 
+	var eventPos:FlxUIInputText = null;
+	var eventName:FlxUIInputText = null;
+	var eventType:FlxUIDropDownMenu = null;
+	var eventValue:FlxUIInputText = null;
+
 	override function create()
 	{
 		curSection = lastSection;
@@ -595,11 +600,11 @@ class ChartingState extends MusicBeatState
 	
 			var listLabel = new FlxText(10, 5, 'List of Events');
 			var nameLabel = new FlxText(150, 5, 'Event Name');
-			var eventName = new FlxUIInputText(150,20,80,"");
+			eventName = new FlxUIInputText(150,20,80,"");
 			var typeLabel = new FlxText(10, 45, 'Type of Event');
-			var eventType = new FlxUIDropDownMenu(10,60,FlxUIDropDownMenu.makeStrIdLabelArray(["BPM Change", "Scroll Speed Change", "Flip Character", "GF Cheer"], true));
+			eventType = new FlxUIDropDownMenu(10,60,FlxUIDropDownMenu.makeStrIdLabelArray(["BPM Change", "Scroll Speed Change", "Flip Character", "GF Cheer"], true));
 			var valueLabel = new FlxText(150, 45, 'Event Value');
-			var eventValue = new FlxUIInputText(150,60,80,"");
+			eventValue = new FlxUIInputText(150,60,80,"");
 			var eventSave = new FlxButton(10,155,"Save Event", function() {
 				var pog:Song.Event = new Song.Event(currentSelectedEventName,currentEventPosition,HelperFunctions.truncateFloat(Std.parseFloat(savedValue), 3),savedType);
 	
@@ -673,7 +678,7 @@ class ChartingState extends MusicBeatState
 				trace('end');
 			});
 			var posLabel = new FlxText(150, 85, 'Event Position');
-			var eventPos = new FlxUIInputText(150,100,80,"");
+			eventPos = new FlxUIInputText(150,100,80,"");
 			var eventAdd = new FlxButton(95,155,"Add Event", function() {
 
 				var pog:Song.Event = new Song.Event("New Event " + HelperFunctions.truncateFloat(curDecimalBeat, 3),HelperFunctions.truncateFloat(curDecimalBeat, 3),_song.bpm,"BPM Change");
@@ -894,6 +899,9 @@ class ChartingState extends MusicBeatState
 
 			listOfEvents = new FlxUIDropDownMenu(10,20, FlxUIDropDownMenu.makeStrIdLabelArray(listofnames, true), function(name:String)
 				{
+					updateSelectedEvent(listOfEvents.selectedLabel);
+					return;
+
 					var event = containsName(listOfEvents.selectedLabel,_song.eventObjects);
 					
 					if (event == null)
@@ -1906,6 +1914,18 @@ class ChartingState extends MusicBeatState
 
 		if (doInput)
 		{
+			if (FlxG.mouse.justPressed)
+				for (i in texts)
+					if (FlxG.mouse.overlaps(i))
+					{
+						// Assuming:
+						// 1. Text is the events on the side
+						// 2. Name of the event is always first
+						updateSelectedEvent(i.text.split('\n')[0]);
+						break;
+					}
+
+
 			if (FlxG.mouse.wheel != 0)
 				{
 					FlxG.sound.music.pause();
@@ -3413,5 +3433,28 @@ class ChartingState extends MusicBeatState
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 		_file = null;
 		FlxG.log.error("Problem saving Level data");
+	}
+
+	function updateSelectedEvent(eventToSelect:String, updateDropdown:Bool = true)
+	{
+		var event = containsName(eventToSelect,_song.eventObjects);
+					
+		if (event == null)
+			return;
+
+		trace('selecting ' + eventToSelect + ' found: ' + event);
+
+		eventName.text = event.name;
+		eventValue.text = event.value + "";
+		eventPos.text = event.position + "";
+		eventType.selectedLabel = event.type;
+		currentSelectedEventName = event.name;
+		currentEventPosition = event.position;
+
+		savedType = event.type;
+		savedValue = event.value + "";
+
+		if (updateDropdown)
+			listOfEvents.selectedLabel = event.name;
 	}
 }
