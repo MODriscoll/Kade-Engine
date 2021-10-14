@@ -2783,91 +2783,94 @@ class PlayState extends MusicBeatState
 				luaModchart.setVar("mustHit", currentSection.mustHitSection);
 			#end
 
-			// TODO: Currently the offset results in the camera dipping a bit before going to the correct
-			// location when flipping. This is due to using the current position for camFollow.setPos
-			// We should use the originPos or flipPos instead
-			if (!currentSection.mustHitSection)
+			if (!endingSong)
 			{
-				if (camFollow.x != (dad.getMidpoint().x + 150) ||
-					camFollow.y != (dad.getMidpoint().y + (dad.isFlipped ? 100 : -100)))
+				// TODO: Currently the offset results in the camera dipping a bit before going to the correct
+				// location when flipping. This is due to using the current position for camFollow.setPos
+				// We should use the originPos or flipPos instead
+				if (!currentSection.mustHitSection)
 				{
-					var offsetX = 0;
-					var offsetY = 0;
-					#if cpp
-					if (luaModchart != null)
+					if (camFollow.x != (dad.getMidpoint().x + 150) ||
+						camFollow.y != (dad.getMidpoint().y + (dad.isFlipped ? 100 : -100)))
 					{
-						offsetX = luaModchart.getVar("followXOffset", "float");
-						offsetY = luaModchart.getVar("followYOffset", "float");
-					}
-					#end
-					var camFollowOffsetY = -100;// + offsetY;
-					if (dad.isFlipped)
-						camFollowOffsetY = -camFollowOffsetY;
-					camFollow.setPosition(dad.getMidpoint().x + 150/* + offsetX*/, dad.getMidpoint().y + camFollowOffsetY);
-					#if cpp
-					if (luaModchart != null)
-						luaModchart.executeState('playerTwoTurn', []);
-					#end
-					// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
+						var offsetX = 0;
+						var offsetY = 0;
+						#if cpp
+						if (luaModchart != null)
+						{
+							offsetX = luaModchart.getVar("followXOffset", "float");
+							offsetY = luaModchart.getVar("followYOffset", "float");
+						}
+						#end
+						var camFollowOffsetY = -100;// + offsetY;
+						if (dad.isFlipped)
+							camFollowOffsetY = -camFollowOffsetY;
+						camFollow.setPosition(dad.getMidpoint().x + 150/* + offsetX*/, dad.getMidpoint().y + camFollowOffsetY);
+						#if cpp
+						if (luaModchart != null)
+							luaModchart.executeState('playerTwoTurn', []);
+						#end
+						// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
 
-					switch (dad.curCharacter)
-					{
-						case 'mom' | 'mom-car':
-							camFollow.y = dad.getMidpoint().y;
-						case 'senpai' | 'senpai-angry':
-							camFollow.y = dad.getMidpoint().y - 430;
-							camFollow.x = dad.getMidpoint().x - 100;
+						switch (dad.curCharacter)
+						{
+							case 'mom' | 'mom-car':
+								camFollow.y = dad.getMidpoint().y;
+							case 'senpai' | 'senpai-angry':
+								camFollow.y = dad.getMidpoint().y - 430;
+								camFollow.x = dad.getMidpoint().x - 100;
+						}
 					}
 				}
-			}
 
-			// TODO: Currently the offset results in the camera dipping a bit before going to the correct
-			// location when flipping. This is due to using the current position for camFollow.setPos
-			// We should use the originPos or flipPos instead
-			if (currentSection.mustHitSection)
-			{
-				if (camFollow.x != (boyfriend.getMidpoint().x - 100) ||
-					camFollow.y != (boyfriend.getMidpoint().y + (boyfriend.isFlipped ? 100 : -100)))
+				// TODO: Currently the offset results in the camera dipping a bit before going to the correct
+				// location when flipping. This is due to using the current position for camFollow.setPos
+				// We should use the originPos or flipPos instead
+				if (currentSection.mustHitSection)
 				{
-					var offsetX = 0;
-					var offsetY = 0;
-					#if cpp
-					if (luaModchart != null)
+					if (camFollow.x != (boyfriend.getMidpoint().x - 100) ||
+						camFollow.y != (boyfriend.getMidpoint().y + (boyfriend.isFlipped ? 100 : -100)))
 					{
-						offsetX = luaModchart.getVar("followXOffset", "float");
-						offsetY = luaModchart.getVar("followYOffset", "float");
-					}
-					#end
-					var camFollowOffsetY = -100;// + offsetY;
-					if (boyfriend.isFlipped)
-						camFollowOffsetY = -camFollowOffsetY;
-					camFollow.setPosition(boyfriend.getMidpoint().x - 100/* + offsetX*/, boyfriend.getMidpoint().y + camFollowOffsetY);
+						var offsetX = 0;
+						var offsetY = 0;
+						#if cpp
+						if (luaModchart != null)
+						{
+							offsetX = luaModchart.getVar("followXOffset", "float");
+							offsetY = luaModchart.getVar("followYOffset", "float");
+						}
+						#end
+						var camFollowOffsetY = -100;// + offsetY;
+						if (boyfriend.isFlipped)
+							camFollowOffsetY = -camFollowOffsetY;
+						camFollow.setPosition(boyfriend.getMidpoint().x - 100/* + offsetX*/, boyfriend.getMidpoint().y + camFollowOffsetY);
 
-					#if cpp
-					if (luaModchart != null)
-						luaModchart.executeState('playerOneTurn', []);
-					#end
+						#if cpp
+						if (luaModchart != null)
+							luaModchart.executeState('playerOneTurn', []);
+						#end
 
-					switch (Stage.curStage)
-					{
-						case 'limo':
-							camFollow.x = boyfriend.getMidpoint().x - 300;
-						case 'mall':
-							camFollow.y = boyfriend.getMidpoint().y - 200;
-						case 'school':
-							camFollow.x = boyfriend.getMidpoint().x - 200;
-							camFollow.y = boyfriend.getMidpoint().y - 200;
-						case 'schoolEvil':
-							camFollow.x = boyfriend.getMidpoint().x - 200;
-							camFollow.y = boyfriend.getMidpoint().y - 200;
+						switch (Stage.curStage)
+						{
+							case 'limo':
+								camFollow.x = boyfriend.getMidpoint().x - 300;
+							case 'mall':
+								camFollow.y = boyfriend.getMidpoint().y - 200;
+							case 'school':
+								camFollow.x = boyfriend.getMidpoint().x - 200;
+								camFollow.y = boyfriend.getMidpoint().y - 200;
+							case 'schoolEvil':
+								camFollow.x = boyfriend.getMidpoint().x - 200;
+								camFollow.y = boyfriend.getMidpoint().y - 200;
+						}
 					}
 				}
-			}
 
-			if (dad.isFlipped != boyfriend.isFlipped)
-			{
-				var halfwayPos:Float = (dad.getMidpoint().y - 100) + (boyfriend.getMidpoint().y - 100) * 0.5;
-				camFollow.setPosition(camFollow.x, halfwayPos);
+				if (dad.isFlipped != boyfriend.isFlipped)
+				{
+					var halfwayPos:Float = (dad.getMidpoint().y - 100) + (boyfriend.getMidpoint().y - 100) * 0.5;
+					camFollow.setPosition(camFollow.x, halfwayPos);
+				}
 			}
 		}
 
@@ -3089,13 +3092,16 @@ class PlayState extends MusicBeatState
 				desiredCamZoomLerp = interpTime > desiredCamZoomLerp ? interpTime : desiredCamZoomLerp;
 			}
 
-			if (desiredCamZoomLerp > 0)
+			if (!endingSong)
 			{
-				FlxG.camera.zoom = FlxMath.lerp(Stage.camZoom, Stage.flippedCamZoom, desiredCamZoomLerp);
-			}
-			else
-			{
-				FlxG.camera.zoom = Stage.camZoom;
+				if (desiredCamZoomLerp > 0)
+				{
+					FlxG.camera.zoom = FlxMath.lerp(Stage.camZoom, Stage.flippedCamZoom, desiredCamZoomLerp);
+				}
+				else
+				{
+					FlxG.camera.zoom = Stage.camZoom;
+				}
 			}
 
 			notes.forEachAlive(function(daNote:Note)
@@ -5375,8 +5381,16 @@ class PlayState extends MusicBeatState
 		if (!cheerOnVictory)
 			return;
 
+		// Some sprite sheets may not have a hey animation
+		if (boyfriend.animation.getByName('hey') == null)
+			return;
+
+		// Focus on boyfriend
+		camFollow.setPosition(boyfriend.getMidpoint().x, boyfriend.getMidpoint().y);
+		Stage.camZoom = 1.2;
+
 		new FlxTimer().start(0.2, function(tmr:FlxTimer)
-			{
+			{	
 				boyfriend.playAnim('hey');
 				gf.playAnim('cheer');
 			});
