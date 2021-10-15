@@ -69,8 +69,13 @@ class Boyfriend extends Character
 		if (PlayStateChangeables.Optimize)
 			return null;
 
-		// TODO: Higher chance on spawning closer to halloween
 		var ghostChance = 0.1;
+
+		// Higher chance on Halloween
+		var now:Date = Date.now();
+		if (now.getDate() == 31 && now.getMonth() == 9)
+			ghostChance = 10;
+				
 		if (!FlxG.random.bool(ghostChance))
 			return null;
 
