@@ -83,6 +83,7 @@ import sys.FileSystem;
 
 using StringTools;
 
+import Note.NoteGhost;
 
 class PlayState extends MusicBeatState
 {
@@ -281,6 +282,10 @@ class PlayState extends MusicBeatState
 	private var hasFlipEvents:Bool = false;
 	private var flipDuration:Float = 0.4;
 
+	// Experimental 'Ghost Note' for flips. I say mostly works (besides some visual issues
+	// It can be kind of trippy. Was an idea to try and help players adjust when a flip occurs.
+	public var flipNoteGhosts:FlxTypedGroup<NoteGhost>;
+
 	// GF Cheer event
 	private var gfIsCheering:Bool = false;
 	private var gfBeatsToCheerFor:Int = 1;
@@ -340,6 +345,7 @@ class PlayState extends MusicBeatState
 		PlayStateChangeables.Optimize = FlxG.save.data.optimize;
 		PlayStateChangeables.zoom = FlxG.save.data.zoom;
 		PlayStateChangeables.enableFlip = FlxG.save.data.enableFlip;
+		PlayStateChangeables.enableGhostNotesForFlip = FlxG.save.data.enableGhostNotesForFlip;
 
 		// pre lowercasing the song name (create)
 		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
@@ -1020,6 +1026,7 @@ class PlayState extends MusicBeatState
 
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
+		flipNoteGhosts.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
 		healthBarBG.cameras = [camHUD];
 		iconP1.cameras = [camHUD];
@@ -1459,6 +1466,10 @@ class PlayState extends MusicBeatState
 					{
 						trace('found a stacked/really close note ' + (note.strumTime  - coolNote.strumTime ));
 						// just fuckin remove it since it's a stacked note and shouldn't be there
+
+						if (note.ghost != null)
+							flipNoteGhosts.remove(note.ghost, true);
+
 						note.kill();
 						notes.remove(note, true);
 						note.destroy();
@@ -1678,6 +1689,8 @@ class PlayState extends MusicBeatState
 
 		notes = new FlxTypedGroup<Note>();
 		add(notes);
+		flipNoteGhosts = new FlxTypedGroup<NoteGhost>();
+		add(flipNoteGhosts);
 
 		var noteData:Array<SwagSection>;
 
@@ -2251,8 +2264,14 @@ class PlayState extends MusicBeatState
 
 									notes.forEachAlive(function(daNote:Note)
 									{
+										// !! Do this first before setting up flip ghost (as we need flipY correct)
 										if (daNote.isSustainNote && !daNote.mustPress)
 											daNote.flipY = PlayStateChangeables.useDownscroll != dad.isFlipped;
+
+										if (PlayStateChangeables.enableGhostNotesForFlip)
+											if (daNote.setupGhostForFlip())
+												flipNoteGhosts.add(daNote.ghost);
+										
 									});
 								}
 								else if (flipType == 1)
@@ -2263,8 +2282,13 @@ class PlayState extends MusicBeatState
 
 									notes.forEachAlive(function(daNote:Note)
 									{
+										// !! Do this first before setting up flip ghost (as we need flipY correct)
 										if (daNote.isSustainNote && daNote.mustPress)
 											daNote.flipY = PlayStateChangeables.useDownscroll != boyfriend.isFlipped;
+
+										if (PlayStateChangeables.enableGhostNotesForFlip)
+											if (daNote.setupGhostForFlip())
+												flipNoteGhosts.add(daNote.ghost);
 									});
 								}
 								else
@@ -2279,6 +2303,7 @@ class PlayState extends MusicBeatState
 
 									notes.forEachAlive(function(daNote:Note)
 									{
+										// !! Do this first before setting up flip ghost (as we need flipY correct)
 										if (daNote.isSustainNote)
 										{
 											if (daNote.mustPress)
@@ -2286,6 +2311,10 @@ class PlayState extends MusicBeatState
 											else
 												daNote.flipY = PlayStateChangeables.useDownscroll != dad.isFlipped;
 										}
+
+										if (PlayStateChangeables.enableGhostNotesForFlip)
+											if (daNote.setupGhostForFlip())
+												flipNoteGhosts.add(daNote.ghost);
 									});
 								}
 							}
@@ -2606,6 +2635,8 @@ class PlayState extends MusicBeatState
 						daNote.active = false;
 						daNote.visible = false;
 
+						if (daNote.ghost != null)
+							flipNoteGhosts.remove(daNote.ghost, true);
 					
 						daNote.kill();
 						notes.remove(daNote, true);
@@ -3038,10 +3069,12 @@ class PlayState extends MusicBeatState
 				desiredCamZoomLerp = 1.0;
 			}
 
+			var cpuFlipTime:Float = 0.0;
 			if (cpuIsFlipping)
 			{
 				var endInterpTime:Float = cpuFlipStart + (flipDuration * 1000.0);
 				var interpTime:Float = 	(endInterpTime - songTime) / (flipDuration * 1000.0);
+				cpuFlipTime = interpTime;
 				interpTime = dad.isFlipped ? (1.0 - interpTime) : interpTime;
 
 				if (interpTime < 0.0)
@@ -3065,10 +3098,12 @@ class PlayState extends MusicBeatState
 				desiredCamZoomLerp = interpTime > desiredCamZoomLerp ? interpTime : desiredCamZoomLerp;
 			}
 
+			var playerFlipTime:Float = 0.0;
 			if (playerIsFlipping)
 			{
 				var endInterpTime:Float = playerFlipStart + (flipDuration * 1000.0);
 				var interpTime:Float = 	(endInterpTime - songTime) / (flipDuration * 1000.0);
+				playerFlipTime = interpTime;
 				interpTime = boyfriend.isFlipped ? (1.0 - interpTime) : interpTime;
 
 				if (interpTime < 0.0)
@@ -3106,66 +3141,73 @@ class PlayState extends MusicBeatState
 
 			notes.forEachAlive(function(daNote:Note)
 			{
+				// Destroy flip ghost notes if off-screen while not flipping
+				if (daNote.ghost != null &&
+					daNote.ghost.visible)
+				{
+					if ((daNote.mustPress && !playerIsFlipping) ||
+						(!daNote.mustPress && !cpuIsFlipping))
+					{
+						if (!daNote.ghost.isOnScreen(camHUD))
+						{
+							// I tried removing it and destroying it here,
+							// but that doesn't work (and the screen gets covered).
+							// Just set it to invisible and let it be destroyed with its owner
+							daNote.ghost.visible = false;
+							daNote.ghost.active = false;
+						}
+					}
+					else if (daNote.mustPress)
+						daNote.ghost.alpha = daNote.alpha * playerFlipTime;
+					else
+						daNote.ghost.alpha = daNote.alpha * cpuFlipTime;
+				}
+
 				// instead of doing stupid y > FlxG.height
 				// we be men and actually calculate the time :)
 
 				if (!daNote.modifiedByLua)
 				{
-					// We updated normal scroll to work for both, keeping this as reference to original
-					// TODO: Looks like we need to update Conductor.songPosition to Conductor.rawPosition in some
-					if (false)//PlayStateChangeables.useDownscroll)
+					if (daNote.mustPress)
 					{
-						
-						//if (daNote.mustPress)
-						//{
-						//	daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-						//		+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * 
-						//		(FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-						//			2) )) 
-						//		- daNote.noteYOff;
-						//}
-						//else
-						//	daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
-						//		+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-						//			2))) - daNote.noteYOff;
-	
-						if (daNote.mustPress)
-						{
-							if (boyfriend.isFlipped)
-								{
-									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-									- 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-										2))) + daNote.noteYOff;
-								}
-								else
-								{
-							daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-								+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * 
-								(FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-									2) )) 
-								- daNote.noteYOff;
-								}
-						}
-						else
-						{
-							if (dad.isFlipped)
-								{
-									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
-								- 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+						if (PlayStateChangeables.useDownscroll == boyfriend.isFlipped)
+							{
+								daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
+								- 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
 									2))) + daNote.noteYOff;
-								}
-								else
-								{
-									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
-								+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-									2))) - daNote.noteYOff;
-								}
-							
-						}
-	
-						if (daNote.isSustainNote)
+							}
+							else
+							{
+						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
+							+ 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * 
+							(FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+								2) )) 
+							- daNote.noteYOff;
+							}
+					}
+					else
+					{
+						if (PlayStateChangeables.useDownscroll == dad.isFlipped)
+							{
+								daNote.y = (cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y
+							- 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+								2))) + daNote.noteYOff;
+							}
+							else
+							{
+								daNote.y = (cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y
+							+ 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+								2))) - daNote.noteYOff;
+							}
+						
+					}
+
+					var isDownScrollNow:Bool = PlayStateChangeables.useDownscroll != (daNote.mustPress ? boyfriend.isFlipped : dad.isFlipped);
+					if (daNote.isSustainNote)
+					{
+						if (isDownScrollNow)
 						{
-							// Remember = minus makes notes go up, plus makes them go down
+							// Remember = minus makes notes go up, plus makes them go down (This was ripped from a pull request, look for it again :/)
 							if (daNote.animation.curAnim.name.endsWith("end") && daNote.prevNote != null)
 							{
 								daNote.y += daNote.prevNote.height;
@@ -3174,181 +3216,92 @@ class PlayState extends MusicBeatState
 							{
 								daNote.y += daNote.height / 2;
 							}
+						}
+						else
+						{
+							daNote.y -= daNote.height / 2;
+						}
+						
+						var passesThisStatement:Bool = false;
+						{
+							var strumLineY = daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y : cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y;
 	
-							// If not in botplay, only clip sustain notes when properly hit, botplay gets to clip it everytime
-							if (!PlayStateChangeables.botPlay)
-							{
-								if ((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit || holdArray[Math.floor(Math.abs(daNote.noteData))])
-									&& daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
-								{
-									// Clip to strumline
-									var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
-									swagRect.height = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
-										+ Note.swagWidth / 2
-										- daNote.y) / daNote.scale.y;
-									swagRect.y = daNote.frameHeight - swagRect.height;
-	
-									daNote.clipRect = swagRect;
-								}
-							}
+							if (isDownScrollNow)
+								passesThisStatement = daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (/*strumLine.y*/strumLineY + Note.swagWidth / 2);
 							else
+								passesThisStatement = daNote.y + daNote.offset.y * daNote.scale.y <= (/*strumLine.y*/strumLineY + Note.swagWidth / 2);
+						}
+	
+						if ((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit || holdArray[Math.floor(Math.abs(daNote.noteData))])
+							&& passesThisStatement)//daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
+						{
+							var yToUse:Float = daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y : cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y;
+	
+							// Clip to strumline
+							
+							if (isDownScrollNow)
 							{
+								// Clip to strumline
 								var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
-								swagRect.height = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
+								swagRect.height = (yToUse
 									+ Note.swagWidth / 2
 									- daNote.y) / daNote.scale.y;
 								swagRect.y = daNote.frameHeight - swagRect.height;
 	
 								daNote.clipRect = swagRect;
-							}
-						}
-					}
-					else
-					{
-						//if (daNote.mustPress)
-						//	daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-						//		- 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-						//			2))) + daNote.noteYOff;
-						//else
-						//	daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
-						//		- 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-						//			2))) + daNote.noteYOff;
-						if (daNote.mustPress)
-						{
-							if (PlayStateChangeables.useDownscroll == boyfriend.isFlipped)
-								{
-									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-									- 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-										2))) + daNote.noteYOff;
-								}
-								else
-								{
-							daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-								+ 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * 
-								(FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-									2) )) 
-								- daNote.noteYOff;
-								}
-						}
-						else
-						{
-							if (PlayStateChangeables.useDownscroll == dad.isFlipped)
-								{
-									daNote.y = (cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-								- 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-									2))) + daNote.noteYOff;
-								}
-								else
-								{
-									daNote.y = (cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-								+ 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-									2))) - daNote.noteYOff;
-								}
-							
-						}
-						if (daNote.isSustainNote)
-						{
-	
-							//if (!PlayStateChangeables.botPlay)
-							//{
-							//	if ((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit || holdArray[Math.floor(Math.abs(daNote.noteData))])
-							//		&& daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
-							//	{
-									// Clip to strumline
-							//		var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
-							//		swagRect.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
-							//			+ Note.swagWidth / 2
-							//			- daNote.y) / daNote.scale.y;
-							//		swagRect.height -= swagRect.y;
-	//
-							//		daNote.clipRect = swagRect;
-							//	}
-							//}
-							//else
-							//{
-							//	var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
-							//	swagRect.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
-							//		+ Note.swagWidth / 2
-							//		- daNote.y) / daNote.scale.y;
-							//	swagRect.height -= swagRect.y;
-	//
-							//	daNote.clipRect = swagRect;
-							//}
-							
-							//if (!PlayStateChangeables.botPlay)
+							} 
+							else
 							{
-								var isDownScrollNow:Bool = PlayStateChangeables.useDownscroll != (daNote.mustPress ? boyfriend.isFlipped : dad.isFlipped);
-	
-								if (isDownScrollNow)
-								{
-									// Remember = minus makes notes go up, plus makes them go down (This was ripped from a pull request, look for it again :/)
-									if (daNote.animation.curAnim.name.endsWith("end") && daNote.prevNote != null)
-									{
-										daNote.y += daNote.prevNote.height;
-									}
-									else
-									{
-										daNote.y += daNote.height / 2;
-									}
-								}
-								else
-								{
-									daNote.y -= daNote.height / 2;
-								}
-								
-								var passesThisStatement:Bool = false;
-								{
-									var strumLineY = daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y : cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y;
-	
-									if (isDownScrollNow)
-										passesThisStatement = daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (/*strumLine.y*/strumLineY + Note.swagWidth / 2);
-									else
-										passesThisStatement = daNote.y + daNote.offset.y * daNote.scale.y <= (/*strumLine.y*/strumLineY + Note.swagWidth / 2);
-								}
-	
-								if ((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit || holdArray[Math.floor(Math.abs(daNote.noteData))])
-									&& passesThisStatement)//daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
-								{
-									var yToUse:Float = daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y : cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y;
-	
-									// Clip to strumline
-									
-									if (isDownScrollNow)
-									{
-										// Clip to strumline
-										var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
-										swagRect.height = (yToUse
-											+ Note.swagWidth / 2
-											- daNote.y) / daNote.scale.y;
-										swagRect.y = daNote.frameHeight - swagRect.height;
-	
-										daNote.clipRect = swagRect;
-									} 
-									else
-									{
-										var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
-										swagRect.y = (yToUse
-											+ Note.swagWidth / 2
-											- daNote.y) / daNote.scale.y;
-										swagRect.height -= swagRect.y;
-	
-										daNote.clipRect = swagRect;
-									}			
-								}
-							}
-							if (false) // originall was for BotPlay
-							{
-								var yToUse:Float = daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y : cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y;
-	
 								var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
 								swagRect.y = (yToUse
 									+ Note.swagWidth / 2
 									- daNote.y) / daNote.scale.y;
 								swagRect.height -= swagRect.y;
-		
+	
 								daNote.clipRect = swagRect;
+							}			
+						}
+					}
+	
+					var noteGhost:NoteGhost = daNote.ghost;
+					if (noteGhost != null && noteGhost.visible)
+					{
+						var yToUse:Float = daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y : cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y;
+						var delta:Float = daNote.y - yToUse;
+
+						noteGhost.x = daNote.x;
+						noteGhost.y = yToUse - delta;
+						noteGhost.angle = daNote.angle;
+
+						if (daNote.isSustainNote)
+						{
+							// Clip to strumline
+							if (!isDownScrollNow)
+							{
+								
+								var swagRect = new FlxRect(0, 0, noteGhost.frameWidth * 2, noteGhost.frameHeight * 2);
+								swagRect.height = (yToUse
+									+ Note.swagWidth / 2
+									- noteGhost.y) / noteGhost.scale.y;
+								swagRect.y = noteGhost.frameHeight - swagRect.height;
+	
+								noteGhost.clipRect = swagRect;
+							} 
+							else
+							{
+								var swagRect = new FlxRect(0, 0, noteGhost.width / noteGhost.scale.x, noteGhost.height / noteGhost.scale.y);
+								swagRect.y = (yToUse
+									+ Note.swagWidth / 2
+									- noteGhost.y) / noteGhost.scale.y;
+								swagRect.height -= swagRect.y;
+	
+								noteGhost.clipRect = swagRect;
 							}
 						}
+
+						// Basically if on the other side of the arrow, hide it
+						if ((delta <= 0) != isDownScrollNow)
+							noteGhost.visible = false;
 					}
 				}
 
@@ -3453,6 +3406,12 @@ class PlayState extends MusicBeatState
 					}
 					daNote.active = false;
 
+					if (daNote.ghost != null)
+					{
+						daNote.ghost.active = false;
+						flipNoteGhosts.remove(daNote.ghost, true);
+					}
+
 					daNote.kill();
 					notes.remove(daNote, true);
 					daNote.destroy();
@@ -3498,6 +3457,9 @@ class PlayState extends MusicBeatState
 
 				if (daNote.isSustainNote && daNote.wasGoodHit && Conductor.songPosition >= daNote.strumTime)
 				{
+					if (daNote.ghost != null)
+						flipNoteGhosts.remove(daNote.ghost, true);
+
 					daNote.kill();
 					notes.remove(daNote, true);
 					daNote.destroy();
@@ -3508,6 +3470,9 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.isSustainNote && daNote.wasGoodHit)
 						{
+							if (daNote.ghost != null)
+								flipNoteGhosts.remove(daNote.ghost, true);
+
 							daNote.kill();
 							notes.remove(daNote, true);
 						}
@@ -3615,6 +3580,12 @@ class PlayState extends MusicBeatState
 									}
 								}
 							}
+						}
+
+						if (daNote.ghost != null)
+						{
+							daNote.ghost.visible = false;
+							flipNoteGhosts.remove(daNote.ghost, true);
 						}
 
 						daNote.visible = false;
@@ -4350,6 +4321,10 @@ class PlayState extends MusicBeatState
 				for (note in dumbNotes)
 				{
 					FlxG.log.add("killing dumb ass note at " + note.strumTime);
+
+					if (note.ghost != null)
+						flipNoteGhosts.remove(note.ghost, true);
+
 					note.kill();
 					notes.remove(note, true);
 					note.destroy();
@@ -4813,6 +4788,9 @@ class PlayState extends MusicBeatState
 				{
 					++numTrinketsCollected;
 
+					if (note.ghost != null)
+						flipNoteGhosts.remove(note.ghost, true);
+
 					note.kill();
 					notes.remove(note, true);
 					note.destroy();
@@ -4858,6 +4836,9 @@ class PlayState extends MusicBeatState
 
 			if (!note.isSustainNote)
 			{
+				if (note.ghost != null)
+					flipNoteGhosts.remove(note.ghost, true);
+
 				note.kill();
 				notes.remove(note, true);
 				note.destroy();
@@ -5373,6 +5354,12 @@ class PlayState extends MusicBeatState
 	function helperHasFlipEvents():Bool
 	{
 		return PlayStateChangeables.enableFlip && hasFlipEvents;
+	}
+
+	// Returns if flip ghost notes should be used
+	function helperUseFlipGhostForNotes():Bool
+	{
+		return PlayStateChangeables.enableGhostNotesForFlip && helperHasFlipEvents();
 	}
 
 	// Tweens zoom in for boyfriend/gf cheer when results creen pops up

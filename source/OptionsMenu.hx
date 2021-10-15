@@ -37,6 +37,7 @@ class OptionsMenu extends MusicBeatState
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
 			new ResetButtonOption("Toggle pressing R to gameover."),
 			new EnableFlipOption("Toggle enabling the Flip Character mechanic in all songs"),
+			new EnableGhostNotesForFlipOption("Experimental: Toggle enabling ghost notes when in the middle of a Flip (Experimental)"),
 			new InstantRespawn("Toggle if you instantly respawn after dying."),
 			// new OffsetMenu("Get a note offset based off of your inputs!"),
 			new CustomizeGameplay("Drag and drop gameplay modules to your prefered positions!")

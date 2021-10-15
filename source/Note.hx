@@ -13,6 +13,35 @@ import PlayState;
 
 using StringTools;
 
+// A 'Fake' note, just meant to help represent a note when flipping
+class NoteGhost extends FlxSprite
+{
+	// Note this ghost note belongs to
+	public var ogNote:Note = null;
+
+	public function new(ogNote:Note)
+	{
+		super();
+
+		x += 50;
+		// MAKE SURE ITS DEFINITELY OFF SCREEN?
+		y -= 2000;
+
+		this.ogNote = ogNote;
+
+		scale = ogNote.scale;
+		width = ogNote.width;
+		height = ogNote.height;
+		color = ogNote.color;
+		scrollFactor = ogNote.scrollFactor;
+
+		frames = ogNote.frames;
+		animation.copyFrom(ogNote.animation);
+
+		updateHitbox();
+	}
+}
+
 class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
@@ -72,6 +101,10 @@ class Note extends FlxSprite
 
 	// Collectable for viridian story week
 	public var isTrinket:Bool = false;
+
+	// When flipping, this is our 'Ghost' note (interpolates the opposite of us)
+	// Requires ghost notes for flipping enabled
+	public var ghost:NoteGhost = null;
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false, ?isAlt:Bool = false, ?bet:Float = 0, ?isTrinket:Bool = false)
 	{
@@ -283,6 +316,14 @@ class Note extends FlxSprite
 		}
 	}
 
+	override public function destroy()
+	{
+		super.destroy();
+
+		if (ghost != null)
+			ghost.destroy();
+	}
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -334,7 +375,6 @@ class Note extends FlxSprite
 				alpha = 0.3;
 		}
 
-		// Temp
 		if (isTrinket)
 		{
 			var r:Int = 200 - FlxG.random.int(0, 64);
@@ -342,6 +382,17 @@ class Note extends FlxSprite
 			var b:Int = 164 + FlxG.random.int(0, 60);
 			color = FlxColor.fromRGB(r, g, b);
 		}
+		
+		if (ghost != null && ghost.visible)
+			ghost.color = color;
+	}
+
+	override function kill()
+	{
+		super.kill();
+
+		if (ghost != null)
+			ghost.kill();
 	}
 
 	public function playNoteAnim()
@@ -350,5 +401,23 @@ class Note extends FlxSprite
 			animation.play('trinket');
 		else
 			animation.play(dataColor[noteData] + 'Scroll');
+	}
+
+	// Helper for creating a ghost note for when flipping
+	// This returns if the ghost was just created and needs to be added to the fixed group
+	public function setupGhostForFlip():Bool
+	{
+		var justCreated:Bool = false;
+		if (ghost == null)
+		{
+			ghost = new NoteGhost(this);
+			justCreated = true;
+		}
+
+		ghost.flipY = isSustainNote ? !flipY : flipY;
+		ghost.alpha = alpha;
+		ghost.visible = true;
+		ghost.active = true;
+		return justCreated;
 	}
 }

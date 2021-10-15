@@ -937,6 +937,27 @@ class EnableFlipOption extends Option
 	}
 }
 
+class EnableGhostNotesForFlipOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.enableGhostNotesForFlip = !FlxG.save.data.enableGhostNotesForFlip;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return FlxG.save.data.enableGhostNotesForFlip ? "Ghost Notes for Flip: Enabled" : "Ghost Notes for Flip: Disabled";
+	}
+}
+
 class ResetSettings extends Option
 {
 	var confirm:Bool = false;
