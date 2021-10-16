@@ -1350,6 +1350,7 @@ class ChartingState extends MusicBeatState
 	
 	public var check_naltAnim:FlxUICheckBox;
 	public var check_isTrinket:FlxUICheckBox;
+	public var check_isSpike:FlxUICheckBox;
 
 	function addNoteUI():Void
 	{
@@ -1390,9 +1391,41 @@ class ChartingState extends MusicBeatState
 				for(i in selectedBoxes)
 				{
 					i.connectedNoteData[5] = check_isTrinket.checked;
+
+					// Clear Spike flags
+					if (i.connectedNoteData[5] == true)
+						i.connectedNoteData[6] = false;
+
+					check_isSpike.checked = i.connectedNoteData[6];
 					
 					// Refresh for visualization as well
 					{
+						i.connectedNote.isTrinket = i.connectedNoteData[5];
+						i.connectedNote.isSpike = i.connectedNoteData[6];
+						i.connectedNote.playNoteAnim();
+					}
+				}
+			}
+		}
+
+		check_isSpike = new FlxUICheckBox(10, 200, null, null, "Is Spike", 100);
+		check_isSpike.callback = function()
+		{
+			if (curSelectedNote != null)
+			{
+				for(i in selectedBoxes)
+				{
+					i.connectedNoteData[6] = check_isSpike.checked;
+
+					// Clear Trinket flags
+					if (i.connectedNoteData[6] == true)
+						i.connectedNoteData[5] = false;
+
+					check_isTrinket.checked = i.connectedNoteData[5];
+					
+					// Refresh for visualization as well
+					{
+						i.connectedNote.isSpike = i.connectedNoteData[6];
 						i.connectedNote.isTrinket = i.connectedNoteData[5];
 						i.connectedNote.playNoteAnim();
 					}
@@ -1409,6 +1442,7 @@ class ChartingState extends MusicBeatState
 		tab_group_note.add(applyLength);
 		tab_group_note.add(check_naltAnim);
 		tab_group_note.add(check_isTrinket);
+		tab_group_note.add(check_isSpike);
 
 		UI_box.addGroup(tab_group_note);
 
@@ -1445,7 +1479,7 @@ class ChartingState extends MusicBeatState
 
 						var thing = ii.sectionNotes[ii.sectionNotes.length - 1];
 
-						var note:Note = new Note(strum, Math.floor(i[1] % 4),null,false,true,i[3], i[4], i[5]);
+						var note:Note = new Note(strum, Math.floor(i[1] % 4),null,false,true,i[3], i[4], i[5], i[6]);
 						note.rawNoteData = i[1];
 						note.sustainLength = i[2];
 						note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
@@ -2849,6 +2883,14 @@ class ChartingState extends MusicBeatState
 				curSelectedNote[5] = false;
 				check_isTrinket.checked = false;
 			}
+
+			if (curSelectedNote[6] != null)
+				check_isSpike.checked = curSelectedNote[6];
+			else
+			{
+				curSelectedNote[6] = false;
+				check_isSpike.checked = false;
+			}
 		}
 	}
 
@@ -2889,7 +2931,7 @@ class ChartingState extends MusicBeatState
 				var daStrumTime = i[0];
 				var daSus = i[2];
 
-				var note:Note = new Note(daStrumTime, daNoteInfo % 4,null,false,true,i[3], i[4], i[5]);
+				var note:Note = new Note(daStrumTime, daNoteInfo % 4,null,false,true,i[3], i[4], i[5], i[6]);
 				note.rawNoteData = daNoteInfo;
 				note.sustainLength = daSus;
 				note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
@@ -3229,9 +3271,9 @@ class ChartingState extends MusicBeatState
 		var noteSus = 0;
 
 		if (n != null)
-			section.sectionNotes.push([n.strumTime, n.noteData, n.sustainLength, false, TimingStruct.getBeatFromTime(n.strumTime), n.isTrinket]);
+			section.sectionNotes.push([n.strumTime, n.noteData, n.sustainLength, false, TimingStruct.getBeatFromTime(n.strumTime), n.isTrinket, n.isSpike]);
 		else
-			section.sectionNotes.push([noteStrum, noteData, noteSus, false, TimingStruct.getBeatFromTime(noteStrum), false]);
+			section.sectionNotes.push([noteStrum, noteData, noteSus, false, TimingStruct.getBeatFromTime(noteStrum), false, false]);
 
 		var thingy = section.sectionNotes[section.sectionNotes.length - 1];
 
@@ -3241,7 +3283,7 @@ class ChartingState extends MusicBeatState
 
 		if (n == null)
 		{
-			var note:Note = new Note(noteStrum, noteData % 4,null,false,true,false, TimingStruct.getBeatFromTime(noteStrum), false);
+			var note:Note = new Note(noteStrum, noteData % 4,null,false,true,false, TimingStruct.getBeatFromTime(noteStrum), false, false);
 			note.rawNoteData = noteData;
 			note.sustainLength = noteSus;
 			note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
@@ -3271,7 +3313,7 @@ class ChartingState extends MusicBeatState
 		}
 		else
 		{
-			var note:Note = new Note(n.strumTime, n.noteData % 4,null,false,true, n.isAlt,TimingStruct.getBeatFromTime(n.strumTime), n.isTrinket);
+			var note:Note = new Note(n.strumTime, n.noteData % 4,null,false,true, n.isAlt,TimingStruct.getBeatFromTime(n.strumTime), n.isTrinket, n.isSpike);
 			note.beat = TimingStruct.getBeatFromTime(n.strumTime);
 			note.rawNoteData = n.noteData;
 			note.sustainLength = noteSus;

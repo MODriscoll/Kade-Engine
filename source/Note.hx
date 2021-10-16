@@ -102,11 +102,15 @@ class Note extends FlxSprite
 	// Collectable for viridian story week
 	public var isTrinket:Bool = false;
 
+	// Note is a spike note that causes damage upon hitting (should be avoided)
+	public var isSpike:Bool = false;
+
 	// When flipping, this is our 'Ghost' note (interpolates the opposite of us)
 	// Requires ghost notes for flipping enabled
 	public var ghost:NoteGhost = null;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false, ?isAlt:Bool = false, ?bet:Float = 0, ?isTrinket:Bool = false)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false, ?isAlt:Bool = false, ?bet:Float = 0, 
+		?isTrinket:Bool = false, ?isSpike:Bool = false)
 	{
 		super();
 
@@ -115,11 +119,16 @@ class Note extends FlxSprite
 
 		beat = bet;
 
+		if (isSpike == null)
+			isSpike = false;
+
 		if (isTrinket == null)
 			isTrinket = false;
 
 		this.isAlt = isAlt;
-		this.isTrinket = isTrinket;
+
+		this.isSpike = isSpike;
+		this.isTrinket = isTrinket && !isSpike;
 
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
@@ -385,6 +394,10 @@ class Note extends FlxSprite
 		
 		if (ghost != null && ghost.visible)
 			ghost.color = color;
+
+		// temp
+		if (isSpike)
+			localAngle += 360 * elapsed;
 	}
 
 	override function kill()
@@ -401,6 +414,18 @@ class Note extends FlxSprite
 			animation.play('trinket');
 		else
 			animation.play(dataColor[noteData] + 'Scroll');
+	}
+
+	// Small check if bots (both CPU and BotPlay) should avoid this note
+	public function botShouldAvoidNote():Bool
+	{
+		return isTrinket || isSpike;
+	}
+
+	// If the player is allowed to skip hitting this note without penalty
+	public function playerCanSkipThisNote():Bool
+	{
+		return isTrinket || isSpike;
 	}
 
 	// Helper for creating a ghost note for when flipping

@@ -96,6 +96,9 @@ class Ratings
 
     public static function judgeNote(note:Note)
     {
+        if (note.isSpike)
+            return "shit";
+
         var diff = Math.abs(note.strumTime - Conductor.songPosition) / (PlayState.songMultiplier >= 1 ? PlayState.songMultiplier : 1);
         for(index in 0...timingWindows.length) // based on 4 timing windows, will break with anything else
         {

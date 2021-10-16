@@ -1773,7 +1773,7 @@ class PlayState extends MusicBeatState
 				else
 					oldNote = null;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,false,false,false,songNotes[4], isTrinketNote);
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,false,false,false,songNotes[4], isTrinketNote, songNotes[6]);
 
 				if (!gottaHitNote && PlayStateChangeables.Optimize)
 					continue;
@@ -1797,6 +1797,10 @@ class PlayState extends MusicBeatState
 					trinketNotes.push(swagNote);
 					continue;
 				}
+
+				// Don't allow spikes to have any sustain notes
+				if (swagNote.isSpike)
+					continue;
 
 				var susLength:Float = swagNote.sustainLength;
 				susLength = susLength / Conductor.stepCrochet;				
@@ -3305,7 +3309,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				if (!daNote.mustPress && daNote.wasGoodHit)
+				if (!daNote.mustPress && daNote.wasGoodHit && !daNote.botShouldAvoidNote())
 				{
 					if (SONG.song != 'Tutorial')
 						camZooming = true;
@@ -3325,7 +3329,7 @@ class PlayState extends MusicBeatState
 					}
 
 					// Damage player if playing versus mode
-					if (versusMode && !daNote.isSustainNote && !daNote.isTrinket)
+					if (versusMode && !daNote.isSustainNote)
 					{
 						health -= (0.01 + (0.005 * storyDifficulty));
 
@@ -3540,8 +3544,8 @@ class PlayState extends MusicBeatState
 										noteMiss(daNote.noteData, daNote);
 								}
 
-								// Is optional to hit trinket
-								if (daNote.isTrinket)
+								// Is optional to hit trinket or spikes
+								if (daNote.playerCanSkipThisNote())
 								{
 									daNote.alpha = 0.3;
 								}
@@ -3582,6 +3586,19 @@ class PlayState extends MusicBeatState
 							}
 						}
 
+						if (daNote.ghost != null)
+						{
+							daNote.ghost.visible = false;
+							flipNoteGhosts.remove(daNote.ghost, true);
+						}
+
+						daNote.visible = false;
+						daNote.kill();
+						notes.remove(daNote, true);
+					}
+					// Anything that the CPU should avoid
+					else if (!daNote.mustPress && daNote.strumTime / songMultiplier - Conductor.songPosition / songMultiplier < -(166 * Conductor.timeScale) && songStarted)
+					{
 						if (daNote.ghost != null)
 						{
 							daNote.ghost.visible = false;
@@ -3908,6 +3925,16 @@ class PlayState extends MusicBeatState
 		if (daNote.isTrinket)
 			return;
 
+		if (daNote.isSpike)
+		{
+			if (!PlayStateChangeables.botPlay)
+			{
+				health -= 0.15;
+				noteMiss(daNote.noteData, daNote, true);
+			}
+			return;
+		}
+
 		var noteDiff:Float = -(daNote.strumTime - Conductor.songPosition);
 		var wife:Float = EtternaFunctions.wife3(-noteDiff, Conductor.timeScale);
 		// boyfriend.playAnim('hey');
@@ -3965,7 +3992,6 @@ class PlayState extends MusicBeatState
 
 		if (songMultiplier >= 1.05)
 			score = getRatesScore(songMultiplier, score);
-
 
 		// trace('Wife accuracy loss: ' + wife + ' | Rating: ' + daRating + ' | Score: ' + score + ' | Weight: ' + (1 - wife));
 
@@ -4384,8 +4410,7 @@ class PlayState extends MusicBeatState
 		if (PlayStateChangeables.botPlay)
 		notes.forEachAlive(function(daNote:Note)
 		{
-			// Bot ignores trinkets
-			if (daNote.isTrinket)
+			if (daNote.botShouldAvoidNote())
 				return;
 
 			var diff = -((daNote.strumTime - Conductor.songPosition ) / songMultiplier);
@@ -4576,10 +4601,14 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
-	function noteMiss(direction:Int = 1, daNote:Note):Void
+	function noteMiss(direction:Int = 1, daNote:Note, wasHitSpike:Bool = false):Void
 	{
 		// ignore trinket nodes (as they are optional)
 		if (daNote != null && daNote.isTrinket)
+			return;
+
+		// only process this if spike was actually hit (this is called for a hit spike)
+		if (daNote != null && daNote.isSpike && !wasHitSpike)
 			return;
 
 		if (!boyfriend.stunned)
@@ -4624,7 +4653,9 @@ class PlayState extends MusicBeatState
 
 			if (daNote != null)
 			{
-				if (!daNote.isSustainNote)
+				if (daNote.isSpike)
+					songScore -= 100;
+				else if (!daNote.isSustainNote)
 					songScore -= 10;
 			}
 			else
@@ -4796,7 +4827,7 @@ class PlayState extends MusicBeatState
 					note.destroy();
 					return;
 				}
-				else
+				else if (!note.isSpike)
 				{
 					combo += 1;
 				}
@@ -4809,8 +4840,9 @@ class PlayState extends MusicBeatState
 					trace("Alt note on BF");
 				}
 
-			if (!note.isTrinket)
+			if (!note.isTrinket && !note.isSpike)
 				boyfriend.playAnim('sing' + dataSuffix[note.noteData] + altAnim, true);
+
 
 			#if cpp
 			if (luaModchart != null)

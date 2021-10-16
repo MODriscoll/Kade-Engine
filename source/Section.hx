@@ -4,7 +4,7 @@ typedef SwagSection =
 {
 	var startTime:Float;
 	var endTime:Float;
-	var sectionNotes:Array<Array<Dynamic>>; // [5] = isTrinket
+	var sectionNotes:Array<Array<Dynamic>>; // [5] = isTrinket, [6] = isSpike
 	var lengthInSteps:Int;
 	var typeOfSection:Int;
 	var mustHitSection:Bool;
