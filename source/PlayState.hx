@@ -2104,6 +2104,7 @@ class PlayState extends MusicBeatState
 	public var pastScrollChanges:Array<Song.Event> = [];
 	public var pastFlipChanges:Array<Song.Event> = [];
 	public var pastCheers:Array<Song.Event> = [];
+	public var pastIdleBeats:Array<Song.Event> = [];
 
 
 	var currentLuaIndex = 0;
@@ -2339,6 +2340,12 @@ class PlayState extends MusicBeatState
 							}
 							
 							pastCheers.push(i);
+						}
+					case "Idle Beat":
+						if (curDecimalBeat >= i.position && !pastIdleBeats.contains(i))
+						{
+							idleBeat = Math.floor(i.value > 0 ? i.value : 1);
+							pastIdleBeats.push(i);
 						}
 				}
 			}
@@ -5123,8 +5130,11 @@ class PlayState extends MusicBeatState
 
 			// Dad doesnt interupt his own notes
 			if ((!dad.animation.curAnim.name.startsWith("sing")) && dad.curCharacter != 'gf')
-				if ((curBeat % idleBeat == 0 || !idleToBeat) || dad.curCharacter == "spooky")
-					dad.dance(idleToBeat, currentSection.CPUAltAnim);
+				if (((curBeat + 1) % idleBeat == 0 || idleToBeat) || dad.curCharacter == "spooky")
+				{
+					var force:Bool = idleToBeat || dad.animation.curAnim.name.startsWith("idle");
+					dad.dance(force, currentSection.CPUAltAnim);
+				}
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
@@ -5171,9 +5181,10 @@ class PlayState extends MusicBeatState
 				gf.dance();
 			}
 
-			if (!boyfriend.animation.curAnim.name.startsWith("sing") && (curBeat % idleBeat == 0 || !idleToBeat))
+			if (!boyfriend.animation.curAnim.name.startsWith("sing") && ((curBeat + 1) % idleBeat == 0 || idleToBeat))
 			{
-				boyfriend.playAnim('idle' + ((currentSection.playerAltAnim && boyfriend.animation.getByName('idle-alt') != null) ? '-alt' : ''), idleToBeat);
+				var force:Bool = idleToBeat || boyfriend.animation.curAnim.name.startsWith("idle");
+				boyfriend.playAnim('idle' + ((currentSection.playerAltAnim && boyfriend.animation.getByName('idle-alt') != null) ? '-alt' : ''), force);//idleToBeat);
 			}
 
 			/*if (!dad.animation.curAnim.name.startsWith("sing"))

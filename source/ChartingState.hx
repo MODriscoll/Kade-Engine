@@ -602,7 +602,7 @@ class ChartingState extends MusicBeatState
 			var nameLabel = new FlxText(150, 5, 'Event Name');
 			eventName = new FlxUIInputText(150,20,80,"");
 			var typeLabel = new FlxText(10, 45, 'Type of Event');
-			eventType = new FlxUIDropDownMenu(10,60,FlxUIDropDownMenu.makeStrIdLabelArray(["BPM Change", "Scroll Speed Change", "Flip Character", "GF Cheer"], true));
+			eventType = new FlxUIDropDownMenu(10,60,FlxUIDropDownMenu.makeStrIdLabelArray(["BPM Change", "Scroll Speed Change", "Flip Character", "GF Cheer", "Idle Beat"], true));
 			var valueLabel = new FlxText(150, 45, 'Event Value');
 			eventValue = new FlxUIInputText(150,60,80,"");
 			var eventSave = new FlxButton(10,155,"Save Event", function() {
