@@ -1349,8 +1349,7 @@ class ChartingState extends MusicBeatState
 	}
 	
 	public var check_naltAnim:FlxUICheckBox;
-	public var check_isTrinket:FlxUICheckBox;
-	public var check_isSpike:FlxUICheckBox;
+	public var dropdown_noteType:FlxUIDropDownMenu;
 
 	function addNoteUI():Void
 	{
@@ -1383,55 +1382,26 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
-		check_isTrinket = new FlxUICheckBox(10, 175, null, null, "Is Trinket", 100);
-		check_isTrinket.callback = function()
+		var noteTypeLabel = new FlxText(10, 175, 'Note Type');
+		dropdown_noteType = new FlxUIDropDownMenu(10, 200, FlxUIDropDownMenu.makeStrIdLabelArray(NoteTypes.getTypesAsStrings(), true));
+		dropdown_noteType.callback = function(type:String)
 		{
+			var asNoteType:Int = Std.parseInt(type);
+
 			if (curSelectedNote != null)
 			{
 				for(i in selectedBoxes)
 				{
-					i.connectedNoteData[5] = check_isTrinket.checked;
+					i.connectedNoteData[5] = asNoteType;
 
-					// Clear Spike flags
-					if (i.connectedNoteData[5] == true)
-						i.connectedNoteData[6] = false;
-
-					check_isSpike.checked = i.connectedNoteData[6];
-					
 					// Refresh for visualization as well
 					{
-						i.connectedNote.isTrinket = i.connectedNoteData[5];
-						i.connectedNote.isSpike = i.connectedNoteData[6];
+						i.connectedNote.noteType = i.connectedNoteData[5];
 						i.connectedNote.playNoteAnim();
 					}
 				}
 			}
-		}
-
-		check_isSpike = new FlxUICheckBox(10, 200, null, null, "Is Spike", 100);
-		check_isSpike.callback = function()
-		{
-			if (curSelectedNote != null)
-			{
-				for(i in selectedBoxes)
-				{
-					i.connectedNoteData[6] = check_isSpike.checked;
-
-					// Clear Trinket flags
-					if (i.connectedNoteData[6] == true)
-						i.connectedNoteData[5] = false;
-
-					check_isTrinket.checked = i.connectedNoteData[5];
-					
-					// Refresh for visualization as well
-					{
-						i.connectedNote.isSpike = i.connectedNoteData[6];
-						i.connectedNote.isTrinket = i.connectedNoteData[5];
-						i.connectedNote.playNoteAnim();
-					}
-				}
-			}
-		}
+		};
 
 		var stepperSusLengthLabel = new FlxText(74,10,'Note Sustain Length');
 
@@ -1441,8 +1411,7 @@ class ChartingState extends MusicBeatState
 		tab_group_note.add(stepperSusLengthLabel);
 		tab_group_note.add(applyLength);
 		tab_group_note.add(check_naltAnim);
-		tab_group_note.add(check_isTrinket);
-		tab_group_note.add(check_isSpike);
+		tab_group_note.add(dropdown_noteType);
 
 		UI_box.addGroup(tab_group_note);
 
@@ -1479,7 +1448,7 @@ class ChartingState extends MusicBeatState
 
 						var thing = ii.sectionNotes[ii.sectionNotes.length - 1];
 
-						var note:Note = new Note(strum, Math.floor(i[1] % 4),null,false,true,i[3], i[4], i[5], i[6]);
+						var note:Note = new Note(strum, Math.floor(i[1] % 4),null,false,true,i[3], i[4], i[5]);
 						note.rawNoteData = i[1];
 						note.sustainLength = i[2];
 						note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
@@ -2876,21 +2845,10 @@ class ChartingState extends MusicBeatState
 				check_naltAnim.checked = false;
 			}
 
-			if (curSelectedNote[5] != null)
-				check_isTrinket.checked = curSelectedNote[5];
+			if (curSelectedNote[3] != null)
+				dropdown_noteType.selectedLabel = NoteTypes.noteTypeToString(curSelectedNote[5]);
 			else
-			{
-				curSelectedNote[5] = false;
-				check_isTrinket.checked = false;
-			}
-
-			if (curSelectedNote[6] != null)
-				check_isSpike.checked = curSelectedNote[6];
-			else
-			{
-				curSelectedNote[6] = false;
-				check_isSpike.checked = false;
-			}
+				dropdown_noteType.selectedLabel = NoteTypes.noteTypeToString(NoteTypes.NORMAL);
 		}
 	}
 
@@ -2931,7 +2889,7 @@ class ChartingState extends MusicBeatState
 				var daStrumTime = i[0];
 				var daSus = i[2];
 
-				var note:Note = new Note(daStrumTime, daNoteInfo % 4,null,false,true,i[3], i[4], i[5], i[6]);
+				var note:Note = new Note(daStrumTime, daNoteInfo % 4,null,false,true,i[3], i[4], i[5]);
 				note.rawNoteData = daNoteInfo;
 				note.sustainLength = daSus;
 				note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
@@ -3271,7 +3229,7 @@ class ChartingState extends MusicBeatState
 		var noteSus = 0;
 
 		if (n != null)
-			section.sectionNotes.push([n.strumTime, n.noteData, n.sustainLength, false, TimingStruct.getBeatFromTime(n.strumTime), n.isTrinket, n.isSpike]);
+			section.sectionNotes.push([n.strumTime, n.noteData, n.sustainLength, false, TimingStruct.getBeatFromTime(n.strumTime), n.noteType]);
 		else
 			section.sectionNotes.push([noteStrum, noteData, noteSus, false, TimingStruct.getBeatFromTime(noteStrum), false, false]);
 
@@ -3283,7 +3241,7 @@ class ChartingState extends MusicBeatState
 
 		if (n == null)
 		{
-			var note:Note = new Note(noteStrum, noteData % 4,null,false,true,false, TimingStruct.getBeatFromTime(noteStrum), false, false);
+			var note:Note = new Note(noteStrum, noteData % 4,null,false,true,false, TimingStruct.getBeatFromTime(noteStrum), NoteTypes.NORMAL);
 			note.rawNoteData = noteData;
 			note.sustainLength = noteSus;
 			note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
@@ -3313,7 +3271,7 @@ class ChartingState extends MusicBeatState
 		}
 		else
 		{
-			var note:Note = new Note(n.strumTime, n.noteData % 4,null,false,true, n.isAlt,TimingStruct.getBeatFromTime(n.strumTime), n.isTrinket, n.isSpike);
+			var note:Note = new Note(n.strumTime, n.noteData % 4,null,false,true, n.isAlt,TimingStruct.getBeatFromTime(n.strumTime), n.noteType);
 			note.beat = TimingStruct.getBeatFromTime(n.strumTime);
 			note.rawNoteData = n.noteData;
 			note.sustainLength = noteSus;

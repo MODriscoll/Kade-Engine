@@ -96,7 +96,7 @@ class Ratings
 
     public static function judgeNote(note:Note)
     {
-        if (note.isSpike)
+        if (note.isSpike())
             return "shit";
 
         var diff = Math.abs(note.strumTime - Conductor.songPosition) / (PlayState.songMultiplier >= 1 ? PlayState.songMultiplier : 1);

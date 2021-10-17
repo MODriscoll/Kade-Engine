@@ -1748,7 +1748,7 @@ class PlayState extends MusicBeatState
 			for (songNotes in section.sectionNotes)
 			{
 				// Don't spawn trinkets in free play
-				var isTrinketNote = songNotes[5] != null ? songNotes[5] : false;
+				var isTrinketNote = songNotes[5] != null ? songNotes[5] == NoteTypes.TRINKET : false;
 				#if !debug
 				if (isTrinketNote && !isStoryMode)
 					continue;
@@ -1773,7 +1773,7 @@ class PlayState extends MusicBeatState
 				else
 					oldNote = null;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,false,false,false,songNotes[4], isTrinketNote, songNotes[6]);
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,false,false,false,songNotes[4], songNotes[5]);
 
 				if (!gottaHitNote && PlayStateChangeables.Optimize)
 					continue;
@@ -1792,14 +1792,14 @@ class PlayState extends MusicBeatState
 				}
 
 				// Don't allow trinkets to have any sustain notes
-				if (swagNote.isTrinket)
+				if (swagNote.isTrinket())
 				{
 					trinketNotes.push(swagNote);
 					continue;
 				}
 
 				// Don't allow spikes to have any sustain notes
-				if (swagNote.isSpike)
+				if (swagNote.isSpike())
 					continue;
 
 				var susLength:Float = swagNote.sustainLength;
@@ -3929,10 +3929,10 @@ class PlayState extends MusicBeatState
 
 	private function popUpScore(daNote:Note):Void
 	{
-		if (daNote.isTrinket)
+		if (daNote.isTrinket())
 			return;
 
-		if (daNote.isSpike)
+		if (daNote.isSpike())
 		{
 			if (!PlayStateChangeables.botPlay)
 			{
@@ -4611,11 +4611,11 @@ class PlayState extends MusicBeatState
 	function noteMiss(direction:Int = 1, daNote:Note, wasHitSpike:Bool = false):Void
 	{
 		// ignore trinket nodes (as they are optional)
-		if (daNote != null && daNote.isTrinket)
+		if (daNote != null && daNote.isTrinket())
 			return;
 
 		// only process this if spike was actually hit (this is called for a hit spike)
-		if (daNote != null && daNote.isSpike && !wasHitSpike)
+		if (daNote != null && daNote.isSpike() && !wasHitSpike)
 			return;
 
 		if (!boyfriend.stunned)
@@ -4660,7 +4660,7 @@ class PlayState extends MusicBeatState
 
 			if (daNote != null)
 			{
-				if (daNote.isSpike)
+				if (daNote.isSpike())
 					songScore -= 100;
 				else if (!daNote.isSustainNote)
 					songScore -= 10;
@@ -4822,7 +4822,7 @@ class PlayState extends MusicBeatState
 				popUpScore(note);
 
 				// Just double check if player
-				if (note.isTrinket && note.mustPress)
+				if (note.isTrinket() && note.mustPress)
 				{
 					++numTrinketsCollected;
 
@@ -4834,7 +4834,7 @@ class PlayState extends MusicBeatState
 					note.destroy();
 					return;
 				}
-				else if (!note.isSpike)
+				else if (!note.isSpike())
 				{
 					combo += 1;
 				}
@@ -4847,7 +4847,7 @@ class PlayState extends MusicBeatState
 					trace("Alt note on BF");
 				}
 
-			if (!note.isTrinket && !note.isSpike)
+			if (!note.isTrinket() && !note.isSpike())
 				boyfriend.playAnim('sing' + dataSuffix[note.noteData] + altAnim, true);
 
 

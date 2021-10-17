@@ -99,18 +99,15 @@ class Note extends FlxSprite
 
 	public var children:Array<Note> = [];
 
-	// Collectable for viridian story week
-	public var isTrinket:Bool = false;
-
-	// Note is a spike note that causes damage upon hitting (should be avoided)
-	public var isSpike:Bool = false;
+	// Type of note this is (see NoteTypes)
+	public var noteType:Int = NoteTypes.NORMAL;
 
 	// When flipping, this is our 'Ghost' note (interpolates the opposite of us)
 	// Requires ghost notes for flipping enabled
 	public var ghost:NoteGhost = null;
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false, ?isAlt:Bool = false, ?bet:Float = 0, 
-		?isTrinket:Bool = false, ?isSpike:Bool = false)
+		?noteType:Int = NoteTypes.NORMAL)
 	{
 		super();
 
@@ -119,16 +116,12 @@ class Note extends FlxSprite
 
 		beat = bet;
 
-		if (isSpike == null)
-			isSpike = false;
+		if (noteType == null)
+			noteType = NoteTypes.NORMAL;
 
-		if (isTrinket == null)
-			isTrinket = false;
+		this.noteType = noteType;
 
 		this.isAlt = isAlt;
-
-		this.isSpike = isSpike;
-		this.isTrinket = isTrinket && !isSpike;
 
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
@@ -169,7 +162,7 @@ class Note extends FlxSprite
 		var daStage:String = PlayState.Stage.curStage;
 
 		//defaults if no noteStyle was found in chart
-		var noteTypeCheck:String = 'normal';
+		var noteVisTypeCheck:String = 'normal';
 
 		if (inCharter)
 		{
@@ -191,7 +184,7 @@ class Note extends FlxSprite
 		}
 		else
 		{
-			if (isTrinket)
+			if (isTrinket())
 			{
 				frames = Paths.getSparrowAtlas('NOTE_assets');
 				animation.addByPrefix('trinket', 'trinket', 24, false);
@@ -204,10 +197,10 @@ class Note extends FlxSprite
 			else
 			{
 				if (PlayState.SONG.noteStyle == null) {
-					switch(PlayState.storyWeek) {case 6: noteTypeCheck = 'pixel';}
-				} else {noteTypeCheck = PlayState.SONG.noteStyle;}
+					switch(PlayState.storyWeek) {case 6: noteVisTypeCheck = 'pixel';}
+				} else {noteVisTypeCheck = PlayState.SONG.noteStyle;}
 			
-				switch (noteTypeCheck)
+				switch (noteVisTypeCheck)
 				{
 					case 'pixel':
 						loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
@@ -303,7 +296,7 @@ class Note extends FlxSprite
 
 			x -= width / 2;
 
-			//if (noteTypeCheck == 'pixel')
+			//if (noteVisTypeCheck == 'pixel')
 			//	x += 30;
 			if (inCharter)
 				x += 30;
@@ -384,7 +377,7 @@ class Note extends FlxSprite
 				alpha = 0.3;
 		}
 
-		if (isTrinket)
+		if (isTrinket())
 		{
 			var r:Int = 200 - FlxG.random.int(0, 64);
 			var g:Int = 200 - FlxG.random.int(0, 128);
@@ -396,7 +389,7 @@ class Note extends FlxSprite
 			ghost.color = color;
 
 		// temp
-		if (isSpike)
+		if (isSpike())
 			localAngle += 360 * elapsed;
 	}
 
@@ -410,7 +403,7 @@ class Note extends FlxSprite
 
 	public function playNoteAnim()
 	{
-		if (isTrinket)
+		if (isTrinket())
 			animation.play('trinket');
 		else
 			animation.play(dataColor[noteData] + 'Scroll');
@@ -419,13 +412,25 @@ class Note extends FlxSprite
 	// Small check if bots (both CPU and BotPlay) should avoid this note
 	public function botShouldAvoidNote():Bool
 	{
-		return isTrinket || isSpike;
+		return isTrinket() || isSpike();
 	}
 
 	// If the player is allowed to skip hitting this note without penalty
 	public function playerCanSkipThisNote():Bool
 	{
-		return isTrinket || isSpike;
+		return isTrinket() || isSpike();
+	}
+
+	// Helper for if this note is a trinket
+	public function isTrinket():Bool
+	{
+		return noteType == NoteTypes.TRINKET;
+	}
+
+	// Helper for if this note is a spike
+	public function isSpike():Bool
+	{
+		return noteType == NoteTypes.SPIKE;
 	}
 
 	// Helper for creating a ghost note for when flipping
