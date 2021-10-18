@@ -3650,8 +3650,6 @@ class PlayState extends MusicBeatState
 			endSong();
 		#end
 
-		updateSpaceStars(elapsed);
-
 		super.update(elapsed);
 	}
 
@@ -5009,22 +5007,6 @@ class PlayState extends MusicBeatState
 
 		boyfriend.playAnim('scared', true);
 		gf.playAnim('scared', true);
-	}
-
-	function updateSpaceStars(deltaTime:Float):Void
-	{
-		if (Stage.curStage != 'spaceship')
-			return;
-
-		Stage.swagGroup['starsL1'].forEach(function(star:SpaceStar)
-		{
-			star.updatePos(350, deltaTime);
-		});
-
-		Stage.swagGroup['starsL2'].forEach(function(star:SpaceStar)
-		{
-			star.updatePos(600, deltaTime);
-		});
 	}
 
 	var danced:Bool = false;

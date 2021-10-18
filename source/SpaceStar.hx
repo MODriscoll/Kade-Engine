@@ -19,18 +19,16 @@ class SpaceStar extends FlxSprite
 		super(x, y);
 
 		loadGraphic(Paths.image('spaceship_star', 'week7'));
-
-		// Update is called manually for us (updatePos)
-		active = false;
 	}
 
-	public function updatePos(speed:Float, deltaTime:Float)
+	override function update(elapsed:Float)
 	{
 		// Assuming speed is a positive value, we want to move to the left
-		x += -speed * deltaTime;
 		if (x <= (-spaceshipLimitX + spaceshipOffsetX))
 		{
 			x += spaceshipLimitX * 2;
 		}
+
+		super.update(elapsed);
 	}
 }

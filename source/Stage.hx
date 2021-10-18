@@ -408,10 +408,12 @@ class Stage
 						// Generate first layer of stars in background
 						{
 							var starsLayer = new FlxTypedGroup<SpaceStar>();
+							starsLayer.active = !PlayStateChangeables.Optimize;
 							swagGroup['starsL1'] = starsLayer;
                             toAdd.push(starsLayer);
 
-							for (i in 0...15)
+							var amountToAdd:Int = PlayStateChangeables.Optimize ? 5 : 15;
+							for (i in 0...amountToAdd)
 							{
 								var randX:Float = FlxG.random.float(-SpaceStar.spaceshipLimitX, SpaceStar.spaceshipLimitX);
 								var randY:Float = FlxG.random.float(-SpaceStar.spaceshipLimitY, SpaceStar.spaceshipLimitY);
@@ -420,6 +422,7 @@ class Stage
 								star.scrollFactor.set(0.9, 0.9);
 								star.alpha = 0.3;
 								star.scale.scale(FlxG.random.float(0.8, 1.2));
+								star.velocity.x = -FlxG.random.float(500, 600);
 
 								starsLayer.add(star);
 							}
@@ -428,10 +431,12 @@ class Stage
 						// Second layer
 						{
 							var starsLayer = new FlxTypedGroup<SpaceStar>();
+							starsLayer.active = !PlayStateChangeables.Optimize;
 							swagGroup['starsL2'] = starsLayer;
                             toAdd.push(starsLayer);
 
-							for (i in 0...25)
+							var amountToAdd:Int = PlayStateChangeables.Optimize ? 10 : 25;
+							for (i in 0...amountToAdd)
 							{
 								var randX:Float = FlxG.random.float(-SpaceStar.spaceshipLimitX, SpaceStar.spaceshipLimitX);
 								var randY:Float = FlxG.random.float(-SpaceStar.spaceshipLimitY, SpaceStar.spaceshipLimitY);
@@ -440,6 +445,7 @@ class Stage
 								star.scrollFactor.set(0.85, 0.85);
 								star.alpha = 0.6;
 								star.scale.scale(FlxG.random.float(0.8, 1.2));
+								star.velocity.x = -FlxG.random.float(1100, 1200);
 
 								starsLayer.add(star);
 							}
