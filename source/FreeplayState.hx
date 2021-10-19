@@ -247,9 +247,12 @@ class FreeplayState extends MusicBeatState
 		previewtext.font = scoreText.font;
 		add(previewtext);
 
-		versusText = new FlxText(scoreText.x, scoreText.y + 122, 0, "Versus: " + (versusEnabled ? 'True' : 'False') + ' (V)', 24);
+		versusText = new FlxText(scoreText.x, scoreText.y + 122, 0, "Versus (V):", 24);
 		versusText.font = scoreText.font;
 		add(versusText);
+
+		// This updates the text for versusText
+		setVersusEnabled(versusEnabled);
 
 		comboText = new FlxText(diffText.x + 100, diffText.y, 0, "", 24);
 		comboText.font = diffText.font;
@@ -635,7 +638,7 @@ class FreeplayState extends MusicBeatState
 	function setVersusEnabled(enable:Bool)
 	{
 		versusEnabled = enable;
-		versusText.text = 'Versus: ' + (versusEnabled ? 'True' : 'False') + ' (V)';
+		versusText.text = 'Versus (V): ' + (versusEnabled ? 'Enabled' : 'Disabled');
 	}
 
 	static public function canEnableVsForSong(songName:String):Bool
