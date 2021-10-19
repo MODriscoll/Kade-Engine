@@ -2256,73 +2256,18 @@ class PlayState extends MusicBeatState
 					case "Flip Character":
 						if (curDecimalBeat >= i.position && !pastFlipChanges.contains(i))
 						{
-							if (PlayStateChangeables.enableFlip)
+							var flipType:Int = Math.floor(i.value);
+
+							var flipDad:Bool = flipType == 0;
+							var flipBf:Bool = flipType == 1;
+							if (flipType >= 2)
 							{
-								var flipPos:Float = PlayStateChangeables.useDownscroll ? 10 : FlxG.height - 165;
-
-								var flipType:Int = Math.floor(i.value);
-								if (flipType == 0)
-								{
-									dad.flipSelf();
-									cpuIsFlipping = true;
-									cpuFlipStart = songTime;
-
-									notes.forEachAlive(function(daNote:Note)
-									{
-										// !! Do this first before setting up flip ghost (as we need flipY correct)
-										if (daNote.isSustainNote && !daNote.mustPress)
-											daNote.flipY = PlayStateChangeables.useDownscroll != dad.isFlipped;
-
-										if (PlayStateChangeables.enableGhostNotesForFlip)
-											if (daNote.setupGhostForFlip())
-												flipNoteGhosts.add(daNote.ghost);
-										
-									});
-								}
-								else if (flipType == 1)
-								{
-									boyfriend.flipSelf();
-									playerIsFlipping = true;
-									playerFlipStart = songTime;
-
-									notes.forEachAlive(function(daNote:Note)
-									{
-										// !! Do this first before setting up flip ghost (as we need flipY correct)
-										if (daNote.isSustainNote && daNote.mustPress)
-											daNote.flipY = PlayStateChangeables.useDownscroll != boyfriend.isFlipped;
-
-										if (PlayStateChangeables.enableGhostNotesForFlip)
-											if (daNote.setupGhostForFlip())
-												flipNoteGhosts.add(daNote.ghost);
-									});
-								}
-								else
-								{
-									dad.flipSelf();
-									cpuIsFlipping = true;
-									cpuFlipStart = songTime;
-
-									boyfriend.flipSelf();
-									playerIsFlipping = true;
-									playerFlipStart = songTime;
-
-									notes.forEachAlive(function(daNote:Note)
-									{
-										// !! Do this first before setting up flip ghost (as we need flipY correct)
-										if (daNote.isSustainNote)
-										{
-											if (daNote.mustPress)
-												daNote.flipY = PlayStateChangeables.useDownscroll != boyfriend.isFlipped;
-											else
-												daNote.flipY = PlayStateChangeables.useDownscroll != dad.isFlipped;
-										}
-
-										if (PlayStateChangeables.enableGhostNotesForFlip)
-											if (daNote.setupGhostForFlip())
-												flipNoteGhosts.add(daNote.ghost);
-									});
-								}
+								flipDad = true;
+								flipBf = true;
 							}
+
+							// This checks flipEnabled setting
+							flipCharactersImpl(flipDad, flipBf);
 
 							pastFlipChanges.push(i);
 						}
@@ -5406,6 +5351,51 @@ class PlayState extends MusicBeatState
 				boyfriend.playAnim('hey');
 				gf.playAnim('cheer');
 			});
+	}
+
+	function flipCharactersImpl(flipDad:Bool, flipBf:Bool)
+	{
+		if (!flipDad && !flipBf)
+			return;
+
+		if (PlayStateChangeables.enableFlip)
+		{
+			if (flipDad)
+			{
+				dad.flipSelf();
+				cpuIsFlipping = true;
+				cpuFlipStart = songTime;
+			}
+
+			if (flipBf)
+			{
+				boyfriend.flipSelf();
+				playerIsFlipping = true;
+				playerFlipStart = songTime;
+			}
+
+			notes.forEachAlive(function(daNote:Note)
+			{
+				if ((!daNote.mustPress && !flipDad) ||
+					(daNote.mustPress && !flipBf))
+				{
+					return;
+				}
+
+				// !! Do this first before setting up flip ghost (as we need flipY correct)
+				if (daNote.isSustainNote)
+				{
+					if (daNote.mustPress)
+						daNote.flipY = PlayStateChangeables.useDownscroll != boyfriend.isFlipped;
+					else
+						daNote.flipY = PlayStateChangeables.useDownscroll != dad.isFlipped;
+				}
+
+				if (PlayStateChangeables.enableGhostNotesForFlip)
+					if (daNote.setupGhostForFlip())
+						flipNoteGhosts.add(daNote.ghost);
+			});
+		}
 	}
 }
 //u looked :O -ides
