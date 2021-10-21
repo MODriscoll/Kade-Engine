@@ -451,34 +451,51 @@ class Stage
 							}
 						}
 
-						var middle:FlxSprite = new FlxSprite(-800, -600).loadGraphic(Paths.image('spaceship_middle', 'week7'));
+						/*
+						var middle:FlxSprite = new FlxSprite(-1900, -700).loadGraphic(Paths.image('stage', 'week7'));
 						middle.antialiasing = FlxG.save.data.antialiasing;
-						middle.scrollFactor.set(0.9, 0.9);
+						middle.scrollFactor.set(1.0, 1.0);
 						middle.active = false;
 						swagBacks['bg'] = middle;
-                        toAdd.push(middle);
+                        toAdd.push(middle);*/
 
-						var top:FlxSprite = new FlxSprite(-650, -500).loadGraphic(Paths.image('spaceship_top', 'week7'));
-						top.setGraphicSize(Std.int(middle.width * 1.1));
+						var panel1:FlxSprite = new FlxSprite(1050, -675).loadGraphic(Paths.image('backdrop_panel', 'week7'));
+						panel1.updateHitbox();
+						panel1.antialiasing = FlxG.save.data.antialiasing;
+						panel1.scrollFactor.set(0.7, 0.7);
+						panel1.active = false;
+						
+						swagBacks['panel1'] = panel1;
+                        toAdd.push(panel1);
+
+						var panel2:FlxSprite = new FlxSprite(-1700, 450).loadGraphic(Paths.image('backdrop_panel', 'week7'));
+						panel2.updateHitbox();
+						panel2.antialiasing = FlxG.save.data.antialiasing;
+						panel2.scrollFactor.set(0.7, 0.7);
+						panel2.active = false;
+						
+						swagBacks['panel2'] = panel2;
+                        toAdd.push(panel2);
+						
+						var top:FlxSprite = new FlxSprite(-1350, -700).loadGraphic(Paths.image('stage_floor_roof', 'week7'));
+						top.setGraphicSize(Std.int(top.width), Std.int(top.height * 1.1));
 						top.updateHitbox();
 						top.antialiasing = FlxG.save.data.antialiasing;
-						top.scrollFactor.set(0.9, 0.9);
+						top.scrollFactor.set(1.0, 1.0);
 						top.active = false;
+						top.flipY = true;
 
-						// For now, with better art we probably don't need to do this...
-						layInFront[2].push(top);
 						swagBacks['top'] = top;
                         toAdd.push(top);
 
-						var bottom:FlxSprite = new FlxSprite(-650, 800).loadGraphic(Paths.image('spaceship_bottom', 'week7'));
-						bottom.setGraphicSize(Std.int(middle.width * 1.1));
+						var bottom:FlxSprite = new FlxSprite(-1350, 700).loadGraphic(Paths.image('stage_floor_roof', 'week7'));
+						bottom.setGraphicSize(Std.int(bottom.width), Std.int(bottom.height * 1.1));
 						bottom.updateHitbox();
 						bottom.antialiasing = FlxG.save.data.antialiasing;
-						bottom.scrollFactor.set(0.9, 0.9);
+						bottom.scrollFactor.set(1.0, 1.0);
 						bottom.active = false;
+						bottom.flipY = false;
 
-						// For now, with better art we probably don't need to do this...
-						layInFront[2].push(bottom);
 						swagBacks['bottom'] = bottom;
                         toAdd.push(bottom);
 					}

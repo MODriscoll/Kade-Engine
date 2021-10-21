@@ -731,8 +731,8 @@ class PlayState extends MusicBeatState
 				boyfriend.offsetFlipPosition(0, -500);
 				dad.offsetFlipPosition(0, -500);
 			case 'spaceship':
-				boyfriend.offsetFlipPosition(0, -600);
-				dad.offsetFlipPosition(0, -500);
+				boyfriend.offsetFlipPosition(0, -700);
+				dad.offsetFlipPosition(0, -400);
 		}
 
 		if (loadRep)
