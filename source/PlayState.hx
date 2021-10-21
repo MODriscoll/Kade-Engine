@@ -949,7 +949,7 @@ class PlayState extends MusicBeatState
              case 'spirit':
               healthBar.createFilledBar(0xFFAD0505, 0xFF0097C4);
 			 case 'viridian':
-			  healthBar.createFilledBar(0xFFFFFFFF, 0xFF0097C4);
+			  healthBar.createFilledBar(0xFF40E0D0, 0xFF0097C4);
             }
         }
         else
