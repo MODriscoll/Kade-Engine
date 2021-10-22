@@ -173,6 +173,8 @@ class Note extends FlxSprite
 				animation.addByPrefix(dataColor[i] + 'Scroll', dataColor[i] + ' alone'); // Normal notes
 				animation.addByPrefix(dataColor[i] + 'hold', dataColor[i] + ' hold'); // Hold
 				animation.addByPrefix(dataColor[i] + 'holdend', dataColor[i] + ' tail'); // Tails
+
+				animation.addByPrefix(dataColor[i] + 'Spike', dataColor[i] + ' spike'); // Spikes
 			}
 
 			animation.addByPrefix('trinket', 'trinket', 24, false);
@@ -191,6 +193,25 @@ class Note extends FlxSprite
 
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
+
+				antialiasing = FlxG.save.data.antialiasing;
+			}
+			else if (isSpike())
+			{
+				frames = Paths.getSparrowAtlas('NOTE_assets');
+
+				for (i in 0...4)
+				{
+					animation.addByPrefix(dataColor[i] + 'Spike', dataColor[i] + ' spike'); // Spikes
+				}
+
+				setGraphicSize(Std.int(width * 0.7));
+				updateHitbox();
+
+				if (noteData == PURP_NOTE || noteData == RED_NOTE)
+					offset.set(12.0, 0.0);
+				else
+					offset.set(3.0, 0.0);
 
 				antialiasing = FlxG.save.data.antialiasing;
 			}
@@ -387,10 +408,6 @@ class Note extends FlxSprite
 		
 		if (ghost != null && ghost.visible)
 			ghost.color = color;
-
-		// temp
-		if (isSpike())
-			localAngle += 360 * elapsed;
 	}
 
 	override function kill()
@@ -405,6 +422,8 @@ class Note extends FlxSprite
 	{
 		if (isTrinket())
 			animation.play('trinket');
+		else if (isSpike())
+			animation.play(dataColor[noteData] + 'Spike');
 		else
 			animation.play(dataColor[noteData] + 'Scroll');
 	}
