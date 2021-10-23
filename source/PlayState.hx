@@ -1440,13 +1440,45 @@ class PlayState extends MusicBeatState
 		if (dataNotes.length != 0)
 		{
 			var coolNote = null;
+			var closestSpikeNote = null;
+			var closestSpikeNoteDiff:Float = 9999999;
 
 			for (i in dataNotes)
-				if (!i.isSustainNote)
+			{
+				if (i.isSustainNote)
+					continue;
+
+				if (i.playerCanSkipThisNote())
+				{
+					// Trinkets/Spikes require Sick/Good in order to be hit
+					var noteDiff:Float = (i.strumTime - Conductor.songPosition);
+					noteDiff = noteDiff < 0 ? -noteDiff : noteDiff;
+
+					if (noteDiff < closestSpikeNoteDiff)
+					{
+						closestSpikeNote = i;
+						closestSpikeNoteDiff = noteDiff;
+					}
+				}
+				else
 				{
 					coolNote = i;
 					break;
 				}
+			}
+
+			if (closestSpikeNote != null)
+			{
+				if (coolNote == null)
+					coolNote = closestSpikeNote;
+				else
+				{
+					var noteDiff:Float = (coolNote.strumTime - Conductor.songPosition);
+					noteDiff = noteDiff < 0 ? -noteDiff : noteDiff;
+					if (noteDiff > closestSpikeNoteDiff)
+						coolNote = closestSpikeNote;
+				}
+			}
 
 			if (coolNote == null) // Note is null, which means it's probably a sustain note. Update will handle this (HOPEFULLY???)
 			{
@@ -3877,7 +3909,7 @@ class PlayState extends MusicBeatState
 
 		if (daNote.isSpike())
 		{
-			if (!PlayStateChangeables.botPlay)
+			if (!PlayStateChangeables.botPlay && (daNote.rating =='good' || daNote.rating == 'sick'))
 			{
 				health -= 0.15;
 				noteMiss(daNote.noteData, daNote, true);
@@ -4746,6 +4778,13 @@ class PlayState extends MusicBeatState
 
 		if (note.rating == "miss")
 			return;
+
+		if (note.playerCanSkipThisNote())
+		{
+			// Ignore skippable notes only if pressed too late
+			if (noteDiff > 0 && (note.rating == "bad" || note.rating == "shit"))
+				return;
+		}
 
 		// add newest note to front of notesHitArray
 		// the oldest notes are at the end and are removed first

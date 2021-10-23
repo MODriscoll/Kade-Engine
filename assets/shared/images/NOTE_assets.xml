@@ -92,8 +92,8 @@
   <!-- Temp Trinket -->
   <SubTexture name="trinket0000" x="1608" y="480" width="140" height="140"/>
   <!-- Temp Spike -->
-  <SubTexture name="green spike0000" x="10" y="594" width="92" height="126"/>
-  <SubTexture name="blue spike0000" x="109" y="594" width="92" height="126"/>
-  <SubTexture name="red spike0000" x="208" y="601" width="104" height="112"/>
-  <SubTexture name="purple spike0000" x="324" y="601" width="104" height="112"/>
+  <SubTexture name="green spike0000" x="520" y="595" width="154" height="157"/>
+  <SubTexture name="blue spike0000" x="353" y="595" width="154" height="157"/>
+  <SubTexture name="red spike0000" x="177" y="590" width="157" height="154"/>
+  <SubTexture name="purple spike0000" x="10" y="590" width="157" height="154"/>
 </TextureAtlas>

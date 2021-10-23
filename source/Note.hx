@@ -208,11 +208,6 @@ class Note extends FlxSprite
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
 
-				if (noteData == PURP_NOTE || noteData == RED_NOTE)
-					offset.set(12.0, 0.0);
-				else
-					offset.set(3.0, 0.0);
-
 				antialiasing = FlxG.save.data.antialiasing;
 			}
 			else
