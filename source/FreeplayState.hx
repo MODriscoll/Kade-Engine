@@ -254,7 +254,7 @@ class FreeplayState extends MusicBeatState
 		// This updates the text for versusText
 		setVersusEnabled(versusEnabled);
 
-		comboText = new FlxText(diffText.x + 100, diffText.y, 0, "", 24);
+		comboText = new FlxText(diffText.x + diffText.width + 50, diffText.y, 0, "", 24);
 		comboText.font = diffText.font;
 		add(comboText);
 
@@ -510,6 +510,7 @@ class FreeplayState extends MusicBeatState
 		#end
 		diffCalcText.text = 'RATING: ${DiffCalc.CalculateDiff(songData.get(songs[curSelected].songName)[curDifficulty])}';
 		diffText.text = CoolUtil.difficultyFromInt(curDifficulty).toUpperCase();
+		comboText.x = diffText.x + diffText.width + 50;
 
 		if (Unlocks.hasUnlockedDiffForSong(songs[curSelected].songName, curDifficulty))
 			grpSongs.members[curSelected].color = 0xFFFFFF;
