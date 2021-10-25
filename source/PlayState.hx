@@ -683,7 +683,8 @@ class PlayState extends MusicBeatState
 				dad.y += 100;
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 			case 'viridian':
-				dad.x -= 75;
+				dad.x -= 50;
+				dad.y += 200;
 				camPos.set(dad.getGraphicMidpoint().x + 250, dad.getGraphicMidpoint().y);
 		}
 
@@ -732,7 +733,7 @@ class PlayState extends MusicBeatState
 				dad.offsetFlipPosition(0, -500);
 			case 'spaceship':
 				boyfriend.offsetFlipPosition(0, -700);
-				dad.offsetFlipPosition(0, -400);
+				dad.offsetFlipPosition(0, -600);
 		}
 
 		if (loadRep)
