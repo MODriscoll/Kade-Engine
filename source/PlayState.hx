@@ -298,6 +298,9 @@ class PlayState extends MusicBeatState
 	// If to make Boyfriend/GF cheer when song finishes
 	private var cheerOnVictory:Bool = true;
 
+	// Events that have yet to be processed
+	var remainingEvents:Array<Song.Event> = null;
+
 	// API stuff
 
 	public function addObject(object:FlxBasic)
@@ -458,6 +461,8 @@ class PlayState extends MusicBeatState
 
 		TimingStruct.clearTimings();
 
+		remainingEvents = SONG.eventObjects.copy();
+
 		var currentIndex = 0;
 		for (i in SONG.eventObjects)
 		{
@@ -486,7 +491,6 @@ class PlayState extends MusicBeatState
 				hasFlipEvents = true;
 			}
 		}
-
 
 		recalculateAllSectionTimes();
 	
@@ -1413,7 +1417,7 @@ class PlayState extends MusicBeatState
 		}
 		if (keys[data])
 		{
-			trace("ur already holding " + key);
+			//trace("ur already holding " + key);
 			return;
 		}
 
@@ -2275,8 +2279,12 @@ class PlayState extends MusicBeatState
 
 			var newScroll = 1.0;
 
-			for(i in SONG.eventObjects)
+			var it:Int = 0;
+			while (it < remainingEvents.length)
 			{
+				var i = remainingEvents[it];
+
+				var wasProcessed:Bool = false;
 				switch(i.type)
 				{
 					case "Scroll Speed Change":
@@ -2285,6 +2293,8 @@ class PlayState extends MusicBeatState
 							pastScrollChanges.push(i);
 							trace("SCROLL SPEED CHANGE to " + i.value);
 							newScroll = i.value;
+
+							wasProcessed = true;
 						}
 					case "Flip Character":
 						if (curDecimalBeat >= i.position && !pastFlipChanges.contains(i))
@@ -2303,6 +2313,8 @@ class PlayState extends MusicBeatState
 							flipCharactersImpl(flipDad, flipBf);
 
 							pastFlipChanges.push(i);
+
+							wasProcessed = true;
 						}
 					case "GF Cheer":
 						// This would be nice to have
@@ -2318,14 +2330,26 @@ class PlayState extends MusicBeatState
 							}
 							
 							pastCheers.push(i);
+
+							wasProcessed = true;
 						}
 					case "Idle Beat":
 						if (curDecimalBeat >= i.position && !pastIdleBeats.contains(i))
 						{
 							idleBeat = Math.floor(i.value > 0 ? i.value : 1);
 							pastIdleBeats.push(i);
+
+							wasProcessed = true;
 						}
 				}
+
+				if (wasProcessed)
+				{
+					trace('event processed: ' + i.type);
+					remainingEvents.remove(i);
+				}
+				else
+					++it;
 			}
 
 			if (newScroll != 0)
