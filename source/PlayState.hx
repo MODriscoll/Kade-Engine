@@ -278,9 +278,8 @@ class PlayState extends MusicBeatState
 	private var playerIsFlipping:Bool = false;
 	private var playerFlipStart:Float = -1.0;
 
-	// How long the flip takes TODO: Make Init event for this
+	// If the song has any flip events
 	private var hasFlipEvents:Bool = false;
-	private var flipDuration:Float = 0.4;
 
 	// Experimental 'Ghost Note' for flips. I say mostly works (besides some visual issues
 	// It can be kind of trippy. Was an idea to try and help players adjust when a flip occurs.
@@ -348,6 +347,7 @@ class PlayState extends MusicBeatState
 		PlayStateChangeables.Optimize = FlxG.save.data.optimize;
 		PlayStateChangeables.zoom = FlxG.save.data.zoom;
 		PlayStateChangeables.enableFlip = FlxG.save.data.enableFlip;
+		PlayStateChangeables.flipDuration = FlxG.save.data.flipDuration;
 		PlayStateChangeables.enableGhostNotesForFlip = FlxG.save.data.enableGhostNotesForFlip;
 
 		// pre lowercasing the song name (create)
@@ -3085,8 +3085,8 @@ class PlayState extends MusicBeatState
 			var cpuFlipTime:Float = 0.0;
 			if (cpuIsFlipping)
 			{
-				var endInterpTime:Float = cpuFlipStart + (flipDuration * 1000.0);
-				var interpTime:Float = 	(endInterpTime - songTime) / (flipDuration * 1000.0);
+				var endInterpTime:Float = cpuFlipStart + (PlayStateChangeables.flipDuration * 1000.0);
+				var interpTime:Float = 	(endInterpTime - songTime) / (PlayStateChangeables.flipDuration * 1000.0);
 				cpuFlipTime = interpTime;
 				interpTime = dad.isFlipped ? (1.0 - interpTime) : interpTime;
 
@@ -3114,8 +3114,8 @@ class PlayState extends MusicBeatState
 			var playerFlipTime:Float = 0.0;
 			if (playerIsFlipping)
 			{
-				var endInterpTime:Float = playerFlipStart + (flipDuration * 1000.0);
-				var interpTime:Float = 	(endInterpTime - songTime) / (flipDuration * 1000.0);
+				var endInterpTime:Float = playerFlipStart + (PlayStateChangeables.flipDuration * 1000.0);
+				var interpTime:Float = 	(endInterpTime - songTime) / (PlayStateChangeables.flipDuration * 1000.0);
 				playerFlipTime = interpTime;
 				interpTime = boyfriend.isFlipped ? (1.0 - interpTime) : interpTime;
 

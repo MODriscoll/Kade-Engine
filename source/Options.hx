@@ -937,6 +937,43 @@ class EnableFlipOption extends Option
 	}
 }
 
+class FlipDurationOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+		acceptValues = true;
+	}
+
+	private override function updateDisplay():String {
+		return 'Flip Duration';
+	}
+
+	override function right():Bool {
+		FlxG.save.data.flipDuration += 0.1;
+
+		if (FlxG.save.data.flipDuration < 0)
+			FlxG.save.data.flipDuration = 0;
+
+		return true;
+	}
+
+	override function left():Bool {
+		FlxG.save.data.flipDuration -= 0.1;
+
+		if (FlxG.save.data.flipDuration < 0)
+			FlxG.save.data.flipDuration = 0;
+
+		return true;
+	}
+
+	override function getValue():String {
+		var curFlipDuration = HelperFunctions.truncateFloat(FlxG.save.data.flipDuration,1);
+		return "Current Flip Duration: " + curFlipDuration;
+	}
+}
+
 class EnableGhostNotesForFlipOption extends Option
 {
 	public function new(desc:String)
@@ -1010,6 +1047,7 @@ class ResetSettings extends Option
 		FlxG.save.data.cacheImages = null;
 		FlxG.save.data.editor = null;
 		FlxG.save.data.enableFlip = null;
+		FlxG.save.data.flipDuration = null;
 
 		KadeEngineData.initSave();
 		confirm = false;

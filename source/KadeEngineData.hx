@@ -124,6 +124,9 @@ class KadeEngineData
 		if (FlxG.save.data.enableFlip == null)
 			FlxG.save.data.enableFlip = true;
 
+		if (FlxG.save.data.flipDuration == null)
+			FlxG.save.data.flipDuration = 0.4;
+
 		if (FlxG.save.data.enableGhostNotesForFlip == null)
 			FlxG.save.data.enableGhostNotesForFlip = false;
 
