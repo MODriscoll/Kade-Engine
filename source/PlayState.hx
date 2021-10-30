@@ -278,6 +278,11 @@ class PlayState extends MusicBeatState
 	private var playerIsFlipping:Bool = false;
 	private var playerFlipStart:Float = -1.0;
 
+	// Flip duration for character sprites
+	private var spriteFlipDuration:Float = 0.4;
+	private var cpuSpriteFlipping:Bool = false;
+	private var playerSpriteFlipping:Bool = false;
+
 	// If the song has any flip events
 	private var hasFlipEvents:Bool = false;
 
@@ -1455,7 +1460,6 @@ class PlayState extends MusicBeatState
 
 				if (i.playerCanSkipThisNote())
 				{
-					// Trinkets/Spikes require Sick/Good in order to be hit
 					var noteDiff:Float = (i.strumTime - Conductor.songPosition);
 					noteDiff = noteDiff < 0 ? -noteDiff : noteDiff;
 
@@ -3074,70 +3078,106 @@ class PlayState extends MusicBeatState
 		{
 			var holdArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
 
-			// It's been a long day
+			// Cam Zoom is based upon sprite flip, not arrows flip
 			var desiredCamZoomLerp = 0.0;
-			if ((dad.isFlipped && !cpuIsFlipping) ||
-				(boyfriend.isFlipped && !playerIsFlipping))
+			if ((dad.isFlipped && !cpuSpriteFlipping) ||
+				(boyfriend.isFlipped && !playerSpriteFlipping))
 			{
 				desiredCamZoomLerp = 1.0;
 			}
 
-			var cpuFlipTime:Float = 0.0;
-			if (cpuIsFlipping)
+			var cpuFlipTime:Float = 0.0; // Arrow flip, not sprite
+			if (cpuIsFlipping || cpuSpriteFlipping)
 			{
-				var endInterpTime:Float = cpuFlipStart + (PlayStateChangeables.flipDuration * 1000.0);
-				var interpTime:Float = 	(endInterpTime - songTime) / (PlayStateChangeables.flipDuration * 1000.0);
-				cpuFlipTime = interpTime;
-				interpTime = dad.isFlipped ? (1.0 - interpTime) : interpTime;
-
-				if (interpTime < 0.0)
-					interpTime = 0.0;
-				else if (interpTime > 1.0)
-					interpTime = 1.0;
-
-				var strumTargetflipPos:Float = PlayStateChangeables.useDownscroll ? 50 : FlxG.height - 165;
-				var strumsFlipPos:Float = FlxMath.lerp(strumLine.y, strumTargetflipPos, interpTime);
-				for (i in cpuStrums)
+				if (cpuIsFlipping)
 				{
-					i.y = strumsFlipPos;
+					var endInterpTime:Float = cpuFlipStart + (PlayStateChangeables.flipDuration * 1000.0);
+					var interpTime:Float = 	(endInterpTime - songTime) / (PlayStateChangeables.flipDuration * 1000.0);
+					cpuFlipTime = interpTime;
+					interpTime = dad.isFlipped ? (1.0 - interpTime) : interpTime;
+
+					if (interpTime < 0.0)
+						interpTime = 0.0;
+					else if (interpTime > 1.0)
+						interpTime = 1.0;
+
+					var strumTargetflipPos:Float = PlayStateChangeables.useDownscroll ? 50 : FlxG.height - 165;
+					var strumsFlipPos:Float = FlxMath.lerp(strumLine.y, strumTargetflipPos, interpTime);
+					for (i in cpuStrums)
+					{
+						i.y = strumsFlipPos;
+					}
+
+					if (songTime >= endInterpTime)
+						cpuIsFlipping = false;
 				}
 
-				dad.x = FlxMath.lerp(dad.originXPos, dad.flipXPos, interpTime);
-				dad.y = FlxMath.lerp(dad.originYPos, dad.flipYPos, interpTime);
+				if (cpuSpriteFlipping)
+				{
+					var endInterpTime:Float = cpuFlipStart + (spriteFlipDuration * 1000.0);
+					var interpTime:Float = 	(endInterpTime - songTime) / (spriteFlipDuration * 1000.0);
+					interpTime = dad.isFlipped ? (1.0 - interpTime) : interpTime;
 
-				if (songTime >= endInterpTime)
-					cpuIsFlipping = false;
+					if (interpTime < 0.0)
+						interpTime = 0.0;
+					else if (interpTime > 1.0)
+						interpTime = 1.0;
 
-				desiredCamZoomLerp = interpTime > desiredCamZoomLerp ? interpTime : desiredCamZoomLerp;
+					dad.x = FlxMath.lerp(dad.originXPos, dad.flipXPos, interpTime);
+					dad.y = FlxMath.lerp(dad.originYPos, dad.flipYPos, interpTime);
+
+					if (songTime >= endInterpTime)
+						cpuSpriteFlipping = false;
+
+					desiredCamZoomLerp = interpTime > desiredCamZoomLerp ? interpTime : desiredCamZoomLerp;
+				}
 			}
 
-			var playerFlipTime:Float = 0.0;
-			if (playerIsFlipping)
+			var playerFlipTime:Float = 0.0; // Arrow flip, not sprite
+			if (playerIsFlipping || playerSpriteFlipping)
 			{
-				var endInterpTime:Float = playerFlipStart + (PlayStateChangeables.flipDuration * 1000.0);
-				var interpTime:Float = 	(endInterpTime - songTime) / (PlayStateChangeables.flipDuration * 1000.0);
-				playerFlipTime = interpTime;
-				interpTime = boyfriend.isFlipped ? (1.0 - interpTime) : interpTime;
-
-				if (interpTime < 0.0)
-					interpTime = 0.0;
-				else if (interpTime > 1.0)
-					interpTime = 1.0;
-
-				var strumTargetflipPos:Float = PlayStateChangeables.useDownscroll ? 50 : FlxG.height - 165;
-				var strumsFlipPos:Float = FlxMath.lerp(strumLine.y, strumTargetflipPos, interpTime);
-				for (i in playerStrums)
+				if (playerIsFlipping)
 				{
-					i.y = strumsFlipPos;
+					var endInterpTime:Float = playerFlipStart + (PlayStateChangeables.flipDuration * 1000.0);
+					var interpTime:Float = 	(endInterpTime - songTime) / (PlayStateChangeables.flipDuration * 1000.0);
+					playerFlipTime = interpTime;
+					interpTime = boyfriend.isFlipped ? (1.0 - interpTime) : interpTime;
+
+					if (interpTime < 0.0)
+						interpTime = 0.0;
+					else if (interpTime > 1.0)
+						interpTime = 1.0;
+
+					var strumTargetflipPos:Float = PlayStateChangeables.useDownscroll ? 50 : FlxG.height - 165;
+					var strumsFlipPos:Float = FlxMath.lerp(strumLine.y, strumTargetflipPos, interpTime);
+					for (i in playerStrums)
+					{
+						i.y = strumsFlipPos;
+					}
+
+					if (songTime >= endInterpTime)
+						playerIsFlipping = false;
 				}
 
-				boyfriend.x = FlxMath.lerp(boyfriend.originXPos, boyfriend.flipXPos, interpTime);
-				boyfriend.y = FlxMath.lerp(boyfriend.originYPos, boyfriend.flipYPos, interpTime);
+				if (playerSpriteFlipping)
+				{
+					var endInterpTime:Float = playerFlipStart + (spriteFlipDuration * 1000.0);
+					var interpTime:Float = 	(endInterpTime - songTime) / (spriteFlipDuration * 1000.0);
+					interpTime = boyfriend.isFlipped ? (1.0 - interpTime) : interpTime;
 
-				if (songTime >= endInterpTime)
-					playerIsFlipping = false;
+					if (interpTime < 0.0)
+						interpTime = 0.0;
+					else if (interpTime > 1.0)
+						interpTime = 1.0;
 
-				desiredCamZoomLerp = interpTime > desiredCamZoomLerp ? interpTime : desiredCamZoomLerp;
+					boyfriend.x = FlxMath.lerp(boyfriend.originXPos, boyfriend.flipXPos, interpTime);
+					boyfriend.y = FlxMath.lerp(boyfriend.originYPos, boyfriend.flipYPos, interpTime);
+
+					if (songTime >= endInterpTime)
+						playerSpriteFlipping = false;
+
+					desiredCamZoomLerp = interpTime > desiredCamZoomLerp ? interpTime : desiredCamZoomLerp;
+				}
 			}
 
 			if (!endingSong)
@@ -5428,6 +5468,7 @@ class PlayState extends MusicBeatState
 			{
 				dad.flipSelf();
 				cpuIsFlipping = true;
+				cpuSpriteFlipping = true;
 				cpuFlipStart = songTime;
 			}
 
@@ -5435,6 +5476,7 @@ class PlayState extends MusicBeatState
 			{
 				boyfriend.flipSelf();
 				playerIsFlipping = true;
+				playerSpriteFlipping = true;
 				playerFlipStart = songTime;
 			}
 
