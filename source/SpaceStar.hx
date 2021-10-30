@@ -7,7 +7,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 class SpaceStar extends FlxSprite
 {
 	// This is half the limit (-Half, Half)
-	public static var spaceshipLimitX:Float = 1600;
+	public static var spaceshipLimitX:Float = 1700;
 	public static var spaceshipLimitY:Float = 750;
 
 	// Stage offset for spaceship (specifically stars)
