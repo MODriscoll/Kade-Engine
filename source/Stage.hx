@@ -403,7 +403,9 @@ class Stage
 						flippedCamZoom = 0.5;
 						curStage = 'spaceship';
 
-						// Not considering stars in the background a 'distraction'
+						// Not considering stars in the background a 'distraction' (except for the beat animation)
+
+						var beatScale:Float = 2.5;
 
 						// Generate first layer of stars in background
 						{
@@ -412,7 +414,7 @@ class Stage
 							swagGroup['starsL1'] = starsLayer;
                             toAdd.push(starsLayer);
 
-							var amountToAdd:Int = PlayStateChangeables.Optimize ? 5 : 15;
+							var amountToAdd:Int = PlayStateChangeables.Optimize ? 10 : 25;
 							for (i in 0...amountToAdd)
 							{
 								var randX:Float = FlxG.random.float(-SpaceStar.spaceshipLimitX, SpaceStar.spaceshipLimitX);
@@ -421,8 +423,9 @@ class Stage
 								var star:SpaceStar = new SpaceStar(randX, randY + SpaceStar.spaceshipOffsetY);
 								star.scrollFactor.set(0.9, 0.9);
 								star.alpha = 0.3;
-								star.scale.scale(FlxG.random.float(0.8, 1.2));
 								star.velocity.x = -FlxG.random.float(500, 600);
+
+								star.initStar(FlxG.random.float(0.8, 1.2), beatScale);
 
 								starsLayer.add(star);
 							}
@@ -435,7 +438,7 @@ class Stage
 							swagGroup['starsL2'] = starsLayer;
                             toAdd.push(starsLayer);
 
-							var amountToAdd:Int = PlayStateChangeables.Optimize ? 10 : 25;
+							var amountToAdd:Int = PlayStateChangeables.Optimize ? 5 : 15;
 							for (i in 0...amountToAdd)
 							{
 								var randX:Float = FlxG.random.float(-SpaceStar.spaceshipLimitX, SpaceStar.spaceshipLimitX);
@@ -444,8 +447,9 @@ class Stage
 								var star:SpaceStar = new SpaceStar(randX, randY + SpaceStar.spaceshipOffsetY);
 								star.scrollFactor.set(0.85, 0.85);
 								star.alpha = 0.6;
-								star.scale.scale(FlxG.random.float(0.8, 1.2));
 								star.velocity.x = -FlxG.random.float(1100, 1200);
+
+								star.initStar(FlxG.random.float(1.6, 2.0), beatScale);
 
 								starsLayer.add(star);
 							}

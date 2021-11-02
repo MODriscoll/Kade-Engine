@@ -5290,6 +5290,22 @@ class PlayState extends MusicBeatState
 							trainStart();
 						}
 					}
+				case 'spaceship':
+					if (FlxG.save.data.distractions)
+					{
+						if ((curBeat + 1) % idleBeat == 0)
+						{
+							Stage.swagGroup['starsL1'].forEach(function(star:SpaceStar)
+							{
+								star.beatHit(songTime);
+							});
+
+							Stage.swagGroup['starsL2'].forEach(function(star:SpaceStar)
+							{
+								star.beatHit(songTime);
+							});
+						}
+					}
 			}
 
 			if (!PlayStateChangeables.Optimize)
