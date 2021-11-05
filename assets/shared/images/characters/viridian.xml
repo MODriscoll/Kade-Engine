@@ -2,14 +2,14 @@
 <TextureAtlas imagePath="viridian.png">
 	<!-- Created with Adobe Animate version 21.0.1.37179 -->
 	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="viridian Sing Note DOWN0000" x="932" y="92" width="380" height="581" pivotX="0" pivotY="0" frameX="0" frameY="0" frameWidth="380" frameHeight="581"/>
-  <SubTexture name="viridian Sing Note DOWN0001" x="932" y="92" width="380" height="581"/>
-	<SubTexture name="viridian Sing Note LEFT0000" x="1832" y="92" width="379" height="580" pivotX="0" pivotY="0" frameX="0" frameY="0" frameWidth="379" frameHeight="580"/>
-  <SubTexture name="viridian Sing Note LEFT0001" x="1832" y="92" width="379" height="580"/>
-	<SubTexture name="viridian Sing Note RIGHT0000" x="2774" y="92" width="415" height="587" pivotX="0" pivotY="0" frameX="0" frameY="0" frameWidth="415" frameHeight="587"/>
-	<SubTexture name="viridian Sing Note RIGHT0001" x="2774" y="92" width="415" height="587" frameX="0" frameY="0" frameWidth="415" frameHeight="587"/>
-	<SubTexture name="viridian Sing Note UP0000" x="72" y="92" width="380" height="581" pivotX="0" pivotY="0" frameX="0" frameY="0" frameWidth="380" frameHeight="581"/>
-	<SubTexture name="viridian Sing Note UP0001" x="72" y="92" width="380" height="581" frameX="0" frameY="0" frameWidth="380" frameHeight="581"/>
-	<SubTexture name="viridian idle dance0000" x="72" y="732" width="424" height="581" pivotX="0" pivotY="0" frameX="0" frameY="0" frameWidth="424" frameHeight="581"/>
-	<SubTexture name="viridian idle dance0001" x="72" y="732" width="424" height="581" frameX="0" frameY="0" frameWidth="423" frameHeight="581"/>
+	<SubTexture name="viridian Sing Note DOWN0000" x="937" y="89" width="353" height="597" pivotX="0" pivotY="0" frameX="0" frameY="0" frameWidth="353" frameHeight="597"/>
+  <SubTexture name="viridian Sing Note DOWN0001" x="937" y="89" width="353" height="597"/>
+	<SubTexture name="viridian Sing Note LEFT0000" x="1852" y="88" width="358" height="595" pivotX="0" pivotY="0" frameX="0" frameY="0" frameWidth="358" frameHeight="595"/>
+  <SubTexture name="viridian Sing Note LEFT0001" x="1852" y="88" width="358" height="595"/>
+	<SubTexture name="viridian Sing Note RIGHT0000" x="2799" y="86" width="372" height="597" pivotX="0" pivotY="0" frameX="0" frameY="0" frameWidth="372" frameHeight="597"/>
+	<SubTexture name="viridian Sing Note RIGHT0001" x="2799" y="86" width="372" height="597" frameX="0" frameY="0" frameWidth="372" frameHeight="597"/>
+	<SubTexture name="viridian Sing Note UP0000" x="36" y="77" width="421" height="599" pivotX="0" pivotY="0" frameX="0" frameY="0" frameWidth="421" frameHeight="599"/>
+	<SubTexture name="viridian Sing Note UP0001" x="36" y="77" width="421" height="599" frameX="0" frameY="0" frameWidth="421" frameHeight="599"/>
+	<SubTexture name="viridian idle dance0000" x="63" y="731" width="445" height="587" pivotX="0" pivotY="0" frameX="0" frameY="0" frameWidth="445" frameHeight="587"/>
+	<SubTexture name="viridian idle dance0001" x="63" y="731" width="445" height="587" frameX="0" frameY="0" frameWidth="445" frameHeight="587"/>
 </TextureAtlas>
