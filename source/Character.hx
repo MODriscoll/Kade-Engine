@@ -521,7 +521,9 @@ class Character extends FlxSprite
 		var daOffset = animOffsets.get(AnimName);
 		if (animOffsets.exists(AnimName))
 		{
-			offset.set(daOffset[0], daOffset[1]);
+			// Don't use Y offset if flipped, Viridan and Bfs anims are setup
+			// so the feet are at 'the root' (and Y is the top of the sprite)
+			offset.set(daOffset[0], daOffset[1] * (isFlipped ? 0.0 : 1.0));
 		}
 		else
 			offset.set(0, 0);

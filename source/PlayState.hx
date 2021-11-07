@@ -737,12 +737,12 @@ class PlayState extends MusicBeatState
 
 		switch (Stage.curStage)
 		{
-			case 'stage':
-				boyfriend.offsetFlipPosition(0, -500);
-				dad.offsetFlipPosition(0, -500);
 			case 'spaceship':
 				boyfriend.offsetFlipPosition(0, -700);
 				dad.offsetFlipPosition(0, -600);
+			default:
+				boyfriend.offsetFlipPosition(0, -500);
+				dad.offsetFlipPosition(0, -500);
 		}
 
 		if (loadRep)
