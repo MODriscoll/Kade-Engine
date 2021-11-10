@@ -1019,7 +1019,8 @@ class PlayState extends MusicBeatState
 		iconP1 = new HealthIcon(boyfriend.curCharacter, true);
 		if (helperHasFlipEvents())
 		{
-			iconP1.scale.scale(iconScale);
+			//iconP1.scale.scale(iconScale);
+			iconP1.setGraphicSize(Std.int(150 * iconScale));
 			iconP1.updateHitbox();
 		}
 		iconP1.y = healthBar.y - (iconP1.height / 2);
@@ -1028,7 +1029,8 @@ class PlayState extends MusicBeatState
 		iconP2 = new HealthIcon(dad.curCharacter, false);
 		if (helperHasFlipEvents())
 		{
-			iconP2.scale.scale(iconScale);
+			//iconP2.scale.scale(iconScale);
+			iconP2.setGraphicSize(Std.int(150 * iconScale));
 			iconP2.updateHitbox();
 		}
 		iconP2.y = healthBar.y - (iconP2.height / 2);
@@ -2534,13 +2536,25 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
 		var iconScale:Float = helperHasFlipEvents() ? 0.70 : 1.0;
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width * iconScale, 0.50)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width * iconScale, 0.50)));
+		{
+			var minSize = 150 * iconScale;
+			var maxSize = 180 * iconScale;
 
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+			var t:Float = 1;
+			if (songStarted && !endingSong)
+			{
+				t = (Conductor.songPosition % Conductor.crochet) / Conductor.crochet;
+				t = 1 - (--t) * t * t * t;
+			}
+			
+			iconP1.setGraphicSize(Std.int(FlxMath.lerp(maxSize, minSize, t)));
+			iconP2.setGraphicSize(Std.int(FlxMath.lerp(maxSize, minSize, t)));
 
-		var iconOffset:Int = 26;
+			iconP1.updateHitbox();
+			iconP2.updateHitbox();
+		}
+
+		var iconOffset:Int = Std.int(26 * iconScale);
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
@@ -5186,6 +5200,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		/*
 		var iconScale:Float = helperHasFlipEvents() ? 0.70 : 1.0;
 		if (Conductor.bpm < 340)
 		{	
@@ -5204,6 +5219,7 @@ class PlayState extends MusicBeatState
 			iconP1.updateHitbox();
 			iconP2.updateHitbox();
 		}
+		*/
 
 		if (!endingSong && currentSection != null)
 		{
