@@ -996,7 +996,8 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 
-		add(scoreTxt);
+		// Add after Icons, so it draws on top
+		//add(scoreTxt);
 
 		replayTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 75, healthBarBG.y + (PlayStateChangeables.useDownscroll ? 100 : -100), 0, "REPLAY",
 			20);
@@ -1042,6 +1043,9 @@ class PlayState extends MusicBeatState
 
 		// Hardcoded :/
 		iconsBeatWithCharacters = songLowercase == 'pushing-onwards';
+
+		// Add after icons, so it draws on top
+		add(scoreTxt);
 
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
