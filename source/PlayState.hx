@@ -305,6 +305,10 @@ class PlayState extends MusicBeatState
 	// Events that have yet to be processed
 	var remainingEvents:Array<Song.Event> = null;
 
+	// If the character icons should 'beat' with the idle animations
+	// If false, they beat every beat hit
+	var iconsBeatWithCharacters:Bool = false;
+
 	// API stuff
 
 	public function addObject(object:FlxBasic)
@@ -1035,6 +1039,9 @@ class PlayState extends MusicBeatState
 		}
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
+
+		// Hardcoded :/
+		iconsBeatWithCharacters = songLowercase == 'pushing-onwards';
 
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
@@ -2541,10 +2548,14 @@ class PlayState extends MusicBeatState
 			var maxSize = 180 * iconScale;
 
 			var t:Float = 1;
+			// Only beat when song is playing
 			if (songStarted && !endingSong)
 			{
-				t = (Conductor.songPosition % Conductor.crochet) / Conductor.crochet;
-				t = 1 - (--t) * t * t * t;
+				if (!iconsBeatWithCharacters || (curBeat + 1) % idleBeat == 0)
+				{
+					t = (Conductor.songPosition % Conductor.crochet) / Conductor.crochet;
+					t = 1 - (--t) * t * t * t;
+				}
 			}
 			
 			iconP1.setGraphicSize(Std.int(FlxMath.lerp(maxSize, minSize, t)));
