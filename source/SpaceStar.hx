@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
+import flixel.util.FlxTimer;
 
 class SpaceStar extends FlxSprite
 {
@@ -35,6 +36,9 @@ class SpaceStar extends FlxSprite
 		if (x <= (-spaceshipLimitX + spaceshipOffsetX))
 		{
 			x += spaceshipLimitX * 2;
+
+			var randY:Float = FlxG.random.float(-SpaceStar.spaceshipLimitY, SpaceStar.spaceshipLimitY);
+			y = randY + SpaceStar.spaceshipOffsetY;
 		}
 
 		if (beatTime >= 0)
