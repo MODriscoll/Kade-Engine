@@ -22,6 +22,7 @@ class SpaceStar extends FlxSprite
 	private var originalHeight:Float;
 	private var beatWidth:Float;
 	private var beatHeight:Float;
+	private var rotateOnBeat:Bool;
 
 	public function new(x:Float, y:Float)
 	{
@@ -59,12 +60,15 @@ class SpaceStar extends FlxSprite
 			var newWidth:Int = Std.int(FlxMath.lerp(beatWidth, originalWidth, t));
 			var newHeight:Int = Std.int(FlxMath.lerp(beatHeight, originalHeight, t));
 			setGraphicSize(newWidth, newHeight);
+
+			if (rotateOnBeat)
+				angle = FlxMath.lerp(0, 90, t); // Stars are currently just grey squares
 		}
 
 		super.update(elapsed);
 	}
 
-	public function initStar(randScale:Float, beatScale:Float)
+	public function initStar(randScale:Float, beatScale:Float, rotateOnBeat:Bool)
 	{
 		originalWidth = width * randScale;
 		originalHeight = height * randScale;
@@ -72,6 +76,8 @@ class SpaceStar extends FlxSprite
 		beatHeight = originalHeight * beatScale;
 
 		setGraphicSize(Std.int(originalWidth), Std.int(originalHeight));
+
+		this.rotateOnBeat = rotateOnBeat;
 	}
 
 	public function beatHit(songTime:Float)
