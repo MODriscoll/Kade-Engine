@@ -9,4 +9,6 @@ class PlayStateChangeables
     public static var enableFlip:Bool; // No support for changing this during a song
     public static var flipDuration:Float;
     public static var enableGhostNotesForFlip:Bool;
+
+    public static var VVVVVV:Bool = false;
 }

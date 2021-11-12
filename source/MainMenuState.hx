@@ -16,6 +16,8 @@ import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 import lime.app.Application;
 
+import flixel.input.keyboard.FlxKey;
+
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -137,6 +139,9 @@ class MainMenuState extends MusicBeatState
 
 	var selectedSomethin:Bool = false;
 
+	// shhhh
+	var vCounter:Int = 0;
+
 	override function update(elapsed:Float)
 	{
 		if (FlxG.sound.music.volume < 0.8)
@@ -160,6 +165,24 @@ class MainMenuState extends MusicBeatState
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 					changeItem(1);
 				}
+			}
+
+			// shhhh
+			if (!PlayStateChangeables.VVVVVV)
+			{
+				var justPressed:Int = FlxG.keys.firstJustPressed();
+				if (justPressed != -1)
+					if (justPressed == FlxKey.V)
+					{
+						++vCounter;
+						PlayStateChangeables.VVVVVV = vCounter >= 6;
+						if (PlayStateChangeables.VVVVVV)
+							trace('vvvvvv');
+					}
+					else
+					{
+						vCounter = 0;
+					}
 			}
 
 			if (FlxG.keys.justPressed.UP)
