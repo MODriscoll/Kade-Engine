@@ -177,7 +177,11 @@ class MainMenuState extends MusicBeatState
 						++vCounter;
 						PlayStateChangeables.VVVVVV = vCounter >= 6;
 						if (PlayStateChangeables.VVVVVV)
+						{
+							FlxG.sound.music.volume = 0.0;
+							FlxG.sound.play(Paths.sound('trinket'));
 							trace('vvvvvv');
+						}			
 					}
 					else
 					{

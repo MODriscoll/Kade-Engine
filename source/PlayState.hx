@@ -4902,6 +4902,8 @@ class PlayState extends MusicBeatState
 				{
 					++numTrinketsCollected;
 
+					FlxG.sound.play(Paths.sound('trinket'), 0.35);
+
 					if (note.ghost != null)
 						flipNoteGhosts.remove(note.ghost, true);
 
