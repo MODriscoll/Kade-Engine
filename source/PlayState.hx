@@ -309,6 +309,8 @@ class PlayState extends MusicBeatState
 	// If false, they beat every beat hit
 	var iconsBeatWithCharacters:Bool = false;
 
+	var setCameraZoom:Float = 1;
+
 	// API stuff
 
 	public function addObject(object:FlxBasic)
@@ -895,7 +897,7 @@ class PlayState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, LOCKON, 0.04 * (30 / (cast(Lib.current.getChildAt(0), Main)).getFPS()));
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
-		FlxG.camera.zoom = Stage.camZoom;
+		setCamZoom(Stage.camZoom, true);
 		FlxG.camera.focusOn(camFollow.getPosition());
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
@@ -1092,7 +1094,7 @@ class PlayState extends MusicBeatState
 						camFollow.y = -2050;
 						camFollow.x += 200;
 						FlxG.camera.focusOn(camFollow.getPosition());
-						FlxG.camera.zoom = 1.5;
+						setCamZoom(1.5, true);
 
 						new FlxTimer().start(1, function(tmr:FlxTimer)
 						{
@@ -2703,6 +2705,81 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
+		// Moved in front of next statement as we depend on the 'old' songPosition value (so before we change it right after this)
+		if (camZooming && FlxG.save.data.camzoom && Conductor.bpm < 320)
+		{
+			if (Conductor.bpm > 320) // if we don't do this it'll be really annoying
+			{
+				camZooming = false;
+			}
+
+			if (FlxG.save.data.zoom < 0.8)
+				FlxG.save.data.zoom = 0.8;
+	
+			if (FlxG.save.data.zoom > 1.2)
+				FlxG.save.data.zoom = 1.2;
+
+			var useSetValues:Bool = true;
+
+			// Only beat when song is playing
+			if (songStarted && !endingSong)
+			{
+				var additionalZoomMultiplier:Float = 1;
+
+				var forceZoomNow:Bool = false;
+				// HARDCODING FOR MILF ZOOMS!
+				if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200)
+				{
+					forceZoomNow = true;
+					// Original implementation basically applied zoom twice
+					additionalZoomMultiplier = 2;
+				}
+
+				if (forceZoomNow || (curBeat + 1) % (idleBeat * 2) == 0)
+				{
+					var t:Float = 1;
+					t = (Conductor.songPosition % Conductor.crochet) / (Conductor.crochet * 0.6);
+					t = t < 0 ? 0 : t > 1 ? 1 : t;
+					t = t * (2 - t);
+
+					var additionalCamZoom:Float = (0.01 / songMultiplier) * additionalZoomMultiplier;
+					var additionaHUDZoom:Float = (0.02 / songMultiplier) * additionalZoomMultiplier;
+
+					if (!executeModchart)
+					{
+						// Do not call setCamZoom as we do not want to update the fixed value
+						FlxG.camera.zoom = FlxMath.lerp(setCameraZoom + additionalCamZoom, setCameraZoom, t);
+						camHUD.zoom = FlxMath.lerp(PlayStateChangeables.zoom + additionaHUDZoom, PlayStateChangeables.zoom, t);
+					}
+					else
+					{
+						// Do not call setCamZoom as we do not want to update the fixed value
+						FlxG.camera.zoom = FlxMath.lerp(setCameraZoom + additionalCamZoom, setCameraZoom, t);
+						camHUD.zoom = FlxMath.lerp(PlayStateChangeables.zoom + additionaHUDZoom, PlayStateChangeables.zoom, t);				
+					}
+
+					useSetValues = false;
+				}
+			}
+			
+			if (useSetValues)
+			{
+				FlxG.camera.zoom = setCameraZoom;
+				camHUD.zoom = PlayStateChangeables.zoom;
+			}
+
+			camNotes.zoom = camHUD.zoom;
+			camSustains.zoom = camHUD.zoom;		
+		}
+		else
+		{
+			FlxG.camera.zoom = setCameraZoom;
+			camHUD.zoom = PlayStateChangeables.zoom;
+			
+			camNotes.zoom = camHUD.zoom;
+			camSustains.zoom = camHUD.zoom;	
+		}
+
 		if (startingSong)
 		{
 			if (startedCountdown)
@@ -2951,38 +3028,6 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (camZooming && Conductor.bpm < 320)
-		{
-
-			if (Conductor.bpm > 320) // if we don't do this it'll be really annoying
-			{
-				camZooming = false;
-			}
-
-			if (FlxG.save.data.zoom < 0.8)
-				FlxG.save.data.zoom = 0.8;
-	
-			if (FlxG.save.data.zoom > 1.2)
-				FlxG.save.data.zoom = 1.2;
-
-			if (!executeModchart)
-			{
-				FlxG.camera.zoom = FlxMath.lerp(Stage.camZoom, FlxG.camera.zoom, 0.95);
-				camHUD.zoom = FlxMath.lerp(FlxG.save.data.zoom, camHUD.zoom, 0.95);
-
-				camNotes.zoom = camHUD.zoom;
-				camSustains.zoom = camHUD.zoom;
-			}
-			else
-			{
-				FlxG.camera.zoom = FlxMath.lerp(Stage.camZoom, FlxG.camera.zoom, 0.95);
-				camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
-
-				camNotes.zoom = camHUD.zoom;
-				camSustains.zoom = camHUD.zoom;
-			}
-		}
-
 		FlxG.watch.addQuick("curBPM", Conductor.bpm);
 		FlxG.watch.addQuick("beatShit", curBeat);
 		FlxG.watch.addQuick("stepShit", curStep);
@@ -3213,11 +3258,11 @@ class PlayState extends MusicBeatState
 			{
 				if (desiredCamZoomLerp > 0)
 				{
-					FlxG.camera.zoom = FlxMath.lerp(Stage.camZoom, Stage.flippedCamZoom, desiredCamZoomLerp);
+					setCamZoom(FlxMath.lerp(Stage.camZoom, Stage.flippedCamZoom, desiredCamZoomLerp));
 				}
 				else
 				{
-					FlxG.camera.zoom = Stage.camZoom;
+					setCamZoom(Stage.camZoom);
 				}
 			}
 
@@ -5209,7 +5254,8 @@ class PlayState extends MusicBeatState
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
 
-		if (FlxG.save.data.camzoom && Conductor.bpm < 340 && !endingSong)
+		/*
+		if (FlxG.save.data.camzoom && Conductor.bpm < 340)
 		{
 			// HARDCODING FOR MILF ZOOMS!
 			if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
@@ -5224,6 +5270,7 @@ class PlayState extends MusicBeatState
 				camHUD.zoom += 0.03 / songMultiplier;
 			}
 		}
+		*/
 
 		/*
 		var iconScale:Float = helperHasFlipEvents() ? 0.70 : 1.0;
@@ -5559,6 +5606,13 @@ class PlayState extends MusicBeatState
 						flipNoteGhosts.add(daNote.ghost);
 			});
 		}
+	}
+
+	function setCamZoom(newCamZoom:Float, updateCamNow:Bool = false)
+	{
+		setCameraZoom = newCamZoom;
+		if (updateCamNow)
+			FlxG.camera.zoom = setCameraZoom;
 	}
 }
 //u looked :O -ides
