@@ -61,8 +61,8 @@ class SpaceStar extends FlxSprite
 			var newHeight:Int = Std.int(FlxMath.lerp(beatHeight, originalHeight, t));
 			setGraphicSize(newWidth, newHeight);
 
-			if (rotateOnBeat)
-				angle = FlxMath.lerp(0, 90, t); // Stars are currently just grey squares
+			//if (rotateOnBeat)
+			//	angle = FlxMath.lerp(0, 180, t); // Stars are currently just grey squares
 		}
 
 		super.update(elapsed);
