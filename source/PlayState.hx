@@ -4904,6 +4904,14 @@ class PlayState extends MusicBeatState
 
 					FlxG.sound.play(Paths.sound('trinket'), 0.35);
 
+					if (!PlayStateChangeables.botPlay)
+					{
+						playerStrums.forEach(function(spr:StaticArrow)
+						{
+							pressArrow(spr, spr.ID, note);
+						});
+					}
+
 					if (note.ghost != null)
 						flipNoteGhosts.remove(note.ghost, true);
 
