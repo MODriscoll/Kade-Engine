@@ -590,6 +590,11 @@ class PlayState extends MusicBeatState
 		}
 
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
+		boyfriend.missFinished = function()
+		{
+			boyfriend.newStunned = false;
+			vocals.volume = 1;
+		}
 
 		if (boyfriend.frames == null)
 		{
@@ -3031,6 +3036,8 @@ class PlayState extends MusicBeatState
 		FlxG.watch.addQuick("curBPM", Conductor.bpm);
 		FlxG.watch.addQuick("beatShit", curBeat);
 		FlxG.watch.addQuick("stepShit", curStep);
+		FlxG.watch.addQuick("inst Volume", FlxG.sound.music.volume);
+		FlxG.watch.addQuick("vocals Volume", vocals.volume);
 
 		if (curSong == 'Fresh')
 		{
@@ -3494,7 +3501,7 @@ class PlayState extends MusicBeatState
 
 							dad.holdTimer = 0;
 
-							if (SONG.needsVoices)
+							if (SONG.needsVoices && !boyfriend.newStunned)
 								vocals.volume = 1;
 						}
 					}
@@ -3528,7 +3535,7 @@ class PlayState extends MusicBeatState
 
 							dad.holdTimer = 0;
 
-							if (SONG.needsVoices)
+							if (SONG.needsVoices && !boyfriend.newStunned)
 								vocals.volume = 1;
 					}
 					daNote.active = false;
@@ -3612,7 +3619,6 @@ class PlayState extends MusicBeatState
 									totalNotesHit += 1;
 								else
 								{
-									vocals.volume = 0;
 									if (theFunne && !daNote.isSustainNote)
 									{
 										noteMiss(daNote.noteData, daNote);
@@ -3655,7 +3661,6 @@ class PlayState extends MusicBeatState
 							}
 							else
 							{
-								vocals.volume = 0;
 								if (theFunne && !daNote.isSustainNote)
 								{
 									if (PlayStateChangeables.botPlay)
@@ -3696,9 +3701,9 @@ class PlayState extends MusicBeatState
 											i.alpha = 0.3;
 											i.sustainActive = false;
 										}
-										if (daNote.parent.wasGoodHit)
-											misses++;
-										updateAccuracy();
+										//if (daNote.parent.wasGoodHit)
+										noteMiss(daNote.noteData, daNote);
+										//updateAccuracy();
 									}
 									else if (!daNote.wasGoodHit
 										&& !daNote.isSustainNote)
@@ -4513,7 +4518,11 @@ class PlayState extends MusicBeatState
 				if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true) || PlayStateChangeables.botPlay))
 				{
 					if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss') && (boyfriend.animation.curAnim.curFrame >= 10 || boyfriend.animation.curAnim.finished))
+					{
 						boyfriend.playAnim('idle');
+						boyfriend.newStunned = false;
+						vocals.volume = 1;
+					}
 				}
 				else if (!FlxG.save.data.ghost)
 				{
@@ -4596,7 +4605,11 @@ class PlayState extends MusicBeatState
 		if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true) || PlayStateChangeables.botPlay))
 		{
 			if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss') && (boyfriend.animation.curAnim.curFrame >= 10 || boyfriend.animation.curAnim.finished))
+			{
 				boyfriend.playAnim('idle');
+				boyfriend.newStunned = false;
+				vocals.volume = 1;
+			}
 		}
 
 		if (!PlayStateChangeables.botPlay)
@@ -4732,8 +4745,12 @@ class PlayState extends MusicBeatState
 		if (daNote != null && daNote.isSpike() && !wasHitSpike)
 			return;
 
+		vocals.volume = 0;
+
 		if (!boyfriend.stunned)
-		{
+		{		
+			boyfriend.newStunned = true;
+
 			//health -= 0.2;
 			if (combo > 5 && gf.animOffsets.exists('sad'))
 			{
@@ -4970,7 +4987,7 @@ class PlayState extends MusicBeatState
 					combo += 1;
 				}
 			}
-
+			
 			var altAnim:String = "";
 			if (note.isAlt)
 				{
@@ -5552,7 +5569,14 @@ class PlayState extends MusicBeatState
 
 		// Focus on boyfriend
 		camFollow.setPosition(boyfriend.getMidpoint().x, boyfriend.getMidpoint().y);
-		Stage.camZoom = 1.2;
+		{
+			var onUpdateZoom = function(val:Float)
+			{
+				setCamZoom(val, true);
+			};
+
+			FlxTween.num(setCameraZoom, 1.2, 0.2, { ease: FlxEase.quadOut, type: ONESHOT }, onUpdateZoom.bind());
+		}
 
 		new FlxTimer().start(0.2, function(tmr:FlxTimer)
 			{	

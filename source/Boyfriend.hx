@@ -12,6 +12,9 @@ using StringTools;
 class Boyfriend extends Character
 {
 	public var stunned:Bool = false;
+	// To fix vocals sound when missing shit
+	public var newStunned:Bool = false;
+	public var missFinished:Void->Void;
 
 	// I tried using trails but it made bf update at twice the speed
 	private var spookyGhost:Boyfriend = null;
@@ -32,8 +35,10 @@ class Boyfriend extends Character
 			else
 				holdTimer = 0;
 
-			if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
+			if (animation.curAnim.name.endsWith('miss') && (animation.curAnim.finished || animation.curAnim.curFrame > 13) && !debugMode)
 			{
+				if (missFinished != null)
+					missFinished();
 				playAnim('idle', true, false, 10);
 			}
 
