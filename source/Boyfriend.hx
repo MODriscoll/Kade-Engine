@@ -35,11 +35,20 @@ class Boyfriend extends Character
 			else
 				holdTimer = 0;
 
-			if (animation.curAnim.name.endsWith('miss') && (animation.curAnim.finished || animation.curAnim.curFrame > 13) && !debugMode)
+			if (animation.curAnim.name.endsWith('miss'))
+			{
+				if ((animation.curAnim.finished || animation.curAnim.curFrame > 13) && !debugMode)
+				{
+					if (missFinished != null)
+						missFinished();
+					playAnim('idle', true, false, 10);
+				}
+			}
+			// Some cases where we play an anim when 'stunned'
+			else if (newStunned)
 			{
 				if (missFinished != null)
 					missFinished();
-				playAnim('idle', true, false, 10);
 			}
 
 			if (animation.curAnim.name == 'firstDeath' && animation.curAnim.finished)

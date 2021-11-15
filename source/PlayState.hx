@@ -593,7 +593,8 @@ class PlayState extends MusicBeatState
 		boyfriend.missFinished = function()
 		{
 			boyfriend.newStunned = false;
-			vocals.volume = 1;
+			if (!endingSong)
+				vocals.volume = 1;
 		}
 
 		if (boyfriend.frames == null)
