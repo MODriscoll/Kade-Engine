@@ -4522,7 +4522,6 @@ class PlayState extends MusicBeatState
 					{
 						boyfriend.playAnim('idle');
 						boyfriend.newStunned = false;
-						vocals.volume = 1;
 					}
 				}
 				else if (!FlxG.save.data.ghost)
@@ -4609,7 +4608,6 @@ class PlayState extends MusicBeatState
 			{
 				boyfriend.playAnim('idle');
 				boyfriend.newStunned = false;
-				vocals.volume = 1;
 			}
 		}
 
@@ -5576,10 +5574,10 @@ class PlayState extends MusicBeatState
 				setCamZoom(val, true);
 			};
 
-			FlxTween.num(setCameraZoom, 1.2, 0.2, { ease: FlxEase.quadOut, type: ONESHOT }, onUpdateZoom.bind());
+			FlxTween.num(setCameraZoom, 1.2, 0.5, { ease: FlxEase.quadIn, type: ONESHOT }, onUpdateZoom.bind());
 		}
 
-		new FlxTimer().start(0.2, function(tmr:FlxTimer)
+		new FlxTimer().start(0.5, function(tmr:FlxTimer)
 			{	
 				boyfriend.playAnim('hey');
 				gf.playAnim('cheer');
