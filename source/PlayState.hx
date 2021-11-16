@@ -311,6 +311,10 @@ class PlayState extends MusicBeatState
 
 	var setCameraZoom:Float = 1;
 
+	// If camera zoom is being manually controlled
+	// (So don't adjust zoom based on flip state)
+	private var camZoomManuallyControlled:Bool = false;
+
 	// API stuff
 
 	public function addObject(object:FlxBasic)
@@ -1100,19 +1104,27 @@ class PlayState extends MusicBeatState
 						camFollow.y = -2050;
 						camFollow.x += 200;
 						FlxG.camera.focusOn(camFollow.getPosition());
+						camZoomManuallyControlled = true;
 						setCamZoom(1.5, true);
 
 						new FlxTimer().start(1, function(tmr:FlxTimer)
 						{
 							camHUD.visible = true;
 							remove(blackScreen);
-							FlxTween.tween(FlxG.camera, {zoom: Stage.camZoom}, 2.5, {
+
+							var onUpdateZoom = function(val:Float)
+							{
+								setCamZoom(val, true);
+							};
+							
+							FlxTween.num(setCameraZoom, Stage.camZoom, 2.5, {
 								ease: FlxEase.quadInOut,
 								onComplete: function(twn:FlxTween)
 								{
 									startCountdown();
+									camZoomManuallyControlled = false;
 								}
-							});
+							}, onUpdateZoom.bind());
 						});
 					});
 				case 'senpai':
@@ -2744,7 +2756,7 @@ class PlayState extends MusicBeatState
 				if (forceZoomNow || (curBeat + 1) % (idleBeat * 2) == 0)
 				{
 					var t:Float = 1;
-					t = (Conductor.songPosition % Conductor.crochet) / (Conductor.crochet * 0.6);
+					t = (Conductor.songPosition % Conductor.crochet) / (Conductor.crochet * 1);
 					t = t < 0 ? 0 : t > 1 ? 1 : t;
 					t = t * (2 - t);
 
@@ -3262,7 +3274,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			if (!endingSong)
+			if (!endingSong && !camZoomManuallyControlled)
 			{
 				if (desiredCamZoomLerp > 0)
 				{
@@ -5569,19 +5581,22 @@ class PlayState extends MusicBeatState
 		// Focus on boyfriend
 		camFollow.setPosition(boyfriend.getMidpoint().x, boyfriend.getMidpoint().y);
 		{
+			camZoomManuallyControlled = true;
+
 			var onUpdateZoom = function(val:Float)
 			{
 				setCamZoom(val, true);
 			};
 
-			FlxTween.num(setCameraZoom, 1.2, 0.5, { ease: FlxEase.quadIn, type: ONESHOT }, onUpdateZoom.bind());
-		}
-
-		new FlxTimer().start(0.5, function(tmr:FlxTimer)
-			{	
+			var onZoomComplete = function(tween:FlxTween)
+			{
 				boyfriend.playAnim('hey');
 				gf.playAnim('cheer');
-			});
+			};
+
+			FlxTween.num(setCameraZoom, 1.2, 1,
+				{ ease: FlxEase.quadIn, type: ONESHOT, onComplete: onZoomComplete }, onUpdateZoom.bind());
+		}
 	}
 
 	function flipCharactersImpl(flipDad:Bool, flipBf:Bool)
