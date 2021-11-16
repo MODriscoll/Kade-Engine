@@ -3700,14 +3700,17 @@ class PlayState extends MusicBeatState
 										&& daNote.spotInLine != daNote.parent.children.length)
 									{
 										//health -= 0.05; // give a health punishment for failing a LN
-										trace("hold fell over at " + daNote.spotInLine);
+										var remaining = daNote.parent.children.length - daNote.spotInLine;
+										trace("hold fell over at " + daNote.spotInLine + ' (remaining = ' + remaining + ')');
 										for (i in daNote.parent.children)
 										{
 											i.alpha = 0.3;
 											i.sustainActive = false;
 										}
 										//if (daNote.parent.wasGoodHit)
-										noteMiss(daNote.noteData, daNote);
+										// Don't miss if leaving the small bit at the end
+										if (remaining >= 2)
+											noteMiss(daNote.noteData, daNote);
 										//updateAccuracy();
 									}
 									else if (!daNote.wasGoodHit
