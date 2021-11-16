@@ -1525,10 +1525,15 @@ class ChartingState extends MusicBeatState
 		#if sys
 		if (PlayState.isSM)
 			vocals = null;
+		else if (StringTools.endsWith(daSong.toLowerCase(), 'inst'))
+			vocals = new FlxSound();
 		else
 			vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 		#else
-		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
+		if (StringTools.endsWith(daSong.toLowerCase(), 'inst'))
+			vocals = new FlxSound();
+		else
+			vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 		#end
 		FlxG.sound.list.add(vocals);
 

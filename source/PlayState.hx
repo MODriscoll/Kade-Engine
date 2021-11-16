@@ -1054,7 +1054,7 @@ class PlayState extends MusicBeatState
 		add(iconP2);
 
 		// Hardcoded :/
-		iconsBeatWithCharacters = songLowercase == 'pushing-onwards';
+		iconsBeatWithCharacters = (songLowercase == 'pushing-onwards') || (songLowercase == 'pushing-onwards-inst');
 
 		// Add after icons, so it draws on top
 		add(scoreTxt);

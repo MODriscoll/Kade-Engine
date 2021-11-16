@@ -103,6 +103,8 @@ class Paths
 				case 'dad-battle': songLowercase = 'dadbattle';
 				case 'philly-nice': songLowercase = 'philly';
 			}
+			if (StringTools.endsWith(songLowercase, '-inst'))
+				songLowercase = songLowercase.substr(0, -5);
 		return 'songs:assets/songs/${songLowercase}/Voices.$SOUND_EXT';
 	}
 
@@ -113,6 +115,8 @@ class Paths
 				case 'dad-battle': songLowercase = 'dadbattle';
 				case 'philly-nice': songLowercase = 'philly';
 			}
+			if (StringTools.endsWith(songLowercase, '-inst'))
+				songLowercase = songLowercase.substr(0, -5);
 		return 'songs:assets/songs/${songLowercase}/Inst.$SOUND_EXT';
 	}
 

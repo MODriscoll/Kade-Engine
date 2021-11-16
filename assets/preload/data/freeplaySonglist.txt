@@ -18,3 +18,4 @@ Senpai:senpai:6
 Roses:senpai:6
 Thorns:spirit:6
 Pushing Onwards:viridian:7
+Pushing Onwards-Inst:viridian:7

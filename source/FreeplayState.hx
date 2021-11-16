@@ -209,7 +209,11 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false, true);
+			var songName = songs[i].songName;
+			if (StringTools.endsWith(songName.toLowerCase(), '-inst'))
+				songName = StringTools.replace(songName, '-inst', ' - Inst');
+
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songName, true, false, true);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpSongs.add(songText);
@@ -473,6 +477,10 @@ class FreeplayState extends MusicBeatState
 
 				PlayState.versusMode = versusEnabled;
 
+				// Manually disable voices
+				if (songs[curSelected].instVer)
+					PlayState.SONG.needsVoices = false;
+
 				LoadingState.loadAndSwitchState(new PlayState());
 
 				clean();
@@ -651,6 +659,7 @@ class FreeplayState extends MusicBeatState
 class SongMetadata
 {
 	public var songName:String = "";
+	public var instVer:Bool = false;
 	public var week:Int = 0;
 	#if sys
 	public var sm:SMFile;
@@ -668,6 +677,8 @@ class SongMetadata
 		this.songCharacter = songCharacter;
 		this.sm = sm;
 		this.path = path;
+
+		this.instVer = StringTools.endsWith(this.songName.toLowerCase(), '-inst');
 	}
 	#else
 	public function new(song:String, week:Int, songCharacter:String)
@@ -675,6 +686,8 @@ class SongMetadata
 		this.songName = song;
 		this.week = week;
 		this.songCharacter = songCharacter;
+
+		this.instVer = StringTools.endsWith(this.songName.toLowerCase(), '-inst');
 	}
 	#end
 }

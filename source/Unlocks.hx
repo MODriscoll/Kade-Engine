@@ -21,6 +21,8 @@ class Unlocks
 	static public function hasUnlockedDiffForSong(songName:String, diff:Int):Bool
 	{
 		songName = songName.toLowerCase();
+		if (StringTools.endsWith(songName, '-inst'))
+			songName = songName.substr(0, -5);
 
 		if (FlxG.save.data.songsDiffUnlocks == null)
 			return true;
