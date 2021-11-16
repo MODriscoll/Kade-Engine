@@ -2737,8 +2737,6 @@ class PlayState extends MusicBeatState
 			if (FlxG.save.data.zoom > 1.2)
 				FlxG.save.data.zoom = 1.2;
 
-			var useSetValues:Bool = true;
-
 			// Only beat when song is playing
 			if (songStarted && !endingSong)
 			{
@@ -2753,15 +2751,17 @@ class PlayState extends MusicBeatState
 					additionalZoomMultiplier = 2;
 				}
 
-				if (forceZoomNow || (curBeat + 1) % (idleBeat * 2) == 0)
 				{
+					var beatTime:Float = forceZoomNow ? Conductor.crochet : (Conductor.crochet * (idleBeat * 2));
+
 					var t:Float = 1;
-					t = (Conductor.songPosition % Conductor.crochet) / (Conductor.crochet * 1);
+					// +crochet is our curBeat + 1
+					t = ((Conductor.songPosition + Conductor.crochet) % beatTime) / (0.5 * 1000);
 					t = t < 0 ? 0 : t > 1 ? 1 : t;
-					t = t * (2 - t);
+					t = FlxEase.quadOut(t);
 
 					var additionalCamZoom:Float = (0.01 / songMultiplier) * additionalZoomMultiplier;
-					var additionaHUDZoom:Float = (0.02 / songMultiplier) * additionalZoomMultiplier;
+					var additionaHUDZoom:Float = (0.015 / songMultiplier) * additionalZoomMultiplier;
 
 					if (!executeModchart)
 					{
@@ -2775,19 +2775,11 @@ class PlayState extends MusicBeatState
 						FlxG.camera.zoom = FlxMath.lerp(setCameraZoom + additionalCamZoom, setCameraZoom, t);
 						camHUD.zoom = FlxMath.lerp(PlayStateChangeables.zoom + additionaHUDZoom, PlayStateChangeables.zoom, t);				
 					}
-
-					useSetValues = false;
 				}
-			}
-			
-			if (useSetValues)
-			{
-				FlxG.camera.zoom = setCameraZoom;
-				camHUD.zoom = PlayStateChangeables.zoom;
-			}
 
-			camNotes.zoom = camHUD.zoom;
-			camSustains.zoom = camHUD.zoom;		
+				camNotes.zoom = camHUD.zoom;
+				camSustains.zoom = camHUD.zoom;
+			}			
 		}
 		else
 		{
