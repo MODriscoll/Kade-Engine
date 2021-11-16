@@ -4804,7 +4804,7 @@ class PlayState extends MusicBeatState
 			
 			if(FlxG.save.data.missSounds)
 				{
-					FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+					FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.3, 0.4));
 					// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
 					// FlxG.log.add('played imss note');
 				}
