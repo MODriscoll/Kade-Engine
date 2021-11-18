@@ -4152,16 +4152,42 @@ class PlayState extends MusicBeatState
 				pixelShitPart3 = 'week6';
 			}
 
+			var showInWorldSpace:Bool = FlxG.save.data.worldSpaceRatings;
+			var ratingsScale:Float = showInWorldSpace ? 1 + (1 - setCameraZoom) : 1;
+			ratingsScale = ratingsScale < 0.8 ? 0.8 : ratingsScale > 1.2 ? 1.2 : ratingsScale;
+
 			rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2, pixelShitPart3));
 			rating.screenCenter();
-			rating.y -= 50;
-			rating.x = coolText.x - 125;
 
-			if (FlxG.save.data.changedHit)
+			if (showInWorldSpace)
 			{
-				rating.x = FlxG.save.data.changedHitX;
-				rating.y = FlxG.save.data.changedHitY;
+				// TODO: Could have Stage define these points (for both normal and flipped)
+				rating.x = gf.getMidpoint().x - 100;
+				rating.y = gf.getMidpoint().y + 50;
+
+				// I hope this just works in general (this gf sheet seems different from the others)
+				if (gf.curCharacter == 'gf-pixel')
+				{
+					rating.x = gf.x;
+					rating.y = gf.y + 100;
+				}
+
+				if (dad.isFlipped || boyfriend.isFlipped)
+					rating.y -= 500;
 			}
+			else
+			{
+				rating.y -= 50;
+				rating.x = coolText.x - 125;
+	
+				if (FlxG.save.data.changedHit)
+				{
+					rating.x = FlxG.save.data.changedHitX;
+					rating.y = FlxG.save.data.changedHitY;
+				}
+			}
+
+
 			rating.acceleration.y = 550;
 			rating.velocity.y -= FlxG.random.int(140, 175);
 			rating.velocity.x -= FlxG.random.int(0, 10);
@@ -4191,7 +4217,7 @@ class PlayState extends MusicBeatState
 			currentTimingShown.borderSize = 1;
 			currentTimingShown.borderColor = FlxColor.BLACK;
 			currentTimingShown.text = msTiming + "ms";
-			currentTimingShown.size = 20;
+			currentTimingShown.size = Std.int(20 * ratingsScale);
 
 			if (msTiming >= 0.03 && offsetTesting)
 			{
@@ -4221,13 +4247,13 @@ class PlayState extends MusicBeatState
 			var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2, pixelShitPart3));
 			comboSpr.screenCenter();
 			comboSpr.x = rating.x;
-			comboSpr.y = rating.y + 100;
+			comboSpr.y = rating.y + (100 * ratingsScale);
 			comboSpr.acceleration.y = 600;
 			comboSpr.velocity.y -= 150;
 
 			currentTimingShown.screenCenter();
-			currentTimingShown.x = comboSpr.x + 100;
-			currentTimingShown.y = rating.y + 100;
+			currentTimingShown.x = comboSpr.x + (100 * ratingsScale); // For World Space, we overwrite this in the numScore loop
+			currentTimingShown.y = rating.y + (100 * ratingsScale);
 			currentTimingShown.acceleration.y = 600;
 			currentTimingShown.velocity.y -= 150;
 
@@ -4238,24 +4264,25 @@ class PlayState extends MusicBeatState
 
 			if (SONG.noteStyle != 'pixel')
 			{
-				rating.setGraphicSize(Std.int(rating.width * 0.7));
+				rating.setGraphicSize(Std.int(rating.width * 0.7 * ratingsScale));
 				rating.antialiasing = FlxG.save.data.antialiasing;
-				comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
+				comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7 * ratingsScale));
 				comboSpr.antialiasing = FlxG.save.data.antialiasing;
 			}
 			else
 			{
-				rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7));
-				comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
+				rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7 * ratingsScale));
+				comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7 * ratingsScale));
 			}
 
 			currentTimingShown.updateHitbox();
 			comboSpr.updateHitbox();
 			rating.updateHitbox();
 
-			currentTimingShown.cameras = [camHUD];
-			comboSpr.cameras = [camHUD];
-			rating.cameras = [camHUD];
+			var cameraToUse:FlxCamera = showInWorldSpace ? FlxG.camera : camHUD;
+			currentTimingShown.cameras = [cameraToUse];
+			comboSpr.cameras = [cameraToUse];
+			rating.cameras = [cameraToUse];
 
 			var seperatedScore:Array<Int> = [];
 
@@ -4284,24 +4311,27 @@ class PlayState extends MusicBeatState
 			{
 				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2, pixelShitPart3));
 				numScore.screenCenter();
-				numScore.x = rating.x + (43 * daLoop) - 50;
-				numScore.y = rating.y + 100;
-				numScore.cameras = [camHUD];
+				numScore.x = rating.x + ((43 * ratingsScale) * daLoop) - 50;
+				numScore.y = rating.y + (100 * ratingsScale);
+				numScore.cameras = [cameraToUse];
 
 				if (SONG.noteStyle != 'pixel')
 				{
 					numScore.antialiasing = FlxG.save.data.antialiasing;
-					numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+					numScore.setGraphicSize(Std.int(numScore.width * 0.5 * ratingsScale));
 				}
 				else
 				{
-					numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
+					numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom * ratingsScale));
 				}
 				numScore.updateHitbox();
 
 				numScore.acceleration.y = FlxG.random.int(200, 300);
 				numScore.velocity.y -= FlxG.random.int(140, 160);
 				numScore.velocity.x = FlxG.random.float(-5, 5);
+
+				if (showInWorldSpace)
+					currentTimingShown.x = numScore.x + numScore.width + 20;
 
 				add(numScore);
 

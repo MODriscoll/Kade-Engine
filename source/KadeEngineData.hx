@@ -130,6 +130,9 @@ class KadeEngineData
 		if (FlxG.save.data.enableGhostNotesForFlip == null)
 			FlxG.save.data.enableGhostNotesForFlip = false;
 
+		if (FlxG.save.data.worldSpaceRatings == null)
+			FlxG.save.data.worldSpaceRatings = true;
+
 		Unlocks.initUnlocks();
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;

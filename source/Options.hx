@@ -995,6 +995,27 @@ class EnableGhostNotesForFlipOption extends Option
 	}
 }
 
+class WorldSpaceRatingsOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.worldSpaceRatings = !FlxG.save.data.worldSpaceRatings;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return FlxG.save.data.worldSpaceRatings ? "World Space Ratings" : "Screen Space Ratings";
+	}
+}
+
 class ResetSettings extends Option
 {
 	var confirm:Bool = false;
