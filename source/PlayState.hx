@@ -2578,12 +2578,25 @@ class PlayState extends MusicBeatState
 				if (!iconsBeatWithCharacters || (curBeat + 1) % idleBeat == 0)
 				{
 					t = (Conductor.songPosition % Conductor.crochet) / Conductor.crochet;
-					t = 1 - (--t) * t * t * t;
+					t = FlxEase.quartOut(t);
 				}
 			}
 			
-			iconP1.setGraphicSize(Std.int(FlxMath.lerp(maxSize, minSize, t)));
-			iconP2.setGraphicSize(Std.int(FlxMath.lerp(maxSize, minSize, t)));
+			var p1IconScale:Float = 1;
+			var p2IconScale:Float = 1;
+			if (healthBar.percent > 80)
+			{
+				//p1IconScale = 1.1;
+				//p2IconScale = 0.9;
+			}
+			else if (healthBar.percent < 20)
+			{
+				//p1IconScale = 0.9;
+				//p2IconScale = 1.1;
+			}
+
+			iconP1.setGraphicSize(Std.int(FlxMath.lerp(maxSize, minSize, t) * p1IconScale));
+			iconP2.setGraphicSize(Std.int(FlxMath.lerp(maxSize, minSize, t) * p2IconScale));
 
 			iconP1.updateHitbox();
 			iconP2.updateHitbox();
@@ -2591,7 +2604,9 @@ class PlayState extends MusicBeatState
 
 		var iconOffset:Int = Std.int(26 * iconScale);
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
+		//iconP1.y = healthBar.y - (iconP1.height * 0.5);
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
+		//iconP2.y = healthBar.y - (iconP2.height * 0.5);
 
 		if (health > 2)
 			health = 2;
