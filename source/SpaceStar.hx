@@ -29,6 +29,9 @@ class SpaceStar extends FlxSprite
 		super(x, y);
 
 		loadGraphic(Paths.image('spaceship_star', 'week7'));
+
+		// To be on the safe side (I'm not sure if this engine does collision detection automatically)
+		allowCollisions = 0;
 	}
 
 	override function update(elapsed:Float)
