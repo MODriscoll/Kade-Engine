@@ -536,6 +536,6 @@ class Stage
         }
 
 		if (flippedCamZoom <= 0.0)
-			flippedCamZoom = camZoom;
+			flippedCamZoom = camZoom - 0.1;
     }
 }
