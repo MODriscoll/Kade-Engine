@@ -2915,6 +2915,17 @@ class ChartingState extends MusicBeatState
 				{
 					var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
 						note.y + GRID_SIZE).makeGraphic(8, Math.floor((getYfromStrum(note.strumTime + note.sustainLength) * zoomFactor) - note.y));
+					switch (note.noteData)
+					{
+						case 0:
+							sustainVis.color = 0xc24b99;
+						case 1:
+							sustainVis.color = 0x00ffff;
+						case 2:
+							sustainVis.color = 0x12fa05;
+						case 3:
+							sustainVis.color = 0xf9393f;
+					}
 
 					note.noteCharterObject = sustainVis;
 						
