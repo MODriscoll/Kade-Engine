@@ -315,6 +315,9 @@ class PlayState extends MusicBeatState
 	// (So don't adjust zoom based on flip state)
 	private var camZoomManuallyControlled:Bool = false;
 
+	// 0-0
+	public static var wtfMode:Bool = false;
+
 	// API stuff
 
 	public function addObject(object:FlxBasic)
@@ -796,6 +799,9 @@ class PlayState extends MusicBeatState
 		if (PlayStateChangeables.useDownscroll)
 			strumLine.y = FlxG.height - 165;
 
+		if (wtfMode)
+			strumLine.y = 50 + ((FlxG.height - 215) * 0.5);
+
 		strumLineNotes = new FlxTypedGroup<StaticArrow>();
 		add(strumLineNotes);
 
@@ -1077,6 +1083,12 @@ class PlayState extends MusicBeatState
 		kadeEngineWatermark.cameras = [camHUD];
 		if (loadRep)
 			replayTxt.cameras = [camHUD];
+
+		healthBar.visible = !wtfMode;
+		healthBarBG.visible = !wtfMode;
+		iconP1.visible = !wtfMode;
+		iconP2.visible = !wtfMode;
+		scoreTxt.visible = !wtfMode;
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -1849,6 +1861,9 @@ class PlayState extends MusicBeatState
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote,false,false,false,songNotes[4], songNotes[5]);
 
+				if (wtfMode)
+					swagNote.wtfType = FlxG.random.bool();
+
 				if (!gottaHitNote && PlayStateChangeables.Optimize)
 					continue;
 
@@ -1903,6 +1918,10 @@ class PlayState extends MusicBeatState
 					sustainNote.parent = swagNote;
 					swagNote.children.push(sustainNote);
 					sustainNote.spotInLine = type;
+
+					sustainNote.wtfType = swagNote.wtfType;
+					sustainNote.flipY = sustainNote.wtfType;
+
 					type++;
 				}
 			}
@@ -2198,7 +2217,7 @@ class PlayState extends MusicBeatState
 					var dunceNote:Note = unspawnNotes[0];
 					notes.add(dunceNote);
 
-					if (dunceNote.isSustainNote)
+					if (dunceNote.isSustainNote && !wtfMode)
 					{
 						if (dunceNote.mustPress)
 							dunceNote.flipY = PlayStateChangeables.useDownscroll != boyfriend.isFlipped;
@@ -2581,6 +2600,9 @@ class PlayState extends MusicBeatState
 					t = FlxEase.quartOut(t);
 				}
 			}
+
+			// The following commented lines would scale the health icons based on who is winning
+			// Though, the current icon sprites aren't really set up to make it look nice
 			
 			var p1IconScale:Float = 1;
 			var p2IconScale:Float = 1;
@@ -2600,13 +2622,14 @@ class PlayState extends MusicBeatState
 
 			iconP1.updateHitbox();
 			iconP2.updateHitbox();
+
+			//iconP1.y = healthBar.y - (minSize * p1IconScale * 0.5);
+			//iconP2.y = healthBar.y - (minSize * p2IconScale * 0.5);
 		}
 
 		var iconOffset:Int = Std.int(26 * iconScale);
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
-		//iconP1.y = healthBar.y - (iconP1.height * 0.5);
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
-		//iconP2.y = healthBar.y - (iconP2.height * 0.5);
 
 		if (health > 2)
 			health = 2;
@@ -3324,7 +3347,8 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.mustPress)
 					{
-						if (PlayStateChangeables.useDownscroll == boyfriend.isFlipped)
+						var isUpscroll = wtfMode ? !daNote.wtfType : PlayStateChangeables.useDownscroll == boyfriend.isFlipped;
+						if (isUpscroll)
 							{
 								daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
 								- 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
@@ -3341,7 +3365,8 @@ class PlayState extends MusicBeatState
 					}
 					else
 					{
-						if (PlayStateChangeables.useDownscroll == dad.isFlipped)
+						var isUpscroll = wtfMode ? !daNote.wtfType : PlayStateChangeables.useDownscroll == dad.isFlipped;
+						if (isUpscroll)
 							{
 								daNote.y = (cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y
 							- 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
@@ -3356,7 +3381,12 @@ class PlayState extends MusicBeatState
 						
 					}
 
-					var isDownScrollNow:Bool = PlayStateChangeables.useDownscroll != (daNote.mustPress ? boyfriend.isFlipped : dad.isFlipped);
+					var isDownScrollNow:Bool = false;
+					if (wtfMode)
+						isDownScrollNow = daNote.wtfType;
+					else
+						isDownScrollNow = PlayStateChangeables.useDownscroll != (daNote.mustPress ? boyfriend.isFlipped : dad.isFlipped);
+
 					if (daNote.isSustainNote)
 					{
 						if (isDownScrollNow)
@@ -5649,7 +5679,7 @@ class PlayState extends MusicBeatState
 			if (flipDad)
 			{
 				dad.flipSelf();
-				cpuIsFlipping = true;
+				cpuIsFlipping = !wtfMode;
 				cpuSpriteFlipping = true;
 				cpuFlipStart = songTime;
 			}
@@ -5657,32 +5687,35 @@ class PlayState extends MusicBeatState
 			if (flipBf)
 			{
 				boyfriend.flipSelf();
-				playerIsFlipping = true;
+				playerIsFlipping = !wtfMode;
 				playerSpriteFlipping = true;
 				playerFlipStart = songTime;
 			}
 
-			notes.forEachAlive(function(daNote:Note)
+			if (!wtfMode)
 			{
-				if ((!daNote.mustPress && !flipDad) ||
-					(daNote.mustPress && !flipBf))
+				notes.forEachAlive(function(daNote:Note)
 				{
-					return;
-				}
+					if ((!daNote.mustPress && !flipDad) ||
+						(daNote.mustPress && !flipBf))
+					{
+						return;
+					}
 
-				// !! Do this first before setting up flip ghost (as we need flipY correct)
-				if (daNote.isSustainNote)
-				{
-					if (daNote.mustPress)
-						daNote.flipY = PlayStateChangeables.useDownscroll != boyfriend.isFlipped;
-					else
-						daNote.flipY = PlayStateChangeables.useDownscroll != dad.isFlipped;
-				}
+					// !! Do this first before setting up flip ghost (as we need flipY correct)
+					if (daNote.isSustainNote)
+					{
+						if (daNote.mustPress)
+							daNote.flipY = PlayStateChangeables.useDownscroll != boyfriend.isFlipped;
+						else
+							daNote.flipY = PlayStateChangeables.useDownscroll != dad.isFlipped;
+					}
 
-				if (PlayStateChangeables.enableGhostNotesForFlip)
-					if (daNote.setupGhostForFlip())
-						flipNoteGhosts.add(daNote.ghost);
-			});
+					if (PlayStateChangeables.enableGhostNotesForFlip)
+						if (daNote.setupGhostForFlip())
+							flipNoteGhosts.add(daNote.ghost);
+				});
+			}
 		}
 	}
 

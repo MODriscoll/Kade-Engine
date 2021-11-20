@@ -106,6 +106,9 @@ class Note extends FlxSprite
 	// Requires ghost notes for flipping enabled
 	public var ghost:NoteGhost = null;
 
+	// FALSE-UP/TRUE-DOWN
+	public var wtfType:Bool = false;
+
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false, ?isAlt:Bool = false, ?bet:Float = 0, 
 		?noteType:Int = NoteTypes.NORMAL)
 	{

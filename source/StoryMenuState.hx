@@ -361,6 +361,9 @@ class StoryMenuState extends MusicBeatState
 			// Disable versus for story mode
 			PlayState.versusMode = false;
 
+			// no
+			PlayState.wtfMode = false;
+
 			// adjusting the song name to be compatible
 			var songFormat = StringTools.replace(PlayState.storyPlaylist[0], " ", "-");
 			switch (songFormat) {

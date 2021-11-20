@@ -58,6 +58,9 @@ class FreeplayState extends MusicBeatState
 
 	public static var songData:Map<String,Array<SwagSong>> = [];
 
+	// 0-0
+	var wtfTimer:Float = 0;
+
 	public static function loadDiff(diff:Int, format:String, name:String, array:Array<SwagSong>)
 	{
 		try 
@@ -416,7 +419,34 @@ class FreeplayState extends MusicBeatState
 		}
 
 		if (FlxG.keys.justPressed.V)
-			setVersusEnabled(!versusEnabled && canEnableVsForSong(songs[curSelected].songName));	
+			setVersusEnabled(!versusEnabled && canEnableVsForSong(songs[curSelected].songName));
+
+		// 0-0
+		if (PlayState.wtfMode)
+		{
+			wtfTimer += elapsed;
+			for (i in 0...iconArray.length)
+			{
+				iconArray[i].angle = (wtfTimer * 720) % 360;
+			}
+		}
+		else
+		{
+			if (FlxG.keys.pressed.M)
+			{
+				wtfTimer += elapsed;
+				if (wtfTimer >= 5)
+				{
+					PlayState.wtfMode = true;
+					FlxG.sound.play(Paths.sound('confirmMenu'));
+					wtfTimer = 0;
+				}
+			}
+			else
+			{
+				wtfTimer = 0;
+			}
+		}
 					
 		#if cpp
 		@:privateAccess

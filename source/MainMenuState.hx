@@ -135,6 +135,8 @@ class MainMenuState extends MusicBeatState
 		changeItem();
 
 		super.create();
+
+		PlayState.wtfMode = false;
 	}
 
 	var selectedSomethin:Bool = false;
