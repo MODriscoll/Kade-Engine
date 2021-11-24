@@ -405,10 +405,10 @@ class Stage
 
 						// Not considering stars in the background a 'distraction' (except for the beat animation)
 
-						var beatScale:Float = 2.5;
-
 						// Generate first layer of stars in background
 						{
+							var beatScale:Float = 2.5;
+
 							var starsLayer = new FlxTypedGroup<SpaceStar>();
 							starsLayer.active = !PlayStateChangeables.Optimize;
 							swagGroup['starsL1'] = starsLayer;
@@ -433,6 +433,8 @@ class Stage
 
 						// Second layer
 						{
+							var beatScale:Float = 3;
+
 							var starsLayer = new FlxTypedGroup<SpaceStar>();
 							starsLayer.active = !PlayStateChangeables.Optimize;
 							swagGroup['starsL2'] = starsLayer;
