@@ -449,7 +449,7 @@ class Stage
 								var star:SpaceStar = new SpaceStar(randX, randY + SpaceStar.spaceshipOffsetY);
 								star.scrollFactor.set(0.85, 0.85);
 								star.alpha = 0.75;
-								star.velocity.x = -FlxG.random.float(1500, 1700);
+								star.velocity.x = -FlxG.random.float(1300, 1500);
 
 								star.initStar(FlxG.random.float(1.4, 1.8), beatScale, true);
 

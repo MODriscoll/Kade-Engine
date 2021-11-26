@@ -19,6 +19,7 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+import flixel.tweens.FlxEase;
 
 
 #if desktop
@@ -447,6 +448,31 @@ class FreeplayState extends MusicBeatState
 				wtfTimer = 0;
 			}
 		}
+
+		{
+			for (i in 0...iconArray.length)
+			{
+				var t:Float = 1;
+				if (i == curSelected || (curBeat + 1) % 2 == 0)
+				{
+					t = (Conductor.songPosition % Conductor.crochet) / Conductor.crochet;
+					t = FlxEase.quartOut(t);
+				}	
+
+				iconArray[i].setGraphicSize(Std.int(FlxMath.lerp(210, 150, t)));
+
+				// Disabled as this wasn't working well with songs with longer names
+				/*
+				if (i < grpSongs.length) // be on the safe side
+				{
+					var songName = grpSongs.members[i];
+					songName.resizeText(FlxMath.lerp(1.05, 1, t), FlxMath.lerp(1.2, 1, t), true, true);
+				}
+				*/
+			}
+		}
+
+		Conductor.songPosition = FlxG.sound.music.time;
 					
 		#if cpp
 		@:privateAccess
