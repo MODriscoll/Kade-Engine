@@ -999,7 +999,8 @@ class PlayState extends MusicBeatState
 			+ (Main.watermarks ? " | KE " + MainMenuState.kadeEngineVer : ""), 16);
 		kadeEngineWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		kadeEngineWatermark.scrollFactor.set();
-		add(kadeEngineWatermark);
+		// Add after Icons, so it draws on top
+		//add(kadeEngineWatermark);
 
 		if (PlayStateChangeables.useDownscroll)
 			kadeEngineWatermark.y = FlxG.height * 0.9 + 45;
@@ -1064,6 +1065,7 @@ class PlayState extends MusicBeatState
 
 		// Add after icons, so it draws on top
 		add(scoreTxt);
+		add(kadeEngineWatermark);
 
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
