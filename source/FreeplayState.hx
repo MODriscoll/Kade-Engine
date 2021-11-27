@@ -224,7 +224,7 @@ class FreeplayState extends MusicBeatState
 
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
 			icon.sprTracker = songText;
-			icon.autoMoveWithSprTracker = false; // We manually do this
+			icon.autoMoveWithSprTracker = !FlxG.save.data.animatedMenus; // We manually do this if animated
 
 			// using a FlxGroup is too much fuss!
 			iconArray.push(icon);
