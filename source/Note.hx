@@ -167,6 +167,8 @@ class Note extends FlxSprite
 		//defaults if no noteStyle was found in chart
 		var noteVisTypeCheck:String = 'normal';
 
+		var spikeSpritePrefix:String = FlxG.save.data.blackSpikeNotes ? ' spike' : ' alt spike';
+
 		if (inCharter)
 		{
 			frames = Paths.getSparrowAtlas('NOTE_assets');
@@ -177,7 +179,7 @@ class Note extends FlxSprite
 				animation.addByPrefix(dataColor[i] + 'hold', dataColor[i] + ' hold'); // Hold
 				animation.addByPrefix(dataColor[i] + 'holdend', dataColor[i] + ' tail'); // Tails
 
-				animation.addByPrefix(dataColor[i] + 'Spike', dataColor[i] + ' spike'); // Spikes
+				animation.addByPrefix(dataColor[i] + 'Spike', dataColor[i] + spikeSpritePrefix); // Spikes
 			}
 
 			animation.addByPrefix('trinket', 'trinket', 24, false);
@@ -205,7 +207,7 @@ class Note extends FlxSprite
 
 				for (i in 0...4)
 				{
-					animation.addByPrefix(dataColor[i] + 'Spike', dataColor[i] + ' spike'); // Spikes
+					animation.addByPrefix(dataColor[i] + 'Spike', dataColor[i] + spikeSpritePrefix); // Spikes
 				}
 
 				setGraphicSize(Std.int(width * 0.7));

@@ -96,4 +96,8 @@
   <SubTexture name="blue spike0000" x="353" y="595" width="154" height="157"/>
   <SubTexture name="red spike0000" x="177" y="590" width="157" height="154"/>
   <SubTexture name="purple spike0000" x="10" y="590" width="157" height="154"/>
+  <SubTexture name="green alt spike0000" x="498" y="753" width="154" height="160"/>
+  <SubTexture name="blue alt spike0000" x="334" y="753" width="154" height="160"/>
+  <SubTexture name="red alt spike0000" x="171" y="754" width="160" height="154"/>
+  <SubTexture name="purple alt spike0000" x="10" y="754" width="160" height="154"/>
 </TextureAtlas>

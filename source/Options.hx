@@ -995,6 +995,27 @@ class EnableGhostNotesForFlipOption extends Option
 	}
 }
 
+class BlackSpikeNotesOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.blackSpikeNotes = !FlxG.save.data.blackSpikeNotes;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return FlxG.save.data.blackSpikeNotes ? "Black Spike Notes" : "VVVVVV Spike Notes";
+	}
+}
+
 class WorldSpaceRatingsOption extends Option
 {
 	public function new(desc:String)

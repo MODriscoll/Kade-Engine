@@ -130,6 +130,9 @@ class KadeEngineData
 		if (FlxG.save.data.enableGhostNotesForFlip == null)
 			FlxG.save.data.enableGhostNotesForFlip = false;
 
+		if (FlxG.save.data.blackSpikeNotes == null)
+			FlxG.save.data.blackSpikeNotes = true;
+
 		if (FlxG.save.data.worldSpaceRatings == null)
 			FlxG.save.data.worldSpaceRatings = true;
 
