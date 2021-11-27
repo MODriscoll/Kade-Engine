@@ -54,7 +54,8 @@ class OptionsMenu extends MusicBeatState
 			new NPSDisplayOption("Shows your current Notes Per Second on the info bar."),
 			new RainbowFPSOption("Make the FPS Counter flicker through rainbow colors."),
 			new CpuStrums("Toggle the CPU's strumline lighting up when it hits a note."),
-			new WorldSpaceRatingsOption("If ratings (combo text) should be displayed in World Space or Screen Space"),
+			new WorldSpaceRatingsOption("If ratings (combo text) should be displayed in World Space or Screen Space."),
+			new AnimatedMenusOption("Animate the contents of menus. (not all menus utilize this)")
 		]),
 		
 		new OptionCategory("Misc", [

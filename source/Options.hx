@@ -1016,6 +1016,27 @@ class WorldSpaceRatingsOption extends Option
 	}
 }
 
+class AnimatedMenusOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.animatedMenus = !FlxG.save.data.animatedMenus;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return FlxG.save.data.animatedMenus ? "Animated Menus" : "Static Menus";
+	}
+}
+
 class ResetSettings extends Option
 {
 	var confirm:Bool = false;

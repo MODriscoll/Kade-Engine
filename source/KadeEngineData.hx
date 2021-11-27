@@ -133,6 +133,9 @@ class KadeEngineData
 		if (FlxG.save.data.worldSpaceRatings == null)
 			FlxG.save.data.worldSpaceRatings = true;
 
+		if (FlxG.save.data.animatedMenus == null)
+			FlxG.save.data.animatedMenus = true;
+
 		Unlocks.initUnlocks();
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
