@@ -457,15 +457,9 @@ class Stage
 							}
 						}
 
-						/*
-						var middle:FlxSprite = new FlxSprite(-1900, -700).loadGraphic(Paths.image('stage', 'week7'));
-						middle.antialiasing = FlxG.save.data.antialiasing;
-						middle.scrollFactor.set(1.0, 1.0);
-						middle.active = false;
-						swagBacks['bg'] = middle;
-                        toAdd.push(middle);*/
+						var altSuffix = PlayStateChangeables.VVVVVV ? '_alt' : '';
 
-						var panel1:FlxSprite = new FlxSprite(1050, -675).loadGraphic(Paths.image('backdrop_panel', 'week7'));
+						var panel1:FlxSprite = new FlxSprite(1050, -675).loadGraphic(Paths.image('backdrop_panel' + altSuffix, 'week7'));
 						panel1.updateHitbox();
 						panel1.antialiasing = FlxG.save.data.antialiasing;
 						panel1.scrollFactor.set(0.7, 0.7);
@@ -474,7 +468,7 @@ class Stage
 						swagBacks['panel1'] = panel1;
                         toAdd.push(panel1);
 
-						var panel2:FlxSprite = new FlxSprite(-1700, 450).loadGraphic(Paths.image('backdrop_panel', 'week7'));
+						var panel2:FlxSprite = new FlxSprite(-1700, 450).loadGraphic(Paths.image('backdrop_panel' + altSuffix, 'week7'));
 						panel2.updateHitbox();
 						panel2.antialiasing = FlxG.save.data.antialiasing;
 						panel2.scrollFactor.set(0.7, 0.7);
@@ -483,7 +477,7 @@ class Stage
 						swagBacks['panel2'] = panel2;
                         toAdd.push(panel2);
 						
-						var top:FlxSprite = new FlxSprite(-1350, -700).loadGraphic(Paths.image('stage_floor_roof', 'week7'));
+						var top:FlxSprite = new FlxSprite(-1350, -700).loadGraphic(Paths.image('stage_floor_roof' + altSuffix, 'week7'));
 						top.setGraphicSize(Std.int(top.width), Std.int(top.height * 1.1));
 						top.updateHitbox();
 						top.antialiasing = FlxG.save.data.antialiasing;
@@ -494,7 +488,7 @@ class Stage
 						swagBacks['top'] = top;
                         toAdd.push(top);
 
-						var bottom:FlxSprite = new FlxSprite(-1350, 700).loadGraphic(Paths.image('stage_floor_roof', 'week7'));
+						var bottom:FlxSprite = new FlxSprite(-1350, 700).loadGraphic(Paths.image('stage_floor_roof' + altSuffix, 'week7'));
 						bottom.setGraphicSize(Std.int(bottom.width), Std.int(bottom.height * 1.1));
 						bottom.updateHitbox();
 						bottom.antialiasing = FlxG.save.data.antialiasing;
