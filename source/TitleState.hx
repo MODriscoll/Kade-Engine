@@ -113,6 +113,9 @@ class TitleState extends MusicBeatState
 		startIntro();
 		#end
 		#end
+
+		// ...
+		PlayStateChangeables.VVVVVV = false;
 	}
 
 	var logoBl:FlxSprite;
