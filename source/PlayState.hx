@@ -2857,6 +2857,13 @@ class PlayState extends MusicBeatState
 					// Original implementation basically applied zoom twice
 					additionalZoomMultiplier = 2;
 				}
+				
+				// I'm too lazy to add another event for this
+				// (iconsBeatWithCharacters ~ if Pushing Onwards)
+				if (iconsBeatWithCharacters && curBeat >= 264 && curBeat < 424)
+				{
+					additionalZoomMultiplier = 1.75;
+				}
 
 				{
 					var beatTime:Float = forceZoomNow ? Conductor.crochet : (Conductor.crochet * (idleBeat * 2));
