@@ -7,6 +7,7 @@ import flixel.group.FlxGroup;
 import flixel.system.FlxSound;
 import flixel.addons.effects.chainable.FlxWaveEffect;
 import flixel.math.FlxRandom;
+import flixel.util.FlxColor;
 
 class Stage
 {
@@ -402,6 +403,9 @@ class Stage
 						camZoom = 0.65;
 						flippedCamZoom = 0.5;
 						curStage = 'spaceship';
+
+						var bg:FlxSprite = new FlxSprite(FlxG.width, FlxG.height).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
+						toAdd.push(bg);
 
 						// Not considering stars in the background a 'distraction' (except for the beat animation)
 
