@@ -224,7 +224,8 @@ class FreeplayState extends MusicBeatState
 
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
 			icon.sprTracker = songText;
-			icon.autoMoveWithSprTracker = !FlxG.save.data.animatedMenus; // We manually do this if animated
+			// disabled since we no longer animate text
+			//icon.autoMoveWithSprTracker = !FlxG.save.data.animatedMenus; // We manually do this if animated
 
 			// using a FlxGroup is too much fuss!
 			iconArray.push(icon);
@@ -464,6 +465,7 @@ class FreeplayState extends MusicBeatState
 
 				iconArray[i].setGraphicSize(Std.int(FlxMath.lerp(210, 150, t)));
 
+				/*
 				if (i < grpSongs.length) // be on the safe side
 				{
 					var songName = grpSongs.members[i];
@@ -473,7 +475,7 @@ class FreeplayState extends MusicBeatState
 					// update is being called too early, which results in some flickering
 					iconArray[i].setPosition(songName.x + songName.width + 10, songName.y - 30);
 				}
-				
+				*/
 			}
 		}
 
