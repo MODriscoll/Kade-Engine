@@ -911,7 +911,13 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		FlxG.camera.follow(camFollow, LOCKON, 0.04 * (30 / (cast(Lib.current.getChildAt(0), Main)).getFPS()));
+		var camLerpSpeed:Float = 0.04;
+
+		var useDynamicCamLerpSpeed:Bool = true;
+		if (useDynamicCamLerpSpeed)
+			camLerpSpeed *= (30 / (cast(Lib.current.getChildAt(0), Main)).getFPS()); // Something KadEngine does (too make speed slower at higher framerates)
+
+		FlxG.camera.follow(camFollow, LOCKON, camLerpSpeed);
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
 		setCamZoom(Stage.camZoom, true);
 		FlxG.camera.focusOn(camFollow.getPosition());
@@ -1676,6 +1682,67 @@ class PlayState extends MusicBeatState
 		for(i in 0...unspawnNotes.length)
 			if (unspawnNotes[i].strumTime < startTime)
 				unspawnNotes.remove(unspawnNotes[i]);
+
+		// So user in game knows the genius behind the song :)
+		// Ideally, each song could provide data of what to say here
+		if (StringTools.startsWith(curSong, 'Pushing Onwards') && !wtfMode)
+		{
+			var bannerY:Float = (FlxG.height * 0.5) + (PlayStateChangeables.useDownscroll ? -100 : 100);
+			var bannerBG:FlxSprite = new FlxSprite(0, bannerY).makeGraphic(FlxG.width, 70, FlxColor.BLACK);
+			
+			// The following lines is specific to this song, so just leave it hardcoded
+			var lineOne:FlxText = new FlxText(0, bannerY + 7.5, 0, "Now Playing: Pushing Onwards", 32);
+			lineOne.x = bannerBG.x + ((bannerBG.width - lineOne.width) * 0.5);
+			lineOne.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
+
+			var lineTwo:FlxText = new FlxText(0, bannerY + 37.5, 0, "Check out the original remix at TechnoClassics Youtube Channel!", 24);
+			lineTwo.x = bannerBG.x + ((bannerBG.width - lineTwo.width) * 0.5);
+			lineTwo.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT);
+
+			add(bannerBG);
+			add(lineOne);
+			add(lineTwo);
+			bannerBG.cameras = [camHUD];
+			lineOne.cameras = [camHUD];
+			lineTwo.cameras = [camHUD];
+
+			var desiredBGAlphaValue:Float = 0.7;
+			bannerBG.alpha = 0; // We tween in first
+			lineOne.alpha = 0;
+			lineTwo.alpha = 0;
+
+			// Ugh
+			FlxTween.tween(bannerBG, {alpha: desiredBGAlphaValue}, 1, {
+				onComplete: function(tween:FlxTween)
+				{
+					lineOne.alpha = 1;
+					lineTwo.alpha = 1;
+
+					new FlxTimer().start(4, function(tmr:FlxTimer)
+					{
+						FlxTween.tween(bannerBG, {alpha: 0}, 1, {
+							onComplete: function(tween:FlxTween)
+							{
+								remove(bannerBG);
+								remove(lineOne);
+								remove(lineTwo);
+							},
+							onUpdate: function (tween:FlxTween)
+							{
+								lineOne.alpha = bannerBG.alpha / desiredBGAlphaValue;
+								lineTwo.alpha = bannerBG.alpha / desiredBGAlphaValue;
+							}
+						});
+					});
+				},
+				onUpdate: function (tween:FlxTween)
+				{
+					lineOne.alpha = bannerBG.alpha / desiredBGAlphaValue;
+					lineTwo.alpha = bannerBG.alpha / desiredBGAlphaValue;
+				}
+			});
+			
+		}
 	}
 
 	var debugNum:Int = 0;
