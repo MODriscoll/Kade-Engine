@@ -1687,15 +1687,14 @@ class PlayState extends MusicBeatState
 		// Ideally, each song could provide data of what to say here
 		if (StringTools.startsWith(curSong, 'Pushing Onwards') && !wtfMode)
 		{
-			var bannerY:Float = (FlxG.height * 0.5) + (PlayStateChangeables.useDownscroll ? -100 : 100);
-			var bannerBG:FlxSprite = new FlxSprite(0, bannerY).makeGraphic(FlxG.width, 70, FlxColor.BLACK);
+			var bannerBG:FlxSprite = new FlxSprite(0, FlxG.height * 0.6).makeGraphic(FlxG.width, 70, FlxColor.BLACK);
 			
 			// The following lines is specific to this song, so just leave it hardcoded
-			var lineOne:FlxText = new FlxText(0, bannerY + 7.5, 0, "Now Playing: Pushing Onwards", 32);
+			var lineOne:FlxText = new FlxText(0, bannerBG.y + 5, 0, "Pushing Onwards Remix by TechnoClassic", 32);
 			lineOne.x = bannerBG.x + ((bannerBG.width - lineOne.width) * 0.5);
 			lineOne.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
 
-			var lineTwo:FlxText = new FlxText(0, bannerY + 37.5, 0, "Check out the original remix at TechnoClassics Youtube Channel!", 24);
+			var lineTwo:FlxText = new FlxText(0, bannerBG.y + 36.25, 0, "Check out the original remix at TechnoClassics Youtube Channel!", 24);
 			lineTwo.x = bannerBG.x + ((bannerBG.width - lineTwo.width) * 0.5);
 			lineTwo.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT);
 
