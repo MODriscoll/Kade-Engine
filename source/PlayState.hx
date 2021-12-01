@@ -2860,9 +2860,12 @@ class PlayState extends MusicBeatState
 				
 				// I'm too lazy to add another event for this
 				// (iconsBeatWithCharacters ~ if Pushing Onwards)
-				if (iconsBeatWithCharacters && curBeat >= 264 && curBeat < 424)
+				if (iconsBeatWithCharacters)
 				{
-					additionalZoomMultiplier = 1.75;
+					if (curBeat >= 104 && curBeat < 200)
+						additionalZoomMultiplier = 1.25;
+					else if (curBeat >= 264 && curBeat < 424)
+						additionalZoomMultiplier = 1.75;
 				}
 
 				{
