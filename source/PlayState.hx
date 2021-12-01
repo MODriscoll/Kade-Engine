@@ -4328,6 +4328,10 @@ class PlayState extends MusicBeatState
 					rating.y = gf.y + 100;
 				}
 
+				// This really justifies the stage defining the points
+				if (Stage.curStage == 'limo')
+					rating.y -= 150;
+
 				if (dad.isFlipped || boyfriend.isFlipped)
 					rating.y -= 500;
 			}
