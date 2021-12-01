@@ -2117,6 +2117,9 @@ class PlayState extends MusicBeatState
 			if (PlayStateChangeables.Optimize)
 				babyArrow.x -= 275;
 
+			babyArrow.baseX = babyArrow.x;
+			babyArrow.baseY = babyArrow.y + 10; // The tween still needs to happen
+
 			cpuStrums.forEach(function(spr:FlxSprite)
 			{
 				spr.centerOffsets(); // CPU arrows start out slightly off-center
@@ -3391,6 +3394,36 @@ class PlayState extends MusicBeatState
 				else
 				{
 					setCamZoom(Stage.camZoom);
+				}
+			}
+
+			
+			// Assuming flips do not happen in wtfMode
+			if (wtfMode && songStarted)
+			{
+				// songTime
+				var a:Float = 20;
+				var b:Float = 60;
+				var s:Float = 4.5;
+
+				for (i in 0...cpuStrums.members.length)
+				{
+					var arrow:StaticArrow = cpuStrums.members[i];
+
+					var t:Float = ((songTime / 1000) + (2 * i));
+
+					arrow.x = arrow.baseX + a * (Math.cos(t));
+					arrow.y = arrow.baseY + b * (Math.sin(t * s));
+				}
+
+				for (i in 0...playerStrums.members.length)
+				{
+					var arrow:StaticArrow = playerStrums.members[i];
+
+					var t:Float = ((songTime / 1000) + (2 * i));
+
+					arrow.x = arrow.baseX + a * (Math.cos(t));
+					arrow.y = arrow.baseY + b * (Math.sin(t * s));
 				}
 			}
 
