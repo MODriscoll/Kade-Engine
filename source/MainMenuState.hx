@@ -182,6 +182,9 @@ class MainMenuState extends MusicBeatState
 						{
 							FlxG.sound.music.volume = 0.0;
 							FlxG.sound.play(Paths.sound('trinket'));
+
+							// Unlock extra hard immediately
+							Unlocks.unlockDiffForSong('pushing onwards', 3);
 							trace('vvvvvv');
 						}			
 					}
