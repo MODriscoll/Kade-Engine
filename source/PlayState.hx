@@ -597,12 +597,6 @@ class PlayState extends MusicBeatState
 		}
 
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
-		boyfriend.missFinished = function()
-		{
-			boyfriend.newStunned = false;
-			if (!endingSong)
-				vocals.volume = 1;
-		}
 
 		if (boyfriend.frames == null)
 		{
@@ -5196,6 +5190,9 @@ class PlayState extends MusicBeatState
 
 			if (!note.isTrinket() && !note.isSpike())
 				boyfriend.playAnim('sing' + dataSuffix[note.noteData] + altAnim, true);
+
+			vocals.volume = 1;
+			boyfriend.newStunned = false;
 
 
 			#if cpp

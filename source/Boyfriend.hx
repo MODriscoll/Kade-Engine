@@ -14,7 +14,6 @@ class Boyfriend extends Character
 	public var stunned:Bool = false;
 	// To fix vocals sound when missing shit
 	public var newStunned:Bool = false;
-	public var missFinished:Void->Void;
 
 	// I tried using trails but it made bf update at twice the speed
 	private var spookyGhost:Boyfriend = null;
@@ -39,16 +38,13 @@ class Boyfriend extends Character
 			{
 				if ((animation.curAnim.finished || animation.curAnim.curFrame > 13) && !debugMode)
 				{
-					if (missFinished != null)
-						missFinished();
+					newStunned = false;
 					playAnim('idle', true, false, 10);
 				}
 			}
-			// Some cases where we play an anim when 'stunned'
-			else if (newStunned)
+			else
 			{
-				if (missFinished != null)
-					missFinished();
+				newStunned = false;
 			}
 
 			if (animation.curAnim.name == 'firstDeath' && animation.curAnim.finished)
