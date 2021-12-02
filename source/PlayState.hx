@@ -376,7 +376,14 @@ class PlayState extends MusicBeatState
 				songLowercase = 'dadbattle';
 			case 'philly-nice':
 				songLowercase = 'philly';
+			case 'pushing-onwards':
+				songLowercase = 'pushingonwards';
+			case 'pushing-onwards-inst':
+				songLowercase = 'pushingonwards';
 		}
+
+		// For some hardcoded crap
+		var isPushingOnwards:Bool = songLowercase == 'pushingonwards';
 
 		removedVideo = false;
 
@@ -566,6 +573,7 @@ class PlayState extends MusicBeatState
 		if (isStoryMode)
 			songMultiplier = 1;
 
+		var bfCheck:String = SONG.player1;
 		// defaults if no gf was found in chart
 		var gfCheck:String = 'gf';
 
@@ -586,6 +594,32 @@ class PlayState extends MusicBeatState
 			gfCheck = SONG.gfVersion;
 		}
 
+		// Again, I was bored
+		if (isPushingOnwards && bfCheck == 'bf' && !isStoryMode)
+		{
+			var now:Date = Date.now();
+			if (now.getMonth() == 11)
+			{
+				var chance:Float = 0;
+				if (now.getDate() >= 0)
+					chance = 5;
+				if (now.getDate() >= 10)
+					chance = 10;
+				if (now.getDate() >= 20)
+					chance = 20;
+				if (now.getDate() == 24 || now.getDate() == 25)
+					chance = 100;
+				if (now.getDate() > 28)
+					chance = 0;
+
+				if (FlxG.random.bool(chance))
+				{
+					bfCheck = 'bf-christmas';
+					gfCheck = 'gf-christmas';
+				}
+			}
+		}
+
 		gf = new Character(400, 130, gfCheck);
 
 		if (gf.frames == null)
@@ -596,12 +630,12 @@ class PlayState extends MusicBeatState
 			gf = new Character(770, 450, 'gf');
 		}
 
-		boyfriend = new Boyfriend(770, 450, SONG.player1);
+		boyfriend = new Boyfriend(770, 450, bfCheck);
 
 		if (boyfriend.frames == null)
 		{
 			#if debug
-			FlxG.log.warn(["Couldn't load boyfriend: " + SONG.player1 + ". Loading default boyfriend"]);
+			FlxG.log.warn(["Couldn't load boyfriend: " + bfCheck + ". Loading default boyfriend"]);
 			#end
 			boyfriend = new Boyfriend(770, 450, 'bf');
 		}
@@ -1064,7 +1098,7 @@ class PlayState extends MusicBeatState
 		add(iconP2);
 
 		// Hardcoded :/
-		iconsBeatWithCharacters = (songLowercase == 'pushing-onwards') || (songLowercase == 'pushing-onwards-inst');
+		iconsBeatWithCharacters = isPushingOnwards;
 
 		// Add after icons, so it draws on top
 		add(scoreTxt);
