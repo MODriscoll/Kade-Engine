@@ -1657,15 +1657,6 @@
       false
      ],
      [
-      45000,
-      3,
-      0,
-      false,
-      112.5,
-      false,
-      false
-     ],
-     [
       45300,
       3,
       0,
@@ -1708,6 +1699,15 @@
       false,
       115.5,
       2,
+      false
+     ],
+     [
+      45000,
+      2,
+      0,
+      false,
+      112.5,
+      false,
       false
      ]
     ],
@@ -2337,15 +2337,6 @@
       false
      ],
      [
-      55800,
-      2,
-      0,
-      false,
-      139.5,
-      2,
-      false
-     ],
-     [
       54900,
       4,
       0,
@@ -2369,6 +2360,15 @@
       0,
       false,
       139.25,
+      2,
+      false
+     ],
+     [
+      55900,
+      2,
+      0,
+      false,
+      139.75,
       2,
       false
      ]
@@ -2585,42 +2585,6 @@
       false
      ],
      [
-      57800,
-      3,
-      0,
-      false,
-      144.5,
-      false,
-      false
-     ],
-     [
-      58000,
-      2,
-      0,
-      false,
-      145,
-      2,
-      false
-     ],
-     [
-      58500,
-      1,
-      0,
-      false,
-      146.25,
-      2,
-      false
-     ],
-     [
-      58900,
-      2,
-      0,
-      false,
-      147.25,
-      2,
-      false
-     ],
-     [
       58100,
       5,
       0,
@@ -2632,6 +2596,42 @@
      [
       58900,
       7,
+      0,
+      false,
+      147.25,
+      2,
+      false
+     ],
+     [
+      57800,
+      2,
+      0,
+      false,
+      144.5,
+      false,
+      false
+     ],
+     [
+      58100,
+      0,
+      0,
+      false,
+      145.25,
+      2,
+      false
+     ],
+     [
+      58500,
+      3,
+      0,
+      false,
+      146.25,
+      2,
+      false
+     ],
+     [
+      58900,
+      0,
       0,
       false,
       147.25,
@@ -2869,15 +2869,6 @@
       false
      ],
      [
-      62200,
-      2,
-      0,
-      false,
-      155.5,
-      2,
-      false
-     ],
-     [
       61100,
       7,
       0,
@@ -2892,6 +2883,15 @@
       0,
       false,
       154.5,
+      2,
+      false
+     ],
+     [
+      62300,
+      2,
+      0,
+      false,
+      155.75,
       2,
       false
      ]
@@ -3034,21 +3034,6 @@
       160.25
      ],
      [
-      64200,
-      3,
-      0,
-      false,
-      160.5
-     ],
-     [
-      64800,
-      0,
-      0,
-      false,
-      162,
-      false
-     ],
-     [
       65000,
       0,
       0,
@@ -3109,33 +3094,6 @@
       false
      ],
      [
-      64900,
-      1,
-      0,
-      false,
-      162.25,
-      2,
-      false
-     ],
-     [
-      65300,
-      2,
-      0,
-      false,
-      163.25,
-      2,
-      false
-     ],
-     [
-      64400,
-      2,
-      0,
-      false,
-      161,
-      2,
-      false
-     ],
-     [
       64000,
       6,
       0,
@@ -3168,6 +3126,51 @@
       0,
       false,
       162.75,
+      2,
+      false
+     ],
+     [
+      64200,
+      2,
+      0,
+      false,
+      160.5,
+      false,
+      false
+     ],
+     [
+      64900,
+      3,
+      0,
+      false,
+      162.25,
+      2,
+      false
+     ],
+     [
+      65300,
+      0,
+      0,
+      false,
+      163.25,
+      2,
+      false
+     ],
+     [
+      64800,
+      0,
+      0,
+      false,
+      162,
+      false,
+      false
+     ],
+     [
+      64500,
+      0,
+      0,
+      false,
+      161.25,
       2,
       false
      ]
@@ -3684,15 +3687,6 @@
       false
      ],
      [
-      70600,
-      0,
-      0,
-      false,
-      176.5,
-      false,
-      false
-     ],
-     [
       71900,
       3,
       0,
@@ -3744,6 +3738,15 @@
       false,
       179.5,
       2,
+      false
+     ],
+     [
+      70600,
+      2,
+      0,
+      false,
+      176.5,
+      false,
       false
      ]
     ],
@@ -4256,15 +4259,6 @@
       false
      ],
      [
-      77000,
-      0,
-      0,
-      false,
-      192.5,
-      false,
-      false
-     ],
-     [
       77900,
       0,
       0,
@@ -4307,6 +4301,15 @@
       false,
       194.5,
       2,
+      false
+     ],
+     [
+      77000,
+      2,
+      0,
+      false,
+      192.5,
+      false,
       false
      ]
     ],
@@ -4461,15 +4464,6 @@
       false,
       196.75,
       2,
-      false
-     ],
-     [
-      79500,
-      7,
-      0,
-      false,
-      198.75,
-      1,
       false
      ]
     ],
@@ -5175,6 +5169,15 @@
       222.5,
       2,
       false
+     ],
+     [
+      88000,
+      4,
+      0,
+      false,
+      220,
+      false,
+      false
      ]
     ],
     "changeBPM": false,
@@ -5727,6 +5730,15 @@
       0,
       false,
       237.75,
+      false,
+      false
+     ],
+     [
+      94400,
+      4,
+      0,
+      false,
+      236,
       false,
       false
      ]
@@ -6543,42 +6555,6 @@
       false
      ],
      [
-      106400,
-      3,
-      0,
-      false,
-      266,
-      false,
-      false
-     ],
-     [
-      106500,
-      0,
-      0,
-      false,
-      266.25,
-      false,
-      false
-     ],
-     [
-      106600,
-      3,
-      0,
-      false,
-      266.5,
-      false,
-      false
-     ],
-     [
-      106500,
-      3,
-      0,
-      false,
-      266.25,
-      2,
-      false
-     ],
-     [
       106000,
       7,
       0,
@@ -6593,6 +6569,42 @@
       0,
       false,
       267,
+      2,
+      false
+     ],
+     [
+      106400,
+      0,
+      0,
+      false,
+      266,
+      false,
+      false
+     ],
+     [
+      106600,
+      0,
+      0,
+      false,
+      266.5,
+      false,
+      false
+     ],
+     [
+      106500,
+      3,
+      0,
+      false,
+      266.25,
+      false,
+      false
+     ],
+     [
+      106500,
+      0,
+      0,
+      false,
+      266.25,
       2,
       false
      ]
@@ -6733,15 +6745,6 @@
       false
      ],
      [
-      109000,
-      0,
-      0,
-      false,
-      272.5,
-      false,
-      false
-     ],
-     [
       109200,
       2,
       0,
@@ -6805,15 +6808,6 @@
       false
      ],
      [
-      108900,
-      1,
-      0,
-      false,
-      272.25,
-      false,
-      false
-     ],
-     [
       109100,
       5,
       0,
@@ -6829,6 +6823,24 @@
       false,
       274.5,
       2,
+      false
+     ],
+     [
+      108900,
+      0,
+      0,
+      false,
+      272.25,
+      false,
+      false
+     ],
+     [
+      109000,
+      1,
+      0,
+      false,
+      272.5,
+      false,
       false
      ]
     ],
@@ -6944,47 +6956,11 @@
       280.5
      ],
      [
-      112800,
-      3,
-      0,
-      false,
-      282,
-      false,
-      false
-     ],
-     [
-      112900,
-      0,
-      0,
-      false,
-      282.25,
-      false,
-      false
-     ],
-     [
-      113000,
-      3,
-      0,
-      false,
-      282.5,
-      false,
-      false
-     ],
-     [
       112100,
       0,
       0,
       false,
       280.25,
-      2,
-      false
-     ],
-     [
-      112900,
-      3,
-      0,
-      false,
-      282.25,
       2,
       false
      ],
@@ -7030,6 +7006,51 @@
       0,
       false,
       283,
+      2,
+      false
+     ],
+     [
+      112800,
+      0,
+      0,
+      false,
+      282,
+      false,
+      false
+     ],
+     [
+      112900,
+      3,
+      0,
+      false,
+      282.25,
+      false,
+      false
+     ],
+     [
+      113000,
+      0,
+      0,
+      false,
+      282.5,
+      false,
+      false
+     ],
+     [
+      113000,
+      0,
+      0,
+      false,
+      282.5,
+      false,
+      false
+     ],
+     [
+      112900,
+      0,
+      0,
+      false,
+      282.25,
       2,
       false
      ]
@@ -7186,15 +7207,6 @@
       false
      ],
      [
-      115400,
-      0,
-      0,
-      false,
-      288.5,
-      false,
-      false
-     ],
-     [
       115600,
       2,
       0,
@@ -7240,15 +7252,6 @@
       false
      ],
      [
-      115300,
-      1,
-      0,
-      false,
-      288.25,
-      false,
-      false
-     ],
-     [
       115700,
       6,
       0,
@@ -7264,6 +7267,24 @@
       false,
       291,
       2,
+      false
+     ],
+     [
+      115300,
+      0,
+      0,
+      false,
+      288.25,
+      false,
+      false
+     ],
+     [
+      115400,
+      1,
+      0,
+      false,
+      288.5,
+      false,
       false
      ]
     ],
@@ -7407,20 +7428,11 @@
       false
      ],
      [
-      117700,
-      4,
-      0,
-      false,
-      294.25,
-      2,
-      false
-     ],
-     [
-      118000,
+      117900,
       7,
       0,
       false,
-      295,
+      294.75,
       2,
       false
      ]
@@ -7438,20 +7450,6 @@
     "lengthInSteps": 16,
     "typeOfSection": 0,
     "sectionNotes": [
-     [
-      119300,
-      3,
-      0,
-      false,
-      298.25
-     ],
-     [
-      119400,
-      0,
-      0,
-      false,
-      298.5
-     ],
      [
       119600,
       2,
@@ -7503,29 +7501,11 @@
       false
      ],
      [
-      119200,
-      0,
-      0,
-      false,
-      298,
-      false,
-      false
-     ],
-     [
       119000,
       2,
       0,
       false,
       297.5,
-      2,
-      false
-     ],
-     [
-      119400,
-      3,
-      0,
-      false,
-      298.5,
       2,
       false
      ],
@@ -7553,6 +7533,42 @@
       0,
       false,
       296.5,
+      2,
+      false
+     ],
+     [
+      119200,
+      3,
+      0,
+      false,
+      298,
+      false,
+      false
+     ],
+     [
+      119300,
+      0,
+      0,
+      false,
+      298.25,
+      false,
+      false
+     ],
+     [
+      119400,
+      3,
+      0,
+      false,
+      298.5,
+      false,
+      false
+     ],
+     [
+      119400,
+      0,
+      0,
+      false,
+      298.5,
       2,
       false
      ]
@@ -7790,24 +7806,6 @@
      ],
      [
       121800,
-      0,
-      0,
-      false,
-      304.5,
-      false,
-      false
-     ],
-     [
-      121700,
-      2,
-      0,
-      false,
-      304.25,
-      false,
-      false
-     ],
-     [
-      121800,
       3,
       0,
       false,
@@ -7876,6 +7874,24 @@
       false,
       307.75,
       2,
+      false
+     ],
+     [
+      121700,
+      0,
+      0,
+      false,
+      304.25,
+      false,
+      false
+     ],
+     [
+      121800,
+      2,
+      0,
+      false,
+      304.5,
+      false,
       false
      ]
     ],
@@ -8019,29 +8035,20 @@
       false
      ],
      [
-      124100,
-      4,
-      0,
-      false,
-      310.25,
-      2,
-      false
-     ],
-     [
-      124400,
-      7,
-      0,
-      false,
-      311,
-      2,
-      false
-     ],
-     [
       123600,
       5,
       0,
       false,
       309,
+      2,
+      false
+     ],
+     [
+      124300,
+      7,
+      0,
+      false,
+      310.75,
       2,
       false
      ]
@@ -8059,20 +8066,6 @@
     "lengthInSteps": 16,
     "typeOfSection": 0,
     "sectionNotes": [
-     [
-      125700,
-      3,
-      0,
-      false,
-      314.25
-     ],
-     [
-      125800,
-      0,
-      0,
-      false,
-      314.5
-     ],
      [
       126000,
       2,
@@ -8124,38 +8117,11 @@
       false
      ],
      [
-      125600,
-      0,
-      0,
-      false,
-      314,
-      false,
-      false
-     ],
-     [
       125400,
       2,
       0,
       false,
       313.5,
-      2,
-      false
-     ],
-     [
-      125700,
-      3,
-      0,
-      false,
-      314.25,
-      false,
-      false
-     ],
-     [
-      125800,
-      3,
-      0,
-      false,
-      314.5,
       2,
       false
      ],
@@ -8166,6 +8132,42 @@
       false,
       312.5,
       2,
+      false
+     ],
+     [
+      125600,
+      3,
+      0,
+      false,
+      314,
+      false,
+      false
+     ],
+     [
+      125800,
+      3,
+      0,
+      false,
+      314.5,
+      false,
+      false
+     ],
+     [
+      125800,
+      0,
+      0,
+      false,
+      314.5,
+      2,
+      false
+     ],
+     [
+      125700,
+      0,
+      0,
+      false,
+      314.25,
+      false,
       false
      ]
     ],
@@ -8191,22 +8193,6 @@
       false
      ],
      [
-      126800,
-      4,
-      300,
-      false,
-      317,
-      false
-     ],
-     [
-      127200,
-      6,
-      200,
-      false,
-      318,
-      false
-     ],
-     [
       127600,
       2,
       300,
@@ -8221,24 +8207,6 @@
       300,
       false,
       318,
-      false,
-      false
-     ],
-     [
-      127500,
-      5,
-      200,
-      false,
-      318.75,
-      false,
-      false
-     ],
-     [
-      127800,
-      6,
-      0,
-      false,
-      319.5,
       false,
       false
      ],
@@ -8288,11 +8256,47 @@
       false
      ],
      [
-      127400,
+      126800,
+      6,
+      300,
+      false,
+      317,
+      false,
+      false
+     ],
+     [
+      127200,
+      7,
+      200,
+      false,
+      318,
+      false,
+      false
+     ],
+     [
+      127500,
+      4,
+      200,
+      false,
+      318.75,
+      false,
+      false
+     ],
+     [
+      127800,
+      5,
+      0,
+      false,
+      319.5,
+      false,
+      false
+     ],
+     [
+      127200,
       4,
       0,
       false,
-      318.5,
+      318,
       2,
       false
      ]
@@ -8408,15 +8412,6 @@
       false
      ],
      [
-      128200,
-      0,
-      0,
-      false,
-      320.5,
-      false,
-      false
-     ],
-     [
       128800,
       3,
       0,
@@ -8467,15 +8462,6 @@
       0,
       false,
       323.5,
-      false,
-      false
-     ],
-     [
-      128100,
-      2,
-      0,
-      false,
-      320.25,
       false,
       false
      ],
@@ -8567,6 +8553,24 @@
       false,
       322.25,
       2,
+      false
+     ],
+     [
+      128200,
+      2,
+      0,
+      false,
+      320.5,
+      false,
+      false
+     ],
+     [
+      128100,
+      0,
+      0,
+      false,
+      320.25,
+      false,
       false
      ]
     ],
@@ -8710,17 +8714,17 @@
       false
      ],
      [
-      130400,
+      129900,
       6,
       0,
       false,
-      326,
+      324.75,
       2,
       false
      ],
      [
       130700,
-      5,
+      4,
       0,
       false,
       326.75,
@@ -8728,11 +8732,11 @@
       false
      ],
      [
-      129900,
-      6,
+      130400,
+      7,
       0,
       false,
-      324.75,
+      326,
       2,
       false
      ]
@@ -8769,51 +8773,6 @@
       false
      ],
      [
-      131300,
-      3,
-      0,
-      false,
-      328.25,
-      false,
-      false
-     ],
-     [
-      131400,
-      0,
-      0,
-      false,
-      328.5,
-      false,
-      false
-     ],
-     [
-      132000,
-      3,
-      0,
-      false,
-      330,
-      false,
-      false
-     ],
-     [
-      132100,
-      1,
-      0,
-      false,
-      330.25,
-      false,
-      false
-     ],
-     [
-      132200,
-      0,
-      0,
-      false,
-      330.5,
-      false,
-      false
-     ],
-     [
       131600,
       2,
       0,
@@ -8846,15 +8805,6 @@
       0,
       false,
       331.5,
-      false,
-      false
-     ],
-     [
-      132200,
-      0,
-      0,
-      false,
-      330.5,
       false,
       false
      ],
@@ -8911,6 +8861,51 @@
       329.5,
       2,
       false
+     ],
+     [
+      131300,
+      3,
+      0,
+      false,
+      328.25,
+      false,
+      false
+     ],
+     [
+      131400,
+      0,
+      0,
+      false,
+      328.5,
+      false,
+      false
+     ],
+     [
+      132200,
+      2,
+      0,
+      false,
+      330.5,
+      false,
+      false
+     ],
+     [
+      132000,
+      0,
+      0,
+      false,
+      330,
+      false,
+      false
+     ],
+     [
+      132100,
+      3,
+      0,
+      false,
+      330.25,
+      false,
+      false
      ]
     ],
     "changeBPM": false,
@@ -8945,7 +8940,7 @@
      [
       133000,
       6,
-      400,
+      500,
       false,
       332.5
      ],
@@ -9118,37 +9113,10 @@
      ],
      [
       134400,
-      0,
-      0,
-      false,
-      336,
-      false,
-      false
-     ],
-     [
-      134400,
       7,
       1500,
       false,
       336,
-      false,
-      false
-     ],
-     [
-      134600,
-      3,
-      0,
-      false,
-      336.5,
-      false,
-      false
-     ],
-     [
-      134500,
-      2,
-      0,
-      false,
-      336.25,
       false,
       false
      ],
@@ -9297,12 +9265,39 @@
       false
      ],
      [
+      134600,
+      1,
+      0,
+      false,
+      336.5,
+      false,
+      false
+     ],
+     [
+      134700,
+      3,
+      0,
+      false,
+      336.75,
+      2,
+      false
+     ],
+     [
       134400,
       3,
       0,
       false,
       336,
-      2,
+      false,
+      false
+     ],
+     [
+      134500,
+      0,
+      0,
+      false,
+      336.25,
+      false,
       false
      ]
     ],
@@ -9460,33 +9455,6 @@
       false
      ],
      [
-      138500,
-      1,
-      0,
-      false,
-      346.25,
-      false,
-      false
-     ],
-     [
-      138400,
-      3,
-      0,
-      false,
-      346,
-      false,
-      false
-     ],
-     [
-      138600,
-      0,
-      0,
-      false,
-      346.5,
-      false,
-      false
-     ],
-     [
       138000,
       2,
       0,
@@ -9584,6 +9552,33 @@
       347,
       2,
       false
+     ],
+     [
+      138400,
+      0,
+      0,
+      false,
+      346,
+      false,
+      false
+     ],
+     [
+      138600,
+      2,
+      0,
+      false,
+      346.5,
+      false,
+      false
+     ],
+     [
+      138500,
+      3,
+      0,
+      false,
+      346.25,
+      false,
+      false
      ]
     ],
     "changeBPM": false,
@@ -9618,7 +9613,7 @@
      [
       139400,
       6,
-      400,
+      500,
       false,
       348.5
      ],
@@ -9781,15 +9776,6 @@
     "typeOfSection": 0,
     "sectionNotes": [
      [
-      140800,
-      0,
-      0,
-      false,
-      352,
-      false,
-      false
-     ],
-     [
       141200,
       1,
       0,
@@ -9822,24 +9808,6 @@
       1500,
       false,
       352,
-      false,
-      false
-     ],
-     [
-      141000,
-      3,
-      0,
-      false,
-      352.5,
-      false,
-      false
-     ],
-     [
-      140900,
-      2,
-      0,
-      false,
-      352.25,
       false,
       false
      ],
@@ -9895,15 +9863,6 @@
       false,
       355.25,
       false,
-      false
-     ],
-     [
-      140800,
-      3,
-      0,
-      false,
-      352,
-      2,
       false
      ],
      [
@@ -9975,6 +9934,42 @@
       0,
       false,
       353.75,
+      2,
+      false
+     ],
+     [
+      141000,
+      2,
+      0,
+      false,
+      352.5,
+      false,
+      false
+     ],
+     [
+      140900,
+      0,
+      0,
+      false,
+      352.25,
+      false,
+      false
+     ],
+     [
+      140800,
+      3,
+      0,
+      false,
+      352,
+      false,
+      false
+     ],
+     [
+      141100,
+      3,
+      0,
+      false,
+      352.75,
       2,
       false
      ]
@@ -10124,33 +10119,6 @@
       false
      ],
      [
-      145000,
-      3,
-      0,
-      false,
-      362.5,
-      false,
-      false
-     ],
-     [
-      144800,
-      0,
-      0,
-      false,
-      362,
-      false,
-      false
-     ],
-     [
-      144900,
-      1,
-      0,
-      false,
-      362.25,
-      false,
-      false
-     ],
-     [
       144000,
       3,
       0,
@@ -10247,6 +10215,33 @@
       false,
       363.25,
       2,
+      false
+     ],
+     [
+      144800,
+      3,
+      0,
+      false,
+      362,
+      false,
+      false
+     ],
+     [
+      144900,
+      0,
+      0,
+      false,
+      362.25,
+      false,
+      false
+     ],
+     [
+      145000,
+      1,
+      0,
+      false,
+      362.5,
+      false,
       false
      ]
     ],
@@ -10443,24 +10438,6 @@
       false
      ],
      [
-      147300,
-      2,
-      0,
-      false,
-      368.25,
-      false,
-      false
-     ],
-     [
-      147400,
-      0,
-      0,
-      false,
-      368.5,
-      false,
-      false
-     ],
-     [
       147200,
       6,
       0,
@@ -10602,6 +10579,24 @@
       false,
       369.25,
       2,
+      false
+     ],
+     [
+      147300,
+      0,
+      0,
+      false,
+      368.25,
+      false,
+      false
+     ],
+     [
+      147400,
+      2,
+      0,
+      false,
+      368.5,
+      false,
       false
      ]
     ],
@@ -10770,6 +10765,15 @@
       374.25,
       2,
       false
+     ],
+     [
+      150100,
+      7,
+      0,
+      false,
+      375.25,
+      2,
+      false
      ]
     ],
     "changeBPM": false,
@@ -10785,13 +10789,6 @@
     "lengthInSteps": 16,
     "typeOfSection": 0,
     "sectionNotes": [
-     [
-      151200,
-      0,
-      0,
-      false,
-      378
-     ],
      [
       150800,
       1,
@@ -10865,24 +10862,6 @@
       false
      ],
      [
-      151300,
-      1,
-      0,
-      false,
-      378.25,
-      false,
-      false
-     ],
-     [
-      151400,
-      3,
-      0,
-      false,
-      378.5,
-      false,
-      false
-     ],
-     [
       150700,
       0,
       0,
@@ -10943,6 +10922,33 @@
       false,
       379.25,
       2,
+      false
+     ],
+     [
+      151400,
+      1,
+      0,
+      false,
+      378.5,
+      false,
+      false
+     ],
+     [
+      151200,
+      3,
+      0,
+      false,
+      378,
+      false,
+      false
+     ],
+     [
+      151300,
+      0,
+      0,
+      false,
+      378.25,
+      false,
       false
      ]
     ],
@@ -11179,24 +11185,6 @@
       false
      ],
      [
-      153700,
-      2,
-      0,
-      false,
-      384.25,
-      false,
-      false
-     ],
-     [
-      153800,
-      0,
-      0,
-      false,
-      384.5,
-      false,
-      false
-     ],
-     [
       154400,
       1,
       0,
@@ -11329,6 +11317,24 @@
       false,
       387.25,
       2,
+      false
+     ],
+     [
+      153700,
+      0,
+      0,
+      false,
+      384.25,
+      false,
+      false
+     ],
+     [
+      153800,
+      2,
+      0,
+      false,
+      384.5,
+      false,
       false
      ]
     ],
@@ -13719,6 +13725,15 @@
       462.75,
       2,
       false
+     ],
+     [
+      184600,
+      1,
+      0,
+      false,
+      461.5,
+      false,
+      false
      ]
     ],
     "changeBPM": false,
@@ -14455,6 +14470,15 @@
       false,
       479.75,
       2,
+      false
+     ],
+     [
+      191000,
+      1,
+      0,
+      false,
+      477.5,
+      false,
       false
      ]
     ],
@@ -42988,45 +43012,9 @@
     "type": "Idle Beat"
    },
    {
-    "name": "CF5",
-    "position": 212.25,
-    "value": 0,
-    "type": "Flip Character"
-   },
-   {
-    "name": "PF5",
-    "position": 228.25,
-    "value": 1,
-    "type": "Flip Character"
-   },
-   {
-    "name": "CPUFlip6.5",
-    "position": 244.25,
-    "value": 0,
-    "type": "Flip Character"
-   },
-   {
-    "name": "BothF1",
-    "position": 260.25,
-    "value": 2,
-    "type": "Flip Character"
-   },
-   {
     "name": "CF12",
     "position": 430,
     "value": 0,
-    "type": "Flip Character"
-   },
-   {
-    "name": "CF1",
-    "position": 74.74975,
-    "value": 0,
-    "type": "Flip Character"
-   },
-   {
-    "name": "PF2",
-    "position": 90.74975,
-    "value": 1,
     "type": "Flip Character"
    },
    {
@@ -43148,6 +43136,42 @@
     "position": 404.5,
     "value": 150,
     "type": "BPM Change"
+   },
+   {
+    "name": "CF1",
+    "position": 74.49975,
+    "value": 0,
+    "type": "Flip Character"
+   },
+   {
+    "name": "PF2",
+    "position": 90.49975,
+    "value": 1,
+    "type": "Flip Character"
+   },
+   {
+    "name": "CF5",
+    "position": 210.5,
+    "value": 0,
+    "type": "Flip Character"
+   },
+   {
+    "name": "PF5",
+    "position": 226.49975,
+    "value": 1,
+    "type": "Flip Character"
+   },
+   {
+    "name": "CPUFlip6.5",
+    "position": 242.49975,
+    "value": 0,
+    "type": "Flip Character"
+   },
+   {
+    "name": "BothF1",
+    "position": 258.49975,
+    "value": 2,
+    "type": "Flip Character"
    }
   ],
   "song": "Pushing Onwards",
@@ -43156,6 +43180,6 @@
   "stage": "spaceship",
   "noteStyle": "normal",
   "bpm": 150,
-  "speed": 2.5
+  "speed": 2.2
  }
 }
