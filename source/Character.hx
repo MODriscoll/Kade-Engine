@@ -387,7 +387,6 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 			case 'viridian':
-				FlxG.log.add('Character Viridian');
 				tex = Paths.getSparrowAtlas('viridian','shared',true);
 				frames = tex;
 				animation.addByPrefix('idle', 'viridian idle dance', 24, false);
