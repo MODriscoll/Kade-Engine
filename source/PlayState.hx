@@ -2315,7 +2315,6 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 
-
 		if (unspawnNotes[0] != null)
 			{
 	
@@ -3473,6 +3472,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 
+			var notesToRemove:Array<Note> = new Array<Note>();
 			notes.forEachAlive(function(daNote:Note)
 			{
 				// Destroy flip ghost notes if off-screen while not flipping
@@ -3754,7 +3754,7 @@ class PlayState extends MusicBeatState
 					}
 
 					daNote.kill();
-					notes.remove(daNote, true);
+					notesToRemove.push(daNote);//notes.remove(daNote, true);
 					daNote.destroy();
 				}
 
@@ -3802,7 +3802,7 @@ class PlayState extends MusicBeatState
 						flipNoteGhosts.remove(daNote.ghost, true);
 
 					daNote.kill();
-					notes.remove(daNote, true);
+					notesToRemove.push(daNote);//notes.remove(daNote, true);
 					daNote.destroy();
 				}
 				else if ((daNote.mustPress && !PlayStateChangeables.useDownscroll || daNote.mustPress 
@@ -3815,7 +3815,7 @@ class PlayState extends MusicBeatState
 								flipNoteGhosts.remove(daNote.ghost, true);
 
 							daNote.kill();
-							notes.remove(daNote, true);
+							notesToRemove.push(daNote);//notes.remove(daNote, true);
 						}
 						else
 						{
@@ -3932,7 +3932,7 @@ class PlayState extends MusicBeatState
 
 						daNote.visible = false;
 						daNote.kill();
-						notes.remove(daNote, true);
+						notesToRemove.push(daNote);//notes.remove(daNote, true);
 					}
 					// Anything that the CPU should avoid
 					else if (!daNote.mustPress && daNote.strumTime / songMultiplier - Conductor.songPosition / songMultiplier < -(166 * Conductor.timeScale) && songStarted)
@@ -3945,9 +3945,18 @@ class PlayState extends MusicBeatState
 
 						daNote.visible = false;
 						daNote.kill();
-						notes.remove(daNote, true);
+						notesToRemove.push(daNote);//notes.remove(daNote, true);
 					}
 			});
+
+			// Quite a 'big' change, doesn't seem to break anything
+			// Reason why we do this as by removing it in the for loop, it causes notes to be skipped (not processed)
+			// since forEachAlive isn't built to handle removing elements during the iteration. Issues this was causing
+			// was (for example) 'Dad' flickering between different sing animations if singing multiple sustain notes at once
+			for (i in 0...notesToRemove.length)
+			{
+				notes.remove(notesToRemove[i], true);
+			}
 		}
 
 		if (FlxG.save.data.cpuStrums)
