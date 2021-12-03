@@ -58,6 +58,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import flixel.math.FlxRandom;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
@@ -2030,7 +2031,11 @@ class PlayState extends MusicBeatState
 		// Randomly select which trinkets to actually spawn in
 		if (trinketNotes.length > 0 && trinketNotes.length > numTrinketsToCollect)
 		{
-			FlxG.random.shuffle(trinketNotes);
+			FlxG.log.add('' + trinketNotes.length + ' Trinket Notes detected. Shuffiling and only using ' + numTrinketsToCollect);
+
+			var random:FlxRandom = new FlxRandom(Std.int(Sys.time()));
+			random.shuffle(trinketNotes);
+
 			for (i in numTrinketsToCollect...trinketNotes.length)
 			{
 				unspawnNotes.remove(trinketNotes[i]);
