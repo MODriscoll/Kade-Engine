@@ -1501,7 +1501,7 @@ class PlayState extends MusicBeatState
 		}
 		if (data == -1)
 		{
-			trace("couldn't find a keybind with the code " + key);
+			//trace("couldn't find a keybind with the code " + key);
 			return;
 		}
 		if (keys[data])
@@ -1529,7 +1529,7 @@ class PlayState extends MusicBeatState
 			if (i.noteData == data)
 				dataNotes.push(i);
 
-		trace("notes able to hit for " + key.toString() + " " + dataNotes.length);
+		//trace("notes able to hit for " + key.toString() + " " + dataNotes.length);
 
 		if (dataNotes.length != 0)
 		{
@@ -3493,13 +3493,13 @@ class PlayState extends MusicBeatState
 						if (isUpscroll)
 							{
 								daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-								- 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+								- 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
 									2))) + daNote.noteYOff;
 							}
 							else
 							{
 						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-							+ 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * 
+							+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * 
 							(FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
 								2) )) 
 							- daNote.noteYOff;
@@ -3511,13 +3511,13 @@ class PlayState extends MusicBeatState
 						if (isUpscroll)
 							{
 								daNote.y = (cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-							- 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+							- 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
 								2))) + daNote.noteYOff;
 							}
 							else
 							{
 								daNote.y = (cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-							+ 0.45 * ((Conductor.rawPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+							+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
 								2))) - daNote.noteYOff;
 							}
 						
