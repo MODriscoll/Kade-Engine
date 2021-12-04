@@ -389,11 +389,11 @@ class Character extends FlxSprite
 			case 'viridian':
 				tex = Paths.getSparrowAtlas('viridian','shared',true);
 				frames = tex;
-				animation.addByPrefix('idle', 'viridian idle dance', 24, false);
-				animation.addByPrefix('singUP', 'viridian Sing Note UP', 24, false);
-				animation.addByPrefix('singRIGHT', 'viridian Sing Note RIGHT', 24, false);
-				animation.addByPrefix('singDOWN', 'viridian Sing Note DOWN', 24, false);
-				animation.addByPrefix('singLEFT', 'viridian Sing Note LEFT', 24, false);
+				animation.addByPrefix('idle', 'viridian idle', 24, false);
+				animation.addByPrefix('singUP', 'viridian sing up', 24, false);
+				animation.addByPrefix('singRIGHT', 'viridian sing right', 24, false);
+				animation.addByPrefix('singDOWN', 'viridian sing down', 24, false);
+				animation.addByPrefix('singLEFT', 'viridian sing left', 24, false);
 
 				loadOffsetFile(curCharacter);
 
