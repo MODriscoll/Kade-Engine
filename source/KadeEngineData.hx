@@ -136,6 +136,9 @@ class KadeEngineData
 		if (FlxG.save.data.worldSpaceRatings == null)
 			FlxG.save.data.worldSpaceRatings = true;
 
+		if (FlxG.save.data.songBanners == null)
+			FlxG.save.data.songBanners = true;
+
 		if (FlxG.save.data.animatedMenus == null)
 			FlxG.save.data.animatedMenus = true;
 

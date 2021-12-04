@@ -1717,7 +1717,7 @@ class PlayState extends MusicBeatState
 
 		// So user in game knows the genius behind the song :)
 		// Ideally, each song could provide data of what to say here
-		if (StringTools.startsWith(curSong, 'Pushing Onwards') && !wtfMode)
+		if (FlxG.save.data.songBanners && StringTools.startsWith(curSong, 'Pushing Onwards') && !wtfMode)
 		{
 			var bannerBG:FlxSprite = new FlxSprite(0, FlxG.height * 0.6).makeGraphic(FlxG.width, 70, FlxColor.BLACK);
 			

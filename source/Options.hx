@@ -1058,6 +1058,28 @@ class AnimatedMenusOption extends Option
 	}
 }
 
+class SongBannersOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.songBanners = !FlxG.save.data.songBanners;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return FlxG.save.data.songBanners ? "Show Song Banners" : "Hide Song Banners";
+	}
+}
+
+
 class ResetSettings extends Option
 {
 	var confirm:Bool = false;

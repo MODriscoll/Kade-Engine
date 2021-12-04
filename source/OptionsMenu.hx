@@ -56,6 +56,7 @@ class OptionsMenu extends MusicBeatState
 			new CpuStrums("Toggle the CPU's strumline lighting up when it hits a note."),
 			new BlackSpikeNotesOption("If Spike Notes should use a clear Black note sprite instead of a VVVVVV design."),
 			new WorldSpaceRatingsOption("If ratings (combo text) should be displayed in World Space or Screen Space."),
+			new SongBannersOption("Show song banners that contain details of a song when the song starts."),
 			new AnimatedMenusOption("Animate the contents of menus. (not all menus utilize this)")
 		]),
 		
