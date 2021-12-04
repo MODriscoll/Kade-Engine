@@ -304,6 +304,7 @@ class TitleState extends MusicBeatState
 				{
 					returnedData[0] = data.substring(0, data.indexOf(';'));
 					returnedData[1] = data.substring(data.indexOf('-'), data.length);
+					#if debug
 				  	if (!MainMenuState.kadeEngineVer.contains(returnedData[0].trim()) && !OutdatedSubState.leftState)
 					{
 						trace('outdated lmao! ' + returnedData[0] + ' != ' + MainMenuState.kadeEngineVer);
@@ -313,6 +314,7 @@ class TitleState extends MusicBeatState
 						clean();
 					}
 					else
+					#end						
 					{
 						FlxG.switchState(new MainMenuState());
 						clean();
