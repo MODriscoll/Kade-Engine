@@ -4587,25 +4587,31 @@ class PlayState extends MusicBeatState
 			coolText.text = Std.string(seperatedScore);
 			// add(coolText);
 
-			FlxTween.tween(rating, {alpha: 0}, 0.2, {
+			// Important, thisTiming assumes the previous currentTimingShown is removed manually above
+			var tweenDuration:Float = 0.2;
+
+			var thisTiming = currentTimingShown;
+			FlxTween.tween(rating, {alpha: 0}, tweenDuration, {
 				startDelay: Conductor.crochet * 0.001,
 				onUpdate: function(tween:FlxTween)
 				{
-					if (currentTimingShown != null)
-						currentTimingShown.alpha -= 0.02;
-					timeShown++;
+					// This handles changing alpha, removing is done in the following tween
+					if (thisTiming == currentTimingShown && currentTimingShown != null)
+						currentTimingShown.alpha = rating.alpha;
+					//timeShown++;
 				}
 			});
 
-			FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
+			FlxTween.tween(comboSpr, {alpha: 0}, tweenDuration, {
 				onComplete: function(tween:FlxTween)
 				{
 					coolText.destroy();
 					comboSpr.destroy();
-					if (currentTimingShown != null && timeShown >= 20)
+					if (thisTiming == currentTimingShown && currentTimingShown != null)
 					{
 						remove(currentTimingShown);
 						currentTimingShown = null;
+						thisTiming = null;
 					}
 					rating.destroy();
 				},
