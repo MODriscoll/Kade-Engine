@@ -481,8 +481,8 @@ class Stage
 						swagBacks['panel2'] = panel2;
                         toAdd.push(panel2);
 						
-						var top:FlxSprite = new FlxSprite(-1350, -800).loadGraphic(Paths.image('stage_floor_roof' + altSuffix, 'week7'));
-						top.setGraphicSize(Std.int(top.width), Std.int(top.height * 1.1) + 100);
+						var top:FlxSprite = new FlxSprite(-1350, -700).loadGraphic(Paths.image('stage_floor_roof' + altSuffix, 'week7'));
+						top.setGraphicSize(Std.int(top.width), Std.int(top.height * 1.1));
 						top.updateHitbox();
 						top.antialiasing = FlxG.save.data.antialiasing;
 						top.scrollFactor.set(1.0, 1.0);
