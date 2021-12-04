@@ -259,7 +259,7 @@ class Note extends FlxSprite
 		playNoteAnim();
 		originColor = noteData; // The note's origin color will be checked by its sustain notes
 
-		if (FlxG.save.data.stepMania && !isSustainNote && !PlayState.instance.executeModchart)
+		if (FlxG.save.data.stepMania && !isSustainNote && noteType == NoteTypes.NORMAL && !PlayState.instance.executeModchart)
 		{
 			var col:Int = 0;
 
