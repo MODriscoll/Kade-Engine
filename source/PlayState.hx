@@ -1319,9 +1319,12 @@ class PlayState extends MusicBeatState
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
-			dad.dance();
 			gf.dance();
-			boyfriend.playAnim('idle');
+			if ((swagCounter + 1) % idleBeat == 0)
+			{
+				dad.dance();
+				boyfriend.playAnim('idle');
+			}
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
