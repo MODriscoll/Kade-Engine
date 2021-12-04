@@ -3835,7 +3835,7 @@ class PlayState extends MusicBeatState
 									}
 									if (daNote.isParent)
 									{
-										health -= 0.15; // give a health punishment for failing a LN
+										health -= 0.15 * (storyDifficulty >= 3 ? 2 : 1); // give a health punishment for failing a LN
 										trace("hold fell over at the start");
 										for (i in daNote.children)
 										{
@@ -3864,7 +3864,7 @@ class PlayState extends MusicBeatState
 										else if (!daNote.wasGoodHit
 											&& !daNote.isSustainNote)
 										{
-											health -= 0.15;
+											health -= 0.15 * (storyDifficulty >= 3 ? 2 : 1);
 										}
 									}
 								}
@@ -3889,7 +3889,7 @@ class PlayState extends MusicBeatState
 								}
 								else if (daNote.isParent && daNote.visible)
 								{
-									health -= 0.15; // give a health punishment for failing a LN
+									health -= 0.15 * (storyDifficulty >= 3 ? 2 : 1); // give a health punishment for failing a LN
 									trace("hold fell over at the start");
 									for (i in daNote.children)
 									{
@@ -3921,7 +3921,7 @@ class PlayState extends MusicBeatState
 									else if (!daNote.wasGoodHit
 										&& !daNote.isSustainNote)
 									{
-										health -= 0.15;
+										health -= 0.15 * (storyDifficulty >= 3 ? 2 : 1);
 									}
 								}
 							}
@@ -4277,7 +4277,7 @@ class PlayState extends MusicBeatState
 		{
 			if (!PlayStateChangeables.botPlay && (daNote.rating =='good' || daNote.rating == 'sick'))
 			{
-				health -= 0.15;
+				health -= (FlxG.save.data.spikeInstantDeath ? 999 : 0.5);
 				noteMiss(daNote.noteData, daNote, true);
 			}
 			return;
@@ -4310,7 +4310,7 @@ class PlayState extends MusicBeatState
 				score = -300;
 				combo = 0;
 				misses++;
-				health -= 0.1;
+				health -= 0.1 * (storyDifficulty >= 3 ? 2 : 1);
 				ss = false;
 				shits++;
 				if (FlxG.save.data.accuracyMod == 0)
@@ -4318,7 +4318,7 @@ class PlayState extends MusicBeatState
 			case 'bad':
 				daRating = 'bad';
 				score = 0;
-				health -= 0.06;
+				health -= 0.06 * (storyDifficulty >= 3 ? 2 : 1);
 				ss = false;
 				bads++;
 				if (FlxG.save.data.accuracyMod == 0)
