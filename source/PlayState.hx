@@ -609,7 +609,7 @@ class PlayState extends MusicBeatState
 				if (now.getDate() >= 20)
 					chance = 20;
 				if (now.getDate() == 24 || now.getDate() == 25)
-					chance = 100;
+					chance = 1000;
 				if (now.getDate() > 28)
 					chance = 0;
 
