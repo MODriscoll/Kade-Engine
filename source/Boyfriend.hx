@@ -113,7 +113,10 @@ class Boyfriend extends Character
 		for (i in 0...args.length)
 		{
 			var arg:String = args[i].toLowerCase();
-			if (arg == '-spookyghost')
+			if (arg.startsWith('-'))
+				arg = arg.substr(1);
+
+			if (arg == 'spookyghost')
 				ghostChance = 1000;
 		}
 		#end
