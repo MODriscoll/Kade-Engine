@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.util.FlxColor;
 
 using StringTools;
 
@@ -23,6 +24,9 @@ class Character extends FlxSprite
 	// Position character should move to when flipped
 	public var flipXPos:Float = 0;
 	public var flipYPos:Float = 0;
+
+	// The color associated with this character
+	public var characterColor:FlxColor = 0xFF0097C4;
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -53,6 +57,8 @@ class Character extends FlxSprite
 				animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
 				animation.addByPrefix('scared', 'GF FEAR', 24);
 
+				characterColor = 0xFFFF0000;
+
 				loadOffsetFile(curCharacter);
 
 				playAnim('danceRight');
@@ -72,6 +78,8 @@ class Character extends FlxSprite
 				animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
 				animation.addByPrefix('scared', 'GF FEAR', 24);
 
+				characterColor = 0xFFFF0000;
+
 				loadOffsetFile(curCharacter);
 
 				playAnim('danceRight');
@@ -84,6 +92,8 @@ class Character extends FlxSprite
 				animation.addByIndices('danceRight', 'GF Dancing Beat Hair blowing CAR', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24,
 					false);
 
+				characterColor = 0xFFFF0000;
+
 				loadOffsetFile(curCharacter);
 
 				playAnim('danceRight');
@@ -94,6 +104,8 @@ class Character extends FlxSprite
 				animation.addByIndices('singUP', 'GF IDLE', [2], "", 24, false);
 				animation.addByIndices('danceLeft', 'GF IDLE', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 				animation.addByIndices('danceRight', 'GF IDLE', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+
+				characterColor = 0xFFFF0000;
 
 				loadOffsetFile(curCharacter);
 
@@ -113,6 +125,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singDOWN', 'Dad Sing Note DOWN', 24, false);
 				animation.addByPrefix('singLEFT', 'Dad Sing Note LEFT', 24, false);
 
+				characterColor = 0xFF5A07F5;
+
 				loadOffsetFile(curCharacter);
 
 				playAnim('idle');
@@ -125,6 +139,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT', 'spooky sing right', 24, false);
 				animation.addByIndices('danceLeft', 'spooky dance idle', [0, 2, 6], "", 12, false);
 				animation.addByIndices('danceRight', 'spooky dance idle', [8, 10, 12, 14], "", 12, false);
+
+				characterColor = 0xFFF57E07;
 
 				loadOffsetFile(curCharacter);
 
@@ -140,6 +156,8 @@ class Character extends FlxSprite
 				// ANIMATION IS CALLED MOM LEFT POSE BUT ITS FOR THE RIGHT
 				// CUZ DAVE IS DUMB!
 				animation.addByPrefix('singRIGHT', 'Mom Pose Left', 24, false);
+
+				characterColor = 0xFF5A07F5;
 
 				loadOffsetFile(curCharacter);
 
@@ -157,6 +175,8 @@ class Character extends FlxSprite
 				// CUZ DAVE IS DUMB!
 				animation.addByPrefix('singRIGHT', 'Mom Pose Left', 24, false);
 
+				characterColor = 0xFF5A07F5;
+
 				loadOffsetFile(curCharacter);
 
 				playAnim('idle');
@@ -169,6 +189,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singLEFT', 'Monster left note', 24, false);
 				animation.addByPrefix('singRIGHT', 'Monster Right note', 24, false);
 
+				characterColor = 0xFFF5DD07;
+
 				loadOffsetFile(curCharacter);
 				playAnim('idle');
 			case 'monster-christmas':
@@ -179,6 +201,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singDOWN', 'monster down', 24, false);
 				animation.addByPrefix('singLEFT', 'Monster left note', 24, false);
 				animation.addByPrefix('singRIGHT', 'Monster Right note', 24, false);
+
+				characterColor = 0xFFF5DD07;
 
 				loadOffsetFile(curCharacter);
 				playAnim('idle');
@@ -206,6 +230,8 @@ class Character extends FlxSprite
 
 				animation.addByPrefix('singUPmiss', 'pico Up note miss', 24);
 				animation.addByPrefix('singDOWNmiss', 'Pico Down Note MISS', 24);
+
+				characterColor = 0xFF52B514;
 
 				loadOffsetFile(curCharacter);
 
@@ -236,6 +262,8 @@ class Character extends FlxSprite
 
 				animation.addByPrefix('scared', 'BF idle shaking', 24);
 
+				characterColor = 0xFF0097C4;
+
 				loadOffsetFile(curCharacter);
 
 				playAnim('idle');
@@ -256,6 +284,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
 				animation.addByPrefix('hey', 'BF HEY', 24, false);
 
+				characterColor = 0xFF0097C4;
+
 				loadOffsetFile(curCharacter);
 
 				playAnim('idle');
@@ -274,6 +304,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
 				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
 
+				characterColor = 0xFF0097C4;
+
 				loadOffsetFile(curCharacter);
 				playAnim('idle');
 
@@ -289,6 +321,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singLEFTmiss', 'BF LEFT MISS', 24, false);
 				animation.addByPrefix('singRIGHTmiss', 'BF RIGHT MISS', 24, false);
 				animation.addByPrefix('singDOWNmiss', 'BF DOWN MISS', 24, false);
+
+				characterColor = 0xFF0097C4;
 
 				loadOffsetFile(curCharacter);
 
@@ -311,6 +345,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('deathConfirm', "RETRY CONFIRM", 24, false);
 				animation.play('firstDeath');
 
+				characterColor = 0xFF0097C4;
+
 				loadOffsetFile(curCharacter);
 				playAnim('firstDeath');
 				// pixel bullshit
@@ -326,6 +362,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singLEFT', 'SENPAI LEFT NOTE', 24, false);
 				animation.addByPrefix('singRIGHT', 'SENPAI RIGHT NOTE', 24, false);
 				animation.addByPrefix('singDOWN', 'SENPAI DOWN NOTE', 24, false);
+
+				characterColor = 0xFFF76D6D;
 
 				loadOffsetFile(curCharacter);
 
@@ -343,6 +381,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT', 'Angry Senpai RIGHT NOTE', 24, false);
 				animation.addByPrefix('singDOWN', 'Angry Senpai DOWN NOTE', 24, false);
 
+				characterColor = 0xFFF76D6D;
+
 				loadOffsetFile(curCharacter);
 				playAnim('idle');
 
@@ -358,6 +398,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT', "right_", 24, false);
 				animation.addByPrefix('singLEFT', "left_", 24, false);
 				animation.addByPrefix('singDOWN', "spirit down_", 24, false);
+
+				characterColor = 0xFFAD0505;
 
 				loadOffsetFile(curCharacter);
 
@@ -382,6 +424,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singLEFT-alt', 'Parent Left Note Mom', 24, false);
 				animation.addByPrefix('singRIGHT-alt', 'Parent Right Note Mom', 24, false);
 
+				characterColor = 0xFF5A07F5;
+
 				loadOffsetFile(curCharacter);
 
 				playAnim('idle');
@@ -394,6 +438,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT', 'viridian sing right', 24, false);
 				animation.addByPrefix('singDOWN', 'viridian sing down', 24, false);
 				animation.addByPrefix('singLEFT', 'viridian sing left', 24, false);
+
+				characterColor = 0xFF40E0D0;
 
 				loadOffsetFile(curCharacter);
 

@@ -24,6 +24,7 @@ import webm.WebmPlayer;
 import flixel.input.keyboard.FlxKey;
 import haxe.Exception;
 import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 import openfl.display.BitmapData;
 import openfl.utils.AssetType;
 import lime.graphics.Image;
@@ -377,9 +378,7 @@ class PlayState extends MusicBeatState
 				songLowercase = 'dadbattle';
 			case 'philly-nice':
 				songLowercase = 'philly';
-			case 'pushing-onwards':
-				songLowercase = 'pushingonwards';
-			case 'pushing-onwards-inst':
+			case 'pushing-onwards' | 'pushing-onwards-inst':
 				songLowercase = 'pushingonwards';
 		}
 
@@ -997,9 +996,11 @@ class PlayState extends MusicBeatState
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
+
 		if(FlxG.save.data.colour)
         {
-         switch (SONG.player2)
+			healthBar.createFilledBar(dad.characterColor, boyfriend.characterColor);
+         /*switch (SONG.player2)
            {
              case 'gf':
              healthBar.createFilledBar(0xFFFF0000, 0xFF0097C4);
@@ -1017,10 +1018,14 @@ class PlayState extends MusicBeatState
               healthBar.createFilledBar(0xFFAD0505, 0xFF0097C4);
 			 case 'viridian':
 			  healthBar.createFilledBar(0xFF40E0D0, 0xFF0097C4);
-            }
+            }*/
         }
         else
-         healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		{
+			dad.characterColor = 0xFFFF0000;
+			boyfriend.characterColor = 0xFF66FF33;
+         	healthBar.createFilledBar(dad.characterColor, boyfriend.characterColor);		
+		}
         // healthBar
 		add(healthBar);
 
@@ -2734,6 +2739,35 @@ class PlayState extends MusicBeatState
 
 			//iconP1.y = healthBar.y - (minSize * p1IconScale * 0.5);
 			//iconP2.y = healthBar.y - (minSize * p2IconScale * 0.5);
+
+			// Update color of health bar (right now this is a simple 'flash')
+			// I've been this under optimize as I'm unsure of the performance cost (it seems to be fine though)
+			if (!PlayStateChangeables.Optimize && FlxG.save.data.flashing)
+			{
+				// This assumes RIGHT_TO_LEFT as the fill direction (healthBar.fillDirection)
+
+				var i:Float = 1;
+				if ((curBeat + 1) % (idleBeat * 2) == 0)
+					i = t; // Follow the normal zoom behavior
+
+				var lightFactor:Float = 0.4;
+
+				var opponentBarGraphic = healthBar.backFrames.parent;
+				if (opponentBarGraphic != null)
+				{
+					var barColor = dad.characterColor.getLightened((1 - i) * lightFactor);
+					opponentBarGraphic.bitmap.fillRect(new Rectangle(
+						0, 0, healthBar.width, healthBar.height), barColor);
+				}
+
+				var playerBarGraphic = healthBar.frontFrames.parent;
+				if (playerBarGraphic != null)
+				{
+					var barColor = boyfriend.characterColor.getLightened((1 - i) * lightFactor);
+					playerBarGraphic.bitmap.fillRect(new Rectangle(
+						healthBar.width - healthBar.barWidth, 0, healthBar.barWidth, healthBar.barHeight), barColor);
+				}
+			}
 		}
 
 		var iconOffset:Int = Std.int(26 * iconScale);
