@@ -2940,6 +2940,10 @@ class PlayState extends MusicBeatState
 					{
 						additionalZoomMultiplier = 1.5;
 					}
+					else if (curBeat >= 200 && curBeat < 264)
+					{
+						additionalZoomMultiplier = 1.25;
+					}
 					else if (curBeat >= 264 && curBeat < 424)
 					{
 						forceZoomNow = curBeat < 392; // Second rush section, have the cam zoom every beat
