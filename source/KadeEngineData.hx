@@ -6,6 +6,9 @@ class KadeEngineData
 {
     public static function initSave()
     {
+		// I would use the name of the application, but it's late (prob package name)
+		FlxG.save.bind('VsViridian');
+
         if (FlxG.save.data.weekUnlocked == null)
 			FlxG.save.data.weekUnlocked = 7;
 
