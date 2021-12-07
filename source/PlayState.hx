@@ -2710,8 +2710,7 @@ class PlayState extends MusicBeatState
 			{
 				if (!iconsBeatWithCharacters || (curBeat + 1) % idleBeat == 0)
 				{
-					t = (Conductor.songPosition % Conductor.crochet) / Conductor.crochet;
-					t = FlxEase.quartOut(t);
+					t = FlxEase.quartOut(getCurBeatTime());
 				}
 			}
 
@@ -2747,7 +2746,7 @@ class PlayState extends MusicBeatState
 				// This assumes RIGHT_TO_LEFT as the fill direction (healthBar.fillDirection)
 
 				var i:Float = 1;
-				if ((curBeat + 1) % (idleBeat * 2) == 0)
+				if ((getCurBeatNowPlusOne()) % (idleBeat * 2) == 0)
 					i = t; // Follow the normal zoom behavior
 
 				var lightFactor:Float = 0.4;
@@ -2947,7 +2946,7 @@ class PlayState extends MusicBeatState
 					else if (curBeat >= 264 && curBeat < 424)
 					{
 						forceZoomNow = curBeat < 392; // Second rush section, have the cam zoom every beat
-						if (curBeat >= 392 || (curBeat + 1) % 2 == 0)
+						if (curBeat >= 392 || (getCurBeatNowPlusOne()) % 2 == 0)
 							additionalZoomMultiplier = 1.75;
 					}
 					else if (curBeat >= 424)
@@ -2957,11 +2956,11 @@ class PlayState extends MusicBeatState
 				}
 
 				{
-					var beatTime:Float = forceZoomNow ? Conductor.crochet : (Conductor.crochet * (idleBeat * 2));
+					var camZoomOnBeatDuration = 0.5; // In seconds
 
-					var t:Float = 1;
-					// +crochet is our curBeat + 1
-					t = ((Conductor.songPosition + Conductor.crochet) % beatTime) / (0.5 * 1000);
+					var beatTime:Float = forceZoomNow ? 1 : idleBeat * 2;
+					// Basically, convert BeatDuration into normalized value relative to time between beats (I think thats the right terms)
+					var t:Float = ((curDecimalBeat + 1.0) % beatTime) / ((camZoomOnBeatDuration * 1000) / Conductor.crochet);
 					t = t < 0 ? 0 : t > 1 ? 1 : t;
 					t = FlxEase.quadOut(t);
 
@@ -3244,8 +3243,10 @@ class PlayState extends MusicBeatState
 		}
 
 		FlxG.watch.addQuick("curBPM", Conductor.bpm);
-		FlxG.watch.addQuick("beatShit", curBeat);
+		FlxG.watch.addQuick("beatShit", curBeat); // Seems to be wrong when BPM changes (see Monster, is slightly diff from getCurBeatNow, though fine in most cases)
 		FlxG.watch.addQuick("stepShit", curStep);
+		FlxG.watch.addQuick('curBeatNow', getCurBeatNow()); // This seems to be more accurate
+		FlxG.watch.addQuick('curBeatTime', getCurBeatTime()); 
 		FlxG.watch.addQuick("inst Volume", FlxG.sound.music.volume);
 		FlxG.watch.addQuick("vocals Volume", vocals.volume);
 
@@ -5563,7 +5564,7 @@ class PlayState extends MusicBeatState
 
 			// Dad doesnt interupt his own notes
 			if ((!dad.animation.curAnim.name.startsWith("sing")) && dad.curCharacter != 'gf')
-				if (((curBeat + 1) % idleBeat == 0 || idleToBeat) || dad.curCharacter == "spooky")
+				if ((getCurBeatNowPlusOne() % idleBeat == 0 || idleToBeat) || dad.curCharacter == "spooky")
 				{
 					var force:Bool = idleToBeat || dad.animation.curAnim.name.startsWith("idle");
 					dad.dance(force, currentSection.CPUAltAnim);
@@ -5618,7 +5619,7 @@ class PlayState extends MusicBeatState
 				gf.dance();
 			}
 
-			if (!boyfriend.animation.curAnim.name.startsWith("sing") && ((curBeat + 1) % idleBeat == 0 || idleToBeat))
+			if (!boyfriend.animation.curAnim.name.startsWith("sing") && (getCurBeatNowPlusOne() % idleBeat == 0 || idleToBeat))
 			{
 				var force:Bool = idleToBeat || boyfriend.animation.curAnim.name.startsWith("idle");
 				boyfriend.playAnim('idle' + ((currentSection.playerAltAnim && boyfriend.animation.getByName('idle-alt') != null) ? '-alt' : ''), force);//idleToBeat);
@@ -5699,7 +5700,7 @@ class PlayState extends MusicBeatState
 				case 'spaceship':
 					if (FlxG.save.data.distractions)
 					{
-						if ((curBeat + 1) % idleBeat == 0)
+						if (getCurBeatNowPlusOne() % idleBeat == 0)
 						{
 							Stage.swagGroup['starsL1'].forEach(function(star:SpaceStar)
 							{

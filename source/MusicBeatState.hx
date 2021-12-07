@@ -219,4 +219,28 @@ class MusicBeatState extends FlxUIState
 		FlxG.openURL(schmancy);
 		#end
 	}
+
+	// So when BPM changes, curBeat seems to be behind but
+	// curDecimalBeat is actually correct. We need this for our HUD animations
+	public function getCurBeatNow():Int
+	{
+		return Std.int(Math.floor(curDecimalBeat));
+	}
+
+	public function getCurBeatNowPlus(offset:Int):Int
+	{
+		return getCurBeatNow() + offset;
+	}
+
+	// Adding this as I've commonly used in around the place
+	public function getCurBeatNowPlusOne():Int
+	{
+		return getCurBeatNowPlus(1);
+	}
+
+	// Prob a better name for this
+	public function getCurBeatTime():Float
+	{
+		return curDecimalBeat - Math.floor(curDecimalBeat);
+	}
 }

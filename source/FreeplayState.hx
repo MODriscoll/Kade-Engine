@@ -457,10 +457,9 @@ class FreeplayState extends MusicBeatState
 			for (i in 0...iconArray.length)
 			{
 				var t:Float = 1;
-				if (i == curSelected || (curBeat + 1) % 2 == 0)
+				if (i == curSelected || getCurBeatNowPlusOne() % 2 == 0)
 				{
-					t = (Conductor.songPosition % Conductor.crochet) / Conductor.crochet;
-					t = FlxEase.quartOut(t);
+					t = FlxEase.quartOut(getCurBeatTime());
 				}	
 
 				iconArray[i].setGraphicSize(Std.int(FlxMath.lerp(210, 150, t)));
