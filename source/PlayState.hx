@@ -2931,8 +2931,7 @@ class PlayState extends MusicBeatState
 				if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200)
 				{
 					forceZoomNow = true;
-					// Original implementation basically applied zoom twice
-					additionalZoomMultiplier = 2;
+					additionalZoomMultiplier = 1.6;
 				}
 				
 				// I'm too lazy to add another event for this
@@ -2941,21 +2940,17 @@ class PlayState extends MusicBeatState
 				{
 					if (curBeat >= 104 && curBeat < 200)
 					{
-						additionalZoomMultiplier = 1.5;
-					}
-					else if (curBeat >= 200 && curBeat < 264)
-					{
-						additionalZoomMultiplier = 1.25;
+						additionalZoomMultiplier = 1.15;
 					}
 					else if (curBeat >= 264 && curBeat < 424)
 					{
 						forceZoomNow = curBeat < 392; // Second rush section, have the cam zoom every beat
 						if (curBeat >= 392 || (getCurBeatNowPlusOne()) % 2 == 0)
-							additionalZoomMultiplier = 1.75;
+							additionalZoomMultiplier = 1.35;
 					}
 					else if (curBeat >= 424)
 					{
-						additionalZoomMultiplier = 1.5;
+						additionalZoomMultiplier = 1.15;
 					}
 				}
 
@@ -2968,8 +2963,8 @@ class PlayState extends MusicBeatState
 					t = t < 0 ? 0 : t > 1 ? 1 : t;
 					t = FlxEase.quadOut(t);
 
-					var additionalCamZoom:Float = (0.01 / songMultiplier) * additionalZoomMultiplier;
-					var additionaHUDZoom:Float = (0.015 / songMultiplier) * additionalZoomMultiplier;
+					var additionalCamZoom:Float = (0.015 / songMultiplier) * additionalZoomMultiplier;
+					var additionaHUDZoom:Float = (0.03 / songMultiplier) * additionalZoomMultiplier;
 
 					if (!executeModchart)
 					{
