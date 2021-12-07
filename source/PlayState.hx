@@ -1330,6 +1330,10 @@ class PlayState extends MusicBeatState
 				dad.dance();
 				boyfriend.playAnim('idle');
 			}
+			else if (dad.curCharacter == "spooky")
+			{
+				dad.dance();
+			}
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
