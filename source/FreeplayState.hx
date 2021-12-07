@@ -457,7 +457,7 @@ class FreeplayState extends MusicBeatState
 			for (i in 0...iconArray.length)
 			{
 				var t:Float = 1;
-				if (i == curSelected || getCurBeatNowPlusOne() % 2 == 0)
+				if (!PlayState.wtfMode && (i == curSelected || getCurBeatNowPlusOne() % 2 == 0))
 				{
 					t = FlxEase.quartOut(getCurBeatTime());
 				}	

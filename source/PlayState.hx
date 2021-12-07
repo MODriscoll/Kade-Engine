@@ -319,6 +319,7 @@ class PlayState extends MusicBeatState
 
 	// 0-0
 	public static var wtfMode:Bool = false;
+	private static var wtfTimer:Float = 0;
 
 	// API stuff
 
@@ -369,6 +370,8 @@ class PlayState extends MusicBeatState
 		PlayStateChangeables.enableFlip = FlxG.save.data.enableFlip;
 		PlayStateChangeables.flipDuration = FlxG.save.data.flipDuration;
 		PlayStateChangeables.enableGhostNotesForFlip = FlxG.save.data.enableGhostNotesForFlip;
+
+		wtfTimer = 0;
 
 		// pre lowercasing the song name (create)
 		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
@@ -1330,7 +1333,7 @@ class PlayState extends MusicBeatState
 				dad.dance();
 				boyfriend.playAnim('idle');
 			}
-			else if (dad.curCharacter == "spooky")
+			else if (dad.curCharacter == "gf" || dad.curCharacter == "spooky")
 			{
 				dad.dance();
 			}
@@ -2672,6 +2675,9 @@ class PlayState extends MusicBeatState
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
 
+		if (wtfMode && !paused)
+			wtfTimer += elapsed;
+
 		if (FlxG.keys.justPressed.SEVEN && songStarted)
 		{
 			songMultiplier = 1;
@@ -3491,7 +3497,7 @@ class PlayState extends MusicBeatState
 
 			
 			// Assuming flips do not happen in wtfMode
-			if (wtfMode && songStarted)
+			if (wtfMode)
 			{
 				// songTime
 				var a:Float = 20;
@@ -3502,7 +3508,7 @@ class PlayState extends MusicBeatState
 				{
 					var arrow:StaticArrow = cpuStrums.members[i];
 
-					var t:Float = ((songTime / 1000) + (2 * i));
+					var t:Float = wtfTimer + (2 * i);
 
 					arrow.x = arrow.baseX + a * (Math.cos(t));
 					arrow.y = arrow.baseY + b * (Math.sin(t * s));
@@ -3512,7 +3518,7 @@ class PlayState extends MusicBeatState
 				{
 					var arrow:StaticArrow = playerStrums.members[i];
 
-					var t:Float = ((songTime / 1000) + (2 * i));
+					var t:Float = wtfTimer + (2 * i);
 
 					arrow.x = arrow.baseX + a * (Math.cos(t));
 					arrow.y = arrow.baseY + b * (Math.sin(t * s));
