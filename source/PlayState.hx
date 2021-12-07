@@ -2759,6 +2759,12 @@ class PlayState extends MusicBeatState
 				if (opponentBarGraphic != null)
 				{
 					var barColor = dad.characterColor.getLightened((1 - i) * lightFactor);
+
+					// Temp Hack since lighten doesn't work well with viridians color
+					// (And I don't want to pick the beat color for every character)
+					if (dad.curCharacter == 'viridian')
+						barColor = FlxColor.interpolate(dad.characterColor, 0xFF078AB2, (1 - i));
+
 					opponentBarGraphic.bitmap.fillRect(new Rectangle(
 						0, 0, healthBar.width, healthBar.height), barColor);
 				}
