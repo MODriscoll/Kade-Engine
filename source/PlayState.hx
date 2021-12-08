@@ -292,6 +292,12 @@ class PlayState extends MusicBeatState
 	// It can be kind of trippy. Was an idea to try and help players adjust when a flip occurs.
 	public var flipNoteGhosts:FlxTypedGroup<NoteGhost>;
 
+	// Flip VFX
+	private var camFlipVFX:FlxCamera = null;
+	private var flipVFXPool:FlxTypedGroup<FlipVFX> = null;
+	private var numFlipVFXPerFlip:Int = 5;
+	private var flipVFXVelY:Float = 2000; // Units per second
+
 	// GF Cheer event
 	private var gfIsCheering:Bool = false;
 	private var gfBeatsToCheerFor:Int = 1;
@@ -457,19 +463,13 @@ class PlayState extends MusicBeatState
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
+		camHUD.zoom = PlayStateChangeables.zoom;
 		camSustains = new FlxCamera();
 		camSustains.bgColor.alpha = 0;
 		camNotes = new FlxCamera();
 		camNotes.bgColor.alpha = 0;
 
-		FlxG.cameras.reset(camGame);
-		FlxG.cameras.add(camHUD);
-		FlxG.cameras.add(camSustains);
-		FlxG.cameras.add(camNotes);
-
-		camHUD.zoom = PlayStateChangeables.zoom;
-
-		FlxCamera.defaultCameras = [camGame];
+		// Moving cam order setup till after song initialization (for FlipVFX cam)
 
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -521,8 +521,25 @@ class PlayState extends MusicBeatState
 		}
 
 		recalculateAllSectionTimes();
-	
 
+		// Game cam for stage
+		FlxG.cameras.reset(camGame);
+
+		// HUD elements
+		FlxG.cameras.add(camHUD);
+		FlxG.cameras.add(camSustains);
+		FlxG.cameras.add(camNotes);
+
+		if (helperHasFlipEvents())
+		{
+			camFlipVFX = new FlxCamera();
+			camFlipVFX.bgColor.alpha = 0;
+			camFlipVFX.zoom = 1;
+
+			FlxG.cameras.add(camFlipVFX);
+		}	
+
+		FlxCamera.defaultCameras = [camGame];
 
 		trace('INFORMATION ABOUT WHAT U PLAYIN WIT:\nFRAMES: ' + PlayStateChangeables.safeFrames + '\nZONE: ' + Conductor.safeZoneOffset + '\nTS: '
 			+ Conductor.timeScale + '\nBotPlay : ' + PlayStateChangeables.botPlay);
@@ -850,6 +867,26 @@ class PlayState extends MusicBeatState
 			trace('song looks gucci');
 
 		generateSong(SONG.song);
+
+		// only need flip vfx pool if cam exists
+		if (camFlipVFX != null)
+		{
+			// Initialize pool
+			flipVFXPool = new FlxTypedGroup<FlipVFX>();
+			{
+				// This should be enough (as in we don't need to spawn any during play)
+				for (i in 0...(numFlipVFXPerFlip * 2))
+				{
+					var temp:FlipVFX = new FlipVFX(-1280, -1280);
+					temp.active = false;
+					temp.alive = false;
+					flipVFXPool.add(temp);
+				}
+			}
+
+			add(flipVFXPool);
+			flipVFXPool.cameras = [camFlipVFX];
+		}
 
 		#if cpp
 		// pre lowercasing the song name (startCountdown)
@@ -5914,6 +5951,15 @@ class PlayState extends MusicBeatState
 				cpuIsFlipping = !wtfMode;
 				cpuSpriteFlipping = true;
 				cpuFlipStart = songTime;
+
+				if (cpuIsFlipping)
+				{
+					var flipUp = dad.isFlipped == PlayStateChangeables.useDownscroll;
+					// Assuming 4 keys
+					var leftSideKey = cpuStrums.members[0];
+					var rightSideKey = cpuStrums.members[3];
+					spawnFlipVFXAround(flipUp, leftSideKey.x - 50, rightSideKey.x + rightSideKey.width + 50);
+				}
 			}
 
 			if (flipBf)
@@ -5922,6 +5968,15 @@ class PlayState extends MusicBeatState
 				playerIsFlipping = !wtfMode;
 				playerSpriteFlipping = true;
 				playerFlipStart = songTime;
+
+				if (playerIsFlipping)
+				{
+					var flipUp = boyfriend.isFlipped == PlayStateChangeables.useDownscroll;
+					// Assuming 4 keys
+					var leftSideKey = playerStrums.members[0];
+					var rightSideKey = playerStrums.members[3];
+					spawnFlipVFXAround(flipUp, leftSideKey.x - 50, rightSideKey.x + rightSideKey.width + 50);
+				}
 			}
 
 			if (!wtfMode)
@@ -5956,6 +6011,52 @@ class PlayState extends MusicBeatState
 		setCameraZoom = newCamZoom;
 		if (updateCamNow)
 			FlxG.camera.zoom = setCameraZoom;
+	}
+
+	function spawnFlipVFXAround(goUp:Bool, xMin:Float, xMax:Float)
+	{
+		if (flipVFXPool == null)
+			return;
+
+		if (numFlipVFXPerFlip <= 0)
+			return;
+
+		// Assumes xMin < xMax and vfx.width < jump
+
+		var distance:Float = xMax - xMin;
+		var jump:Float = distance / numFlipVFXPerFlip;
+
+		for (i in 0...numFlipVFXPerFlip)
+		{
+			var vfx:FlipVFX = flipVFXPool.getFirstDead();
+			if (vfx == null)
+			{
+				vfx = new FlipVFX(0, 0);
+				flipVFXPool.add(vfx);
+			}
+
+			vfx.alive = true;
+			vfx.active = true;
+
+			// More evenly distributed
+			var minXPos = jump * i;
+			var maxXPos:Float = (jump * (i + 1)) - vfx.width;
+			maxXPos = maxXPos < minXPos ? minXPos : maxXPos;
+
+			vfx.x = FlxG.random.float(xMin + minXPos, xMin + maxXPos);
+			if (goUp)
+			{
+				vfx.y = FlxG.random.float(1, 750) + FlxG.height;
+				vfx.velocity.y = -flipVFXVelY;
+			}
+			else
+			{
+				vfx.y = -FlxG.random.float(1, 750) - vfx.height;
+				vfx.velocity.y = flipVFXVelY;
+			}
+
+			vfx.flipY = !goUp;
+		}
 	}
 }
 //u looked :O -ides
