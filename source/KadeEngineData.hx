@@ -139,6 +139,9 @@ class KadeEngineData
 		if (FlxG.save.data.blackSpikeNotes == null)
 			FlxG.save.data.blackSpikeNotes = true;
 
+		if (FlxG.save.data.flipVFX == null)
+			FlxG.save.data.flipVFX = false;
+
 		if (FlxG.save.data.worldSpaceRatings == null)
 			FlxG.save.data.worldSpaceRatings = true;
 

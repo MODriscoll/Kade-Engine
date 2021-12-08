@@ -991,7 +991,7 @@ class EnableGhostNotesForFlipOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return FlxG.save.data.enableGhostNotesForFlip ? "Ghost Notes for Flip: Enabled" : "Ghost Notes for Flip: Disabled";
+		return "Ex: " + (FlxG.save.data.enableGhostNotesForFlip ? "Flip Ghost: Enabled" : "Flip Ghosts: Disabled");
 	}
 }
 
@@ -1034,6 +1034,27 @@ class BlackSpikeNotesOption extends Option
 	private override function updateDisplay():String
 	{
 		return FlxG.save.data.blackSpikeNotes ? "Black Spike Notes" : "VVVVVV Spike Notes";
+	}
+}
+
+class FlipVFXOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.flipVFX = !FlxG.save.data.flipVFX;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Ex: " + (FlxG.save.data.flipVFX ? "Show Flip VFX" : "Hide Flip VFX");
 	}
 }
 
@@ -1154,6 +1175,13 @@ class ResetSettings extends Option
 		FlxG.save.data.editor = null;
 		FlxG.save.data.enableFlip = null;
 		FlxG.save.data.flipDuration = null;
+		FlxG.save.data.enableGhostNotesForFlip = null;
+		FlxG.save.data.spikeInstantDeath = null;
+		FlxG.save.data.blackSpikeNotes = null;
+		FlxG.save.data.flipVFX = null;
+		FlxG.save.data.worldSpaceRatings = null;
+		FlxG.save.data.animatedMenus = null;
+		FlxG.save.data.songBanners = null;
 
 		KadeEngineData.initSave();
 		confirm = false;

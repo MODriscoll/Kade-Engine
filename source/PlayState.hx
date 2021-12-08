@@ -6018,7 +6018,7 @@ class PlayState extends MusicBeatState
 		if (flipVFXPool == null)
 			return;
 
-		if (numFlipVFXPerFlip <= 0)
+		if (numFlipVFXPerFlip <= 0 || !FlxG.save.data.flipVFX)
 			return;
 
 		// Assumes xMin < xMax and vfx.width < jump
