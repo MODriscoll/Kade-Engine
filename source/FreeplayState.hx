@@ -454,6 +454,19 @@ class FreeplayState extends MusicBeatState
 		// Add some animation to the scene
 		if (FlxG.save.data.animatedMenus)
 		{
+			// Cam zoom
+			{
+				var camZoomOnBeatDuration = 0.5; // In seconds
+
+				// Copy pasted straight from PlayState (beatTime is default for idleBeat * 2)
+				var beatTime:Float = 4;
+				var t:Float = ((curDecimalBeat + 1.0) % beatTime) / ((camZoomOnBeatDuration * 1000) / Conductor.crochet);
+				t = t < 0 ? 0 : t > 1 ? 1 : t;
+				t = FlxEase.quadOut(t);
+
+				FlxG.camera.zoom = FlxMath.lerp(1.02, 1, t);
+			}
+
 			for (i in 0...iconArray.length)
 			{
 				var t:Float = 1;
