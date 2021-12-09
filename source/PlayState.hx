@@ -1113,8 +1113,8 @@ class PlayState extends MusicBeatState
 			"BOTPLAY", 20);
 		botPlayState.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		botPlayState.scrollFactor.set();
-		botPlayState.borderSize = 4;
-		botPlayState.borderQuality = 2;
+		botPlayState.borderSize = 2;
+		botPlayState.borderQuality = 1;
 		if (PlayStateChangeables.botPlay && !loadRep)
 		{
 			add(botPlayState);
