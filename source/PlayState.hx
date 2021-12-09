@@ -3031,6 +3031,9 @@ class PlayState extends MusicBeatState
 
 				camNotes.zoom = camHUD.zoom;
 				camSustains.zoom = camHUD.zoom;
+
+				if (camFlipVFX != null)
+					camFlipVFX.zoom = camHUD.zoom;
 			}			
 		}
 		else
@@ -3039,7 +3042,10 @@ class PlayState extends MusicBeatState
 			camHUD.zoom = PlayStateChangeables.zoom;
 			
 			camNotes.zoom = camHUD.zoom;
-			camSustains.zoom = camHUD.zoom;	
+			camSustains.zoom = camHUD.zoom;
+
+			if (camFlipVFX != null)
+				camFlipVFX.zoom = camHUD.zoom;
 		}
 
 		if (startingSong)

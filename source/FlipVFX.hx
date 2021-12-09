@@ -14,9 +14,8 @@ class FlipVFX extends FlxSprite
 	{
 		super(x, y);
 
-		// TODO: Make a custom sprite for this, for now
-		makeGraphic(64, 64, FlxColor.RED);
-		alpha = 0.6;
+		loadGraphic(Paths.image('flip_vfx', 'week7'));
+		setGraphicSize(Std.int(width * 1.2), Std.int(height * 1.2));
 	}
 	
 	override function update(elapsed:Float)
