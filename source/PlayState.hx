@@ -2757,7 +2757,10 @@ class PlayState extends MusicBeatState
 			{
 				if (!iconsBeatWithCharacters || (curBeat + 1) % idleBeat == 0)
 				{
-					t = FlxEase.quartOut(getCurBeatTime());
+					if (Conductor.bpm >= 210) // Is this considered a high bpm?
+						t = FlxEase.quadOut(getCurBeatTime());
+					else
+						t = FlxEase.quartOut(getCurBeatTime());
 				}
 			}
 
