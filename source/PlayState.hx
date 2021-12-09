@@ -5731,7 +5731,7 @@ class PlayState extends MusicBeatState
 						if (!trainMoving)
 							trainCooldown += 1;
 
-						if (curBeat % 4 == 0)
+						if (getCurBeatNowPlusOne() % 4 == 0)
 						{
 							var phillyCityLights = Stage.swagGroup['phillyCityLights'];
 							phillyCityLights.forEach(function(light:FlxSprite)
@@ -5739,10 +5739,13 @@ class PlayState extends MusicBeatState
 								light.visible = false;
 							});
 
-							curLight = FlxG.random.int(0, phillyCityLights.length - 1);
+							var prevLight = curLight;
+							while (phillyCityLights.length > 1 && curLight == prevLight)
+								curLight = FlxG.random.int(0, phillyCityLights.length - 1);
 
 							phillyCityLights.members[curLight].visible = true;
 							// phillyCityLights.members[curLight].alpha = 1;
+							
 						}
 					}
 
