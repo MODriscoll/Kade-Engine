@@ -82,6 +82,7 @@ import Discord.DiscordClient;
 import Sys;
 import sys.FileSystem;
 #end
+import flixel.system.debug.log.LogStyle;
 
 using StringTools;
 
@@ -3056,6 +3057,14 @@ class PlayState extends MusicBeatState
 
 		if (startingSong)
 		{
+			// There is some issue where the music starts playing before we actually call songStart
+			// Let's just make sure it's not playing
+			if (FlxG.sound.music.playing && !songStarted)
+			{
+				FlxG.log.advanced('music was playing before song started. forcing it to stop', LogStyle.WARNING, false);
+				FlxG.sound.music.stop();
+			}
+
 			if (startedCountdown)
 			{
 				Conductor.songPosition += FlxG.elapsed * 1000;
@@ -3307,6 +3316,8 @@ class PlayState extends MusicBeatState
 		FlxG.watch.addQuick("stepShit", curStep);
 		FlxG.watch.addQuick('curBeatNow', getCurBeatNow()); // This seems to be more accurate
 		FlxG.watch.addQuick('curBeatTime', getCurBeatTime()); 
+		FlxG.watch.addQuick('music time', FlxG.sound.music.time);
+		FlxG.watch.addQuick('vocals time', vocals.time);
 		FlxG.watch.addQuick("inst Volume", FlxG.sound.music.volume);
 		FlxG.watch.addQuick("vocals Volume", vocals.volume);
 
