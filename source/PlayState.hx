@@ -5646,6 +5646,13 @@ class PlayState extends MusicBeatState
 				if ((getCurBeatNowPlusOne() % idleBeat == 0 || idleToBeat) || dad.curCharacter == "spooky")
 				{
 					var force:Bool = idleToBeat || dad.animation.curAnim.name.startsWith("idle");
+
+					// Basically, we need to force idle during pushing onwards rush sections. Senpais default
+					// idle animation is too long that it takes up more than 2 beats (when playing senpai (the song))
+					// Could the idle animation for senpai be cut down perhaps?
+					if (force && dad.curCharacter == 'senpai')
+						force = dad.animation.curAnim.finished;
+
 					dad.dance(force, currentSection.CPUAltAnim);
 				}
 		}
