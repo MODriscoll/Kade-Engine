@@ -303,6 +303,9 @@ class PlayState extends MusicBeatState
 	private var gfBeatsToCheerFor:Int = 1;
 	private var gfCheerNumBeats = 0;
 
+	// BF Trinket event
+	private var bfCollectedTrinket:Int = 0; // Set to num beats to cheer for (similar to gf cheer)
+
 	// Trinket unlocks
 	private var numTrinketsToCollect = 5; // If less than this trinkets exist, extra hard mode cannot be unlocked
 	private var numTrinketsCollected = 0;
@@ -5322,6 +5325,14 @@ class PlayState extends MusicBeatState
 
 					FlxG.sound.play(Paths.sound('trinket'), 0.35);
 
+					// Is nice to have, but feels like GF should cheer too, but that might be
+					// confusing with the gf cheer event.
+					if (boyfriend.animation.getByName('hey') != null && !boyfriend.isSigning())
+					{
+						boyfriend.playAnim('hey', true);
+						bfCollectedTrinket = 2;
+					}
+
 					if (!PlayStateChangeables.botPlay)
 					{
 						playerStrums.forEach(function(spr:StaticArrow)
@@ -5620,7 +5631,7 @@ class PlayState extends MusicBeatState
 			// Conductor.changeBPM(SONG.bpm);
 
 			// Dad doesnt interupt his own notes
-			if ((!dad.animation.curAnim.name.startsWith("sing")) && dad.curCharacter != 'gf')
+			if (!dad.isSigning() && dad.curCharacter != 'gf')
 				if ((getCurBeatNowPlusOne() % idleBeat == 0 || idleToBeat) || dad.curCharacter == "spooky")
 				{
 					var force:Bool = idleToBeat || dad.animation.curAnim.name.startsWith("idle");
@@ -5676,7 +5687,10 @@ class PlayState extends MusicBeatState
 				gf.dance();
 			}
 
-			if (!boyfriend.animation.curAnim.name.startsWith("sing") && (getCurBeatNowPlusOne() % idleBeat == 0 || idleToBeat))
+			if (bfCollectedTrinket > 0)
+				--bfCollectedTrinket;
+
+			if (!boyfriend.isSigning() && (getCurBeatNowPlusOne() % idleBeat == 0 || idleToBeat) && bfCollectedTrinket <= 0)
 			{
 				var force:Bool = idleToBeat || boyfriend.animation.curAnim.name.startsWith("idle");
 				boyfriend.playAnim('idle' + ((currentSection.playerAltAnim && boyfriend.animation.getByName('idle-alt') != null) ? '-alt' : ''), force);//idleToBeat);
@@ -5941,8 +5955,8 @@ class PlayState extends MusicBeatState
 
 			var onZoomComplete = function(tween:FlxTween)
 			{
-				boyfriend.playAnim('hey');
-				gf.playAnim('cheer');
+				boyfriend.playAnim('hey', true);
+				gf.playAnim('cheer', true);
 			};
 
 			FlxTween.num(setCameraZoom, 1.2, 1,

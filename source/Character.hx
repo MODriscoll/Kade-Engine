@@ -630,4 +630,10 @@ class Character extends FlxSprite
 			flipYPos = this.y + offsetY;
 		}
 	}
+
+	// Helper function for checking if character is currently 'signing'
+	public function isSigning():Bool
+	{
+		return animation.curAnim != null && animation.curAnim.name.startsWith("sing");
+	}
 }
