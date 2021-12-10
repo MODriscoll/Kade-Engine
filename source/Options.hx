@@ -1079,6 +1079,27 @@ class WorldSpaceRatingsOption extends Option
 	}
 }
 
+class OriginalRatingsAnimOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.originalRatingsAnim = !FlxG.save.data.originalRatingsAnim;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return FlxG.save.data.originalRatingsAnim ? "Original Ratings Anim" : "New Ratings Anim";
+	}
+}
+
 class AnimatedMenusOption extends Option
 {
 	public function new(desc:String)
@@ -1180,6 +1201,7 @@ class ResetSettings extends Option
 		FlxG.save.data.blackSpikeNotes = null;
 		FlxG.save.data.flipVFX = null;
 		FlxG.save.data.worldSpaceRatings = null;
+		FlxG.save.data.originalRatingsAnim = null;
 		FlxG.save.data.animatedMenus = null;
 		FlxG.save.data.songBanners = null;
 

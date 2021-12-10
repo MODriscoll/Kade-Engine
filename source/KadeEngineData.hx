@@ -142,6 +142,9 @@ class KadeEngineData
 		if (FlxG.save.data.flipVFX == null)
 			FlxG.save.data.flipVFX = false;
 
+		if (FlxG.save.data.originalRatingsAnim == null)
+			FlxG.save.data.originalRatingsAnim = false;
+
 		if (FlxG.save.data.worldSpaceRatings == null)
 			FlxG.save.data.worldSpaceRatings = true;
 

@@ -676,7 +676,10 @@ class FreeplayState extends MusicBeatState
 			{
 				hmm = songData.get(songs[curSelected].songName)[curDifficulty];
 				if (hmm != null)
+				{
 					Conductor.changeBPM(hmm.bpm);
+					Conductor.songPosition = 0;
+				}
 			}
 			catch(ex)
 			{}

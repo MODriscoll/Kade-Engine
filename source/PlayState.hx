@@ -4476,9 +4476,10 @@ class PlayState extends MusicBeatState
 				pixelShitPart3 = 'week6';
 			}
 
+			var originalAnim:Bool = FlxG.save.data.originalRatingsAnim;
 			var showInWorldSpace:Bool = FlxG.save.data.worldSpaceRatings;
 			var ratingsScale:Float = showInWorldSpace ? 1 + (1 - setCameraZoom) : 1;
-			ratingsScale = ratingsScale < 0.8 ? 0.8 : ratingsScale > 1.2 ? 1.2 : ratingsScale;
+			ratingsScale = ratingsScale < 0.7 ? 0.7 : ratingsScale > 1.3 ? 1.3 : ratingsScale;
 
 			rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2, pixelShitPart3));
 			rating.screenCenter();
@@ -4486,6 +4487,7 @@ class PlayState extends MusicBeatState
 			if (showInWorldSpace)
 			{
 				// TODO: Could have Stage define these points (for both normal and flipped)
+				// Cause this assumes gf is bascially inbetween both bf/dad
 				rating.x = gf.getMidpoint().x - 100;
 				rating.y = gf.getMidpoint().y + 50;
 
@@ -4519,6 +4521,8 @@ class PlayState extends MusicBeatState
 			rating.acceleration.y = 550;
 			rating.velocity.y -= FlxG.random.int(140, 175);
 			rating.velocity.x -= FlxG.random.int(0, 10);
+			if (!originalAnim)
+				rating.velocity.y -= 45;
 
 			var msTiming = HelperFunctions.truncateFloat(noteDiff / songMultiplier, 3);
 			if (PlayStateChangeables.botPlay && !loadRep)
@@ -4634,6 +4638,8 @@ class PlayState extends MusicBeatState
 				seperatedScore.push(Std.parseInt(str));
 			}
 
+			var fadeOutDuration:Float = 0.2;
+
 			var daLoop:Int = 0;
 			for (i in seperatedScore)
 			{
@@ -4665,7 +4671,7 @@ class PlayState extends MusicBeatState
 
 				visibleCombos.push(numScore);
 
-				FlxTween.tween(numScore, {alpha: 0}, 0.2, {
+				FlxTween.tween(numScore, {alpha: 0}, fadeOutDuration, {
 					onComplete: function(tween:FlxTween)
 					{
 						visibleCombos.remove(numScore);
@@ -4701,35 +4707,82 @@ class PlayState extends MusicBeatState
 			// add(coolText);
 
 			// Important, thisTiming assumes the previous currentTimingShown is removed manually above
-			var tweenDuration:Float = 0.2;
-
 			var thisTiming = currentTimingShown;
-			FlxTween.tween(rating, {alpha: 0}, tweenDuration, {
-				startDelay: Conductor.crochet * 0.001,
-				onUpdate: function(tween:FlxTween)
-				{
-					// This handles changing alpha, removing is done in the following tween
-					if (thisTiming == currentTimingShown && currentTimingShown != null)
-						currentTimingShown.alpha = rating.alpha;
-					//timeShown++;
-				}
-			});
-
-			FlxTween.tween(comboSpr, {alpha: 0}, tweenDuration, {
-				onComplete: function(tween:FlxTween)
-				{
-					coolText.destroy();
-					comboSpr.destroy();
-					if (thisTiming == currentTimingShown && currentTimingShown != null)
+			
+			var tweenDelay = Conductor.crochet * 0.001;
+			// Optimize since again I'm unsure of the impact all these dynamic captures may have
+			if (originalAnim || PlayStateChangeables.Optimize)
+			{
+				FlxTween.tween(rating, {alpha: 0}, fadeOutDuration, {
+					onUpdate: function(tween:FlxTween)
 					{
-						remove(currentTimingShown);
-						currentTimingShown = null;
-						thisTiming = null;
+						// This handles changing alpha, removing is done in the following tween
+						if (thisTiming == currentTimingShown && currentTimingShown != null)
+							currentTimingShown.alpha = rating.alpha;
+						//timeShown++;
+					},
+					startDelay: tweenDelay
+				});
+			
+				FlxTween.tween(comboSpr, {alpha: 0}, fadeOutDuration, {
+					onComplete: function(tween:FlxTween)
+					{
+						coolText.destroy();
+						comboSpr.destroy();
+						if (thisTiming == currentTimingShown && currentTimingShown != null)
+						{
+							remove(currentTimingShown);
+							currentTimingShown = null;
+							thisTiming = null;
+						}
+						rating.destroy();
+					},
+					startDelay: tweenDelay
+				});
+			}
+			else
+			{
+				var baseWidth = rating.width;
+				var baseHeight = rating.height;
+
+				// Do it this way since we need to call setGraphicsize
+				var onUpdateRatingSize = function(val:Float)
+				{
+					rating.setGraphicSize(Std.int(baseWidth * val), Std.int(baseHeight * val));
+				};
+			
+				// The tween delay acts as the duration for rescaling the ratings graphic
+				FlxTween.num(0.8, 1, tweenDelay, {
+					ease: FlxEase.backOut,
+					onComplete: function(tween:FlxTween)
+					{
+						FlxTween.tween(rating, {alpha: 0}, fadeOutDuration, {
+							onUpdate: function(tween:FlxTween)
+							{
+								// This handles changing alpha, removing is done in the following tween
+								if (thisTiming == currentTimingShown && currentTimingShown != null)
+									currentTimingShown.alpha = rating.alpha;
+								//timeShown++;
+							}
+						});
+					
+						FlxTween.tween(comboSpr, {alpha: 0}, fadeOutDuration, {
+							onComplete: function(tween:FlxTween)
+							{
+								coolText.destroy();
+								comboSpr.destroy();
+								if (thisTiming == currentTimingShown && currentTimingShown != null)
+								{
+									remove(currentTimingShown);
+									currentTimingShown = null;
+									thisTiming = null;
+								}
+								rating.destroy();
+							}
+						});
 					}
-					rating.destroy();
-				},
-				startDelay: Conductor.crochet * 0.001
-			});
+				}, onUpdateRatingSize.bind());
+			}
 
 			curSection += 1;
 		}
