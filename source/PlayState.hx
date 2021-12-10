@@ -691,6 +691,19 @@ class PlayState extends MusicBeatState
 							for (bg in array)
 								add(bg);
 						case 1:
+							// Moved here so evil trail is added before spirit is (so it appears behind)
+							if (FlxG.save.data.distractions)
+							{
+								// trailArea.scrollFactor.set();
+								if (!PlayStateChangeables.Optimize)
+								{
+									var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
+									// evilTrail.changeValuesEnabled(false, false, false, false);
+									// evilTrail.changeGraphic()
+									add(evilTrail);
+								}
+								// evilTrail.scrollFactor.set(1.1, 1.1);
+							}
 							add(dad);
 							for (bg in array)
 								add(bg);
@@ -746,6 +759,7 @@ class PlayState extends MusicBeatState
 				dad.y += 360;
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 			case 'spirit':
+				/* Move to just before Dad is added
 				if (FlxG.save.data.distractions)
 				{
 					// trailArea.scrollFactor.set();
@@ -758,6 +772,7 @@ class PlayState extends MusicBeatState
 					}
 					// evilTrail.scrollFactor.set(1.1, 1.1);
 				}
+				*/
 
 				dad.x -= 150;
 				dad.y += 100;
