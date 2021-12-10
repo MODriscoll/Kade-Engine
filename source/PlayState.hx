@@ -692,7 +692,7 @@ class PlayState extends MusicBeatState
 								add(bg);
 						case 1:
 							// Moved here so evil trail is added before spirit is (so it appears behind)
-							if (FlxG.save.data.distractions)
+							if (dad.curCharacter == 'spirit' && FlxG.save.data.distractions)
 							{
 								// trailArea.scrollFactor.set();
 								if (!PlayStateChangeables.Optimize)
