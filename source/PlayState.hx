@@ -594,8 +594,11 @@ class PlayState extends MusicBeatState
 			stageCheck = SONG.stage;
 		}
 
-		if (isStoryMode)
-			songMultiplier = 1;
+		//if (isStoryMode)
+		//	songMultiplier = 1;
+		// TODO: SongMultiplier doesn't currently work with most changes I've made
+		// Primarily due to using Conductor.songPosition instead of Conductor.rawPosition
+		songMultiplier = 1;
 
 		var bfCheck:String = SONG.player1;
 		// defaults if no gf was found in chart
@@ -1004,6 +1007,7 @@ class PlayState extends MusicBeatState
 		if (useDynamicCamLerpSpeed)
 			camLerpSpeed *= (30 / (cast(Lib.current.getChildAt(0), Main)).getFPS()); // Something KadEngine does (too make speed slower at higher framerates)
 
+		FlxG.log.add("camLerpSpeed: " + camLerpSpeed);
 		FlxG.camera.follow(camFollow, LOCKON, camLerpSpeed);
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
 		setCamZoom(Stage.camZoom, true);
