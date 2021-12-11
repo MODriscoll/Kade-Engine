@@ -108,7 +108,8 @@ class MusicBeatState extends FlxUIState
 				var startInMS = (data.startTime * 1000);
 
 				curDecimalBeat = data.startBeat + ((((Conductor.songPosition / 1000) ) - data.startTime) * (data.bpm / 60));
-				var ste:Int = Math.floor(data.startStep + ((Conductor.songPosition ) - startInMS) / step);
+				//var ste:Int = Math.floor(data.startStep + ((Conductor.songPosition ) - startInMS) / step);
+				var ste:Int = Std.int(Math.floor(curDecimalBeat * 4));
 				if (ste >= 0)
 				{
 					if (ste > curStep)
@@ -133,7 +134,8 @@ class MusicBeatState extends FlxUIState
 			else
 			{
 				curDecimalBeat = (((Conductor.songPosition / 1000))) * (Conductor.bpm/60);
-				var nextStep:Int = Math.floor((Conductor.songPosition) / Conductor.stepCrochet);
+				//var nextStep:Int = Math.floor((Conductor.songPosition) / Conductor.stepCrochet);
+				var nextStep:Int = Std.int(Math.floor(curDecimalBeat * 4));
 				if (nextStep >= 0)
 				{
 					if (nextStep > curStep)
@@ -222,6 +224,7 @@ class MusicBeatState extends FlxUIState
 
 	// So when BPM changes, curBeat seems to be behind but
 	// curDecimalBeat is actually correct. We need this for our HUD animations
+	// Some days later: made a change to how curStep is calculated, curBeat should now match up with this
 	public function getCurBeatNow():Int
 	{
 		return Std.int(Math.floor(curDecimalBeat));

@@ -594,11 +594,8 @@ class PlayState extends MusicBeatState
 			stageCheck = SONG.stage;
 		}
 
-		//if (isStoryMode)
-		//	songMultiplier = 1;
-		// TODO: SongMultiplier doesn't currently work with most changes I've made
-		// Primarily due to using Conductor.songPosition instead of Conductor.rawPosition
-		songMultiplier = 1;
+		if (isStoryMode)
+			songMultiplier = 1;
 
 		var bfCheck:String = SONG.player1;
 		// defaults if no gf was found in chart
@@ -1897,7 +1894,7 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
-		FlxG.sound.music.onComplete = endSong;
+		//FlxG.sound.music.onComplete = endSong;
 		FlxG.sound.music.pause();
 
 		if (SONG.needsVoices)
@@ -2124,7 +2121,6 @@ class PlayState extends MusicBeatState
 
 		generatedMusic = true;
 	}
-
 	
 	function sortByShit(Obj1:Note, Obj2:Note):Int
 	{
@@ -2332,16 +2328,15 @@ class PlayState extends MusicBeatState
 		vocals.pause();
 
 		FlxG.sound.music.play();
-		Conductor.songPosition = FlxG.sound.music.time;
-		vocals.time = FlxG.sound.music.time;
+		FlxG.sound.music.time = Conductor.songPosition;
 		vocals.play();
+		vocals.time = Conductor.songPosition;
 
 		@:privateAccess
 		{
 			lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
 			if (vocals.playing)
 				lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
-
 		}
 
 		#if desktop
@@ -2449,7 +2444,7 @@ class PlayState extends MusicBeatState
 					// Song ends abruptly on slow rate even with second condition being deleted, 
 					// and if it's deleted on songs like cocoa then it would end without finishing instrumental fully,
 					// so no reason to delete it at all
-					if (unspawnNotes.length == 0 && FlxG.sound.music.length - Conductor.songPosition <= 100)
+					if (unspawnNotes.length == 0 && notes.length == 0 && (FlxG.sound.music.length - Conductor.songPosition) <= 100)
 					{
 						endSong();
 					}
@@ -2778,9 +2773,9 @@ class PlayState extends MusicBeatState
 			// Only beat when song is playing
 			if (songStarted && !endingSong)
 			{
-				if (!iconsBeatWithCharacters || (curBeat + 1) % idleBeat == 0)
+				if (!iconsBeatWithCharacters || getCurBeatNowPlusOne() % idleBeat == 0)
 				{
-					if (Conductor.bpm >= 210) // Is this considered a high bpm?
+					if ((Conductor.bpm * songMultiplier) >= 210) // Is this considered a high bpm?
 						t = FlxEase.quadOut(getCurBeatTime());
 					else
 						t = FlxEase.quartOut(getCurBeatTime());
@@ -3003,7 +2998,7 @@ class PlayState extends MusicBeatState
 
 				var forceZoomNow:Bool = false;
 				// HARDCODING FOR MILF ZOOMS!
-				if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200)
+				if (curSong.toLowerCase() == 'milf' && getCurBeatNow() >= 168 && getCurBeatNow() < 200)
 				{
 					forceZoomNow = true;
 					additionalZoomMultiplier = 1.6;
@@ -3013,17 +3008,17 @@ class PlayState extends MusicBeatState
 				// (iconsBeatWithCharacters ~ if Pushing Onwards)
 				if (iconsBeatWithCharacters)
 				{
-					if (curBeat >= 104 && curBeat < 200)
+					if (getCurBeatNow() >= 104 && getCurBeatNow() < 200)
 					{
 						additionalZoomMultiplier = 1.15;
 					}
-					else if (curBeat >= 264 && curBeat < 424)
+					else if (getCurBeatNow() >= 264 && getCurBeatNow() < 424)
 					{
-						forceZoomNow = curBeat < 392; // Second rush section, have the cam zoom every beat
-						if (curBeat >= 392 || (getCurBeatNowPlusOne()) % 2 == 0)
+						forceZoomNow = getCurBeatNow() < 392; // Second rush section, have the cam zoom every beat
+						if (getCurBeatNow() >= 392 || (getCurBeatNowPlusOne()) % 2 == 0)
 							additionalZoomMultiplier = 1.3;
 					}
-					else if (curBeat >= 424)
+					else if (getCurBeatNow() >= 424)
 					{
 						additionalZoomMultiplier = 1.15;
 					}
@@ -3095,7 +3090,19 @@ class PlayState extends MusicBeatState
 		else
 		{
 			// Conductor.songPosition = FlxG.sound.music.time;
-			Conductor.songPosition += FlxG.elapsed * 1000;
+			Conductor.songPosition += FlxG.elapsed * 1000 * songMultiplier;
+			if (!endingSong && (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20))
+			{
+				// Most likey being called when rate is below 1
+				resyncVocals();
+			}
+			// Some cases where vocals reset but not the music
+			else if (!endingSong && SONG.needsVoices && (vocals.time > FlxG.sound.music.time + 20 || vocals.time < FlxG.sound.music.time - 20))
+			{
+				vocals.time = Conductor.songPosition;
+				vocals.play();
+			}
+
 			Conductor.rawPosition = FlxG.sound.music.time;
 			/*@:privateAccess
 				{
@@ -3331,12 +3338,14 @@ class PlayState extends MusicBeatState
 		}
 
 		FlxG.watch.addQuick("curBPM", Conductor.bpm);
-		FlxG.watch.addQuick("beatShit", curBeat); // Seems to be wrong when BPM changes (see Monster, is slightly diff from getCurBeatNow, though fine in most cases)
-		FlxG.watch.addQuick("stepShit", curStep);
-		FlxG.watch.addQuick('curBeatNow', getCurBeatNow()); // This seems to be more accurate
+		FlxG.watch.addQuick("curBPM (multiplied)", Conductor.bpm * songMultiplier);
+		FlxG.watch.addQuick("curStep", curStep);
+		FlxG.watch.addQuick("curBeat", curBeat);
+		FlxG.watch.addQuick('curBeatNow', getCurBeatNow()); // curBeat should now match up to this with recent changes to fix songMultiplier
 		FlxG.watch.addQuick('curBeatTime', getCurBeatTime()); 
 		FlxG.watch.addQuick('music time', FlxG.sound.music.time);
 		FlxG.watch.addQuick('vocals time', vocals.time);
+		FlxG.watch.addQuick('music|vocals diff', SONG.needsVoices ? (FlxG.sound.music.time - vocals.time) : 0);
 		FlxG.watch.addQuick("inst Volume", FlxG.sound.music.volume);
 		FlxG.watch.addQuick("vocals Volume", vocals.volume);
 
@@ -3640,13 +3649,13 @@ class PlayState extends MusicBeatState
 						if (isUpscroll)
 							{
 								daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-								- 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+								- 0.45 * ((Conductor.songPosition - daNote.strumTime) / 1) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
 									2))) + daNote.noteYOff;
 							}
 							else
 							{
 						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-							+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * 
+							+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / 1) * 
 							(FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
 								2) )) 
 							- daNote.noteYOff;
@@ -3658,13 +3667,13 @@ class PlayState extends MusicBeatState
 						if (isUpscroll)
 							{
 								daNote.y = (cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-							- 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+							- 0.45 * ((Conductor.songPosition - daNote.strumTime) / 1) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
 								2))) + daNote.noteYOff;
 							}
 							else
 							{
 								daNote.y = (cpuStrums.members[Math.floor(Math.abs(daNote.noteData))].y
-							+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / songMultiplier) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+							+ 0.45 * ((Conductor.songPosition - daNote.strumTime) / 1) * (FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
 								2))) - daNote.noteYOff;
 							}
 						
@@ -3939,7 +3948,7 @@ class PlayState extends MusicBeatState
 				}
 				else if ((daNote.mustPress && !PlayStateChangeables.useDownscroll || daNote.mustPress 
 					&& PlayStateChangeables.useDownscroll)
-					&& daNote.mustPress && daNote.strumTime / songMultiplier - Conductor.songPosition / songMultiplier < -(166 * Conductor.timeScale) && songStarted)
+					&& daNote.mustPress && daNote.strumTime / 1 - Conductor.songPosition / 1 < -(166 * Conductor.timeScale) && songStarted)
 				{
 					if (daNote.isSustainNote && daNote.wasGoodHit)
 						{
@@ -4067,7 +4076,7 @@ class PlayState extends MusicBeatState
 						notesToRemove.push(daNote);//notes.remove(daNote, true);
 					}
 					// Anything that the CPU should avoid
-					else if (!daNote.mustPress && daNote.strumTime / songMultiplier - Conductor.songPosition / songMultiplier < -(166 * Conductor.timeScale) && songStarted)
+					else if (!daNote.mustPress && daNote.strumTime / 1 - Conductor.songPosition / 1 < -(166 * Conductor.timeScale) && songStarted)
 					{
 						if (daNote.ghost != null)
 						{
@@ -5619,7 +5628,7 @@ class PlayState extends MusicBeatState
 		super.stepHit();
 		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
 		{
-			resyncVocals();
+			//resyncVocals();
 		}
 
 		if (!PlayStateChangeables.Optimize)

@@ -253,7 +253,7 @@ class FreeplayState extends MusicBeatState
 		diffCalcText.font = scoreText.font;
 		add(diffCalcText);
 
-		previewtext = new FlxText(scoreText.x, scoreText.y + 94, 0, "Rate: " + rate + "x", 24);
+		previewtext = new FlxText(scoreText.x, scoreText.y + 94, 0, "Rate (Shift): " + rate + "x", 24);
 		previewtext.font = scoreText.font;
 		add(previewtext);
 
@@ -411,7 +411,7 @@ class FreeplayState extends MusicBeatState
 				diffCalcText.text = 'RATING: ${DiffCalc.CalculateDiff(songData.get(songs[curSelected].songName)[curDifficulty])}';
 			}
 
-			previewtext.text = "Rate: " + rate + "x";
+			previewtext.text = "Rate (Shift): " + rate + "x";
 		}
 		else
 		{
@@ -472,7 +472,10 @@ class FreeplayState extends MusicBeatState
 				var t:Float = 1;
 				if (!PlayState.wtfMode && (i == curSelected || getCurBeatNowPlusOne() % 2 == 0))
 				{
-					t = FlxEase.quartOut(getCurBeatTime());
+					if ((Conductor.bpm * rate) >= 210) // Is this considered a high bpm?
+						t = FlxEase.quadOut(getCurBeatTime());
+					else
+						t = FlxEase.quartOut(getCurBeatTime());
 				}	
 
 				iconArray[i].setGraphicSize(Std.int(FlxMath.lerp(210, 150, t)));
