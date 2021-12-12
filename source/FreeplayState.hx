@@ -500,7 +500,11 @@ class FreeplayState extends MusicBeatState
 		@:privateAccess
 		{
 			if (FlxG.sound.music.playing)
+			{
 				lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, rate);
+				// We can still use music.length, as this hack isn't detected by FlxSound
+				FlxG.sound.music._channel.__source.length = Std.int(FlxG.sound.music.length / rate);
+			}
 		}
 		#end
 
@@ -668,10 +672,10 @@ class FreeplayState extends MusicBeatState
 			var bytes = File.getBytes(data.path + "/" + data.sm.header.MUSIC);
 			var sound = new Sound();
 			sound.loadCompressedDataFromByteArray(bytes.getData(), bytes.length);
-			FlxG.sound.playMusic(sound);
+			FlxG.sound.playMusic(sound, 0, true);
 		}
 		else
-			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
+			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0, true);
 		#end
 
 		var hmm;

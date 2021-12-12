@@ -1024,7 +1024,7 @@ class PlayState extends MusicBeatState
 			add(songPosBG);
 
 			songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
-				'songPositionBar', 0, songLength);
+				'songPositionBar', 0, 1);
 			songPosBar.scrollFactor.set();
 			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 			add(songPosBar);
@@ -1095,6 +1095,7 @@ class PlayState extends MusicBeatState
 			SONG.song
 			+ " - "
 			+ CoolUtil.difficultyFromInt(storyDifficulty)
+			+ (songMultiplier != 1 ? " (x" + FlxMath.roundDecimal(songMultiplier, 2) + ")" : "")
 			+ (versusMode ? " (Vs)" : "")
 			+ (Main.watermarks ? " | KE " + MainMenuState.kadeEngineVer : ""), 16);
 		kadeEngineWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -1775,10 +1776,13 @@ class PlayState extends MusicBeatState
 		#if cpp
 		@:privateAccess
 		{
+			FlxG.sound.music._channel.__source.length = Std.int(FlxG.sound.music.length / songMultiplier);
 			lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
 			if (vocals.playing)
+			{
+				vocals._channel.__source.length = Std.int(vocals.length / songMultiplier);
 				lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
-
+			}
 		}
 		trace("pitched inst and vocals to " + songMultiplier);
 		#end
@@ -1905,6 +1909,7 @@ class PlayState extends MusicBeatState
 
 		
 		// Song duration in a float, useful for the time left feature
+		// music.length still works since our pitch hacks affects a value FlxSound doens't read
 		songLength = FlxG.sound.music.length / 1000;
 
 		Conductor.crochet = ((60 / (SONG.bpm) * 1000)) / songMultiplier;
@@ -1926,8 +1931,8 @@ class PlayState extends MusicBeatState
 			songPosBar = new FlxBar(songPosBG.x
 				+ 4, songPosBG.y
 				+ 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
-				'songPositionBar', 0, 100);
-			songPosBar.numDivisions = 1000;
+				'songPositionBar', 0, 1);
+			songPosBar.numDivisions = 250;
 			songPosBar.scrollFactor.set();
 			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 			add(songPosBar);
@@ -2334,9 +2339,13 @@ class PlayState extends MusicBeatState
 
 		@:privateAccess
 		{
+			FlxG.sound.music._channel.__source.length = Std.int(FlxG.sound.music.length / songMultiplier);
 			lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
 			if (vocals.playing)
+			{
+				vocals._channel.__source.length = Std.int(vocals.length / songMultiplier);
 				lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
+			}
 		}
 
 		#if desktop
@@ -2430,10 +2439,13 @@ class PlayState extends MusicBeatState
 		if (FlxG.sound.music.playing)
 			@:privateAccess
 			{
+				FlxG.sound.music._channel.__source.length = Std.int(FlxG.sound.music.length / songMultiplier);
 				lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
 				if (vocals.playing)
+				{
+					vocals._channel.__source.length = Std.int(vocals.length / songMultiplier);
 					lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
-
+				}
 			}
 		#end
 
@@ -3091,24 +3103,12 @@ class PlayState extends MusicBeatState
 		{
 			// Conductor.songPosition = FlxG.sound.music.time;
 			Conductor.songPosition += FlxG.elapsed * 1000 * songMultiplier;
-			if (!endingSong && (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20))
-			{
-				// Most likey being called when rate is below 1
-				resyncVocals();
-			}
-			// Some cases where vocals reset but not the music
-			else if (!endingSong && SONG.needsVoices && (vocals.time > FlxG.sound.music.time + 20 || vocals.time < FlxG.sound.music.time - 20))
-			{
-				vocals.time = Conductor.songPosition;
-				vocals.play();
-			}
-
 			Conductor.rawPosition = FlxG.sound.music.time;
 			/*@:privateAccess
 				{
 					FlxG.sound.music._channel.
 			}*/
-			songPositionBar = (Conductor.songPosition - songLength) / 1000;
+			songPositionBar = 1 - ((FlxG.sound.music.length - Conductor.songPosition) / FlxG.sound.music.length);
 
 			currentSection = getSectionByTime(Conductor.songPosition);
 
@@ -3337,17 +3337,18 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		FlxG.watch.addQuick("curBPM", Conductor.bpm);
+		//FlxG.watch.addQuick("curBPM", Conductor.bpm);
 		FlxG.watch.addQuick("curBPM (multiplied)", Conductor.bpm * songMultiplier);
 		FlxG.watch.addQuick("curStep", curStep);
 		FlxG.watch.addQuick("curBeat", curBeat);
-		FlxG.watch.addQuick('curBeatNow', getCurBeatNow()); // curBeat should now match up to this with recent changes to fix songMultiplier
+		//FlxG.watch.addQuick('curBeatNow', getCurBeatNow()); // curBeat should now match up to this with recent changes to fix songMultiplier
 		FlxG.watch.addQuick('curBeatTime', getCurBeatTime()); 
 		FlxG.watch.addQuick('music time', FlxG.sound.music.time);
+		FlxG.watch.addQuick('music|songPos diff', FlxG.sound.music.time - Std.int(Conductor.songPosition));
 		FlxG.watch.addQuick('vocals time', vocals.time);
 		FlxG.watch.addQuick('music|vocals diff', SONG.needsVoices ? (FlxG.sound.music.time - vocals.time) : 0);
-		FlxG.watch.addQuick("inst Volume", FlxG.sound.music.volume);
-		FlxG.watch.addQuick("vocals Volume", vocals.volume);
+		//FlxG.watch.addQuick("inst Volume", FlxG.sound.music.volume);
+		//FlxG.watch.addQuick("vocals Volume", vocals.volume);
 
 		if (curSong == 'Fresh')
 		{
@@ -5626,9 +5627,17 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
-		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
+
+		if (!endingSong && (FlxG.sound.music.time > Conductor.songPosition + 100 || FlxG.sound.music.time < Conductor.songPosition - 100))
 		{
-			//resyncVocals();
+			// Most likey being called when rate is below 1
+			resyncVocals();
+		}
+		// Some cases where vocals reset but not the music
+		else if (!endingSong && SONG.needsVoices && (vocals.time > FlxG.sound.music.time + 100 || vocals.time < FlxG.sound.music.time - 100))
+		{
+			vocals.time = Conductor.songPosition;
+			vocals.play();
 		}
 
 		if (!PlayStateChangeables.Optimize)
@@ -5824,7 +5833,7 @@ class PlayState extends MusicBeatState
 					if (FlxG.save.data.distractions)
 					{
 						for (bg in Stage.animatedBacks)
-							bg.animation.play('idle');
+							bg.animation.play('idle', true);
 					}
 
 				case 'limo':
