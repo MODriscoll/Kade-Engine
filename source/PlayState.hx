@@ -278,6 +278,9 @@ class PlayState extends MusicBeatState
 
 	public static var startTime = 0.0;
 
+	// Base speed of cam (assuming 30fps)
+	var baseFollowCamSpeed = 0.04;
+
 	// Flip characters
 	private var cpuIsFlipping:Bool = false;
 	private var cpuFlipStart:Float = -1.0;
@@ -1002,14 +1005,8 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		var camLerpSpeed:Float = 0.04;
-
-		var useDynamicCamLerpSpeed:Bool = true;
-		if (useDynamicCamLerpSpeed)
-			camLerpSpeed *= (30 / (cast(Lib.current.getChildAt(0), Main)).getFPS()); // Something KadEngine does (too make speed slower at higher framerates)
-
-		FlxG.log.add("camLerpSpeed: " + camLerpSpeed);
-		FlxG.camera.follow(camFollow, LOCKON, camLerpSpeed);
+		FlxG.camera.follow(camFollow, LOCKON, 0.0);
+		refreshCamFollowLerp(); // This update followLerp (overwriting the 0 we just used)
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
 		setCamZoom(Stage.camZoom, true);
 		FlxG.camera.focusOn(camFollow.getPosition());
@@ -1476,6 +1473,8 @@ class PlayState extends MusicBeatState
 					FlxG.sound.play(Paths.sound('introGo' + altSuffix), 0.6);
 				case 4:
 			}
+
+			refreshCamFollowLerp();
 
 			swagCounter += 1;
 		}, 5);
@@ -5680,7 +5679,6 @@ class PlayState extends MusicBeatState
 
 	
 		#end
-	
 	}
 
 	var lightningStrikeBeat:Int = 0;
@@ -5929,6 +5927,8 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
+
+		refreshCamFollowLerp();
 	}
 
 	public var cleanedSong:SwagSong;
@@ -6214,6 +6214,13 @@ class PlayState extends MusicBeatState
 
 			vfx.flipY = !goUp;
 		}
+	}
+
+	function refreshCamFollowLerp()
+	{
+		var child:Main = cast(Lib.current.getChildAt(0), Main);
+		if (child != null)
+			FlxG.camera.followLerp = baseFollowCamSpeed * (30 / child.getFPS());
 	}
 }
 //u looked :O -ides
