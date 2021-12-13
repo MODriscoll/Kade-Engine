@@ -111,7 +111,10 @@ class PlayState extends MusicBeatState
 
 	public var visibleNotes:Array<Note> = [];
 
-	public static var songPosBar:FlxBar;
+	public static var songPosBar:FlxBar; // why is this static?
+	public var songPosBarColorFlip:FlxColor = FlxColor.LIME; // false
+	public var songPosBarColorFlop:FlxColor = FlxColor.GREEN; // true
+	public var songPosBarFlipFlop:Bool = false;
 
 	public static var rep:Replay;
 	public static var loadRep:Bool = false;
@@ -1027,7 +1030,7 @@ class PlayState extends MusicBeatState
 			songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
 				'songPositionBar', 0, 1);
 			songPosBar.scrollFactor.set();
-			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
+			songPosBar.createFilledBar(FlxColor.GRAY, songPosBarColorFlip);
 			add(songPosBar);
 
 			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - (SONG.song.length * 5), songPosBG.y, 0, SONG.song, 16);
@@ -1935,7 +1938,7 @@ class PlayState extends MusicBeatState
 				'songPositionBar', 0, 1);
 			songPosBar.numDivisions = 250;
 			songPosBar.scrollFactor.set();
-			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
+			songPosBar.createFilledBar(FlxColor.GRAY, songPosBarColorFlip);
 			add(songPosBar);
 
 			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - (SONG.song.length * 5), songPosBG.y, 0, SONG.song, 16);
@@ -4649,7 +4652,7 @@ class PlayState extends MusicBeatState
 
 			var seperatedScore:Array<Int> = [];
 
-			var comboSplit:Array<String> = (combo + "").split('');
+			var comboSplit:Array<String> = ((combo + 1) + "").split('');
 
 			if (combo > highestCombo)
 				highestCombo = combo;
@@ -5905,6 +5908,24 @@ class PlayState extends MusicBeatState
 				if (FlxG.save.data.distractions)
 				{
 					lightningStrikeShit();
+				}
+			}
+		}
+
+		if (songPosBar != null)
+		{
+			if (songStarted && !endingSong)
+			{
+				// This assumes LEFT_TO_RIGHT as the fill direction (songPosBar.fillDirection)
+
+				songPosBarFlipFlop = !songPosBarFlipFlop;
+
+				var songPosGraphic = songPosBar.frontFrames.parent;
+				if (songPosGraphic != null)
+				{
+					var barColor = (songPosBarFlipFlop ? songPosBarColorFlop : songPosBarColorFlip);
+					songPosGraphic.bitmap.fillRect(new Rectangle(
+						0, 0, songPosBar.barWidth, songPosBar.barHeight), barColor);
 				}
 			}
 		}
