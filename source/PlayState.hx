@@ -2842,7 +2842,7 @@ class PlayState extends MusicBeatState
 
 					// Temp Hack since lighten doesn't work well with viridians color
 					// (And I don't want to pick the beat color for every character)
-					if (dad.curCharacter == 'viridian')
+					if (FlxG.save.data.colour && dad.curCharacter == 'viridian')
 						barColor = FlxColor.interpolate(dad.characterColor, 0xFF078AB2, (1 - i));
 
 					opponentBarGraphic.bitmap.fillRect(new Rectangle(
@@ -2852,7 +2852,7 @@ class PlayState extends MusicBeatState
 				var playerBarGraphic = healthBar.frontFrames.parent;
 				if (playerBarGraphic != null)
 				{
-					var barColor = boyfriend.characterColor.getLightened((1 - i) * lightFactor);
+					var barColor = boyfriend.characterColor.getLightened((1 - i) * (FlxG.save.data.colour ? lightFactor : 0.6));
 					playerBarGraphic.bitmap.fillRect(new Rectangle(
 						healthBar.width - healthBar.barWidth, 0, healthBar.barWidth, healthBar.barHeight), barColor);
 				}
