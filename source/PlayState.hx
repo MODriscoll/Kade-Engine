@@ -321,6 +321,7 @@ class PlayState extends MusicBeatState
 	// If false, they beat every beat hit
 	var iconsBeatWithCharacters:Bool = false;
 
+	// The desired cam zoom, this value should be used of FlxG.camera.zoom
 	var setCameraZoom:Float = 1;
 
 	// If camera zoom is being manually controlled
@@ -2116,6 +2117,7 @@ class PlayState extends MusicBeatState
 			for (i in numTrinketsToCollect...trinketNotes.length)
 			{
 				unspawnNotes.remove(trinketNotes[i]);
+				trinketNotes[i].destroy();
 			}
 		}
 

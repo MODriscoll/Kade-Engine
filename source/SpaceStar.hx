@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
+import flixel.tweens.FlxEase;
 
 class SpaceStar extends FlxSprite
 {
@@ -48,12 +49,12 @@ class SpaceStar extends FlxSprite
 		if (beatTime >= 0)
 		{
 			var t:Float = 1.0;
+			var beatDuration:Float = Conductor.crochet * 0.001;
 
 			timeSinceBeat += elapsed;
-			if (timeSinceBeat < 0.25)
+			if (timeSinceBeat < beatDuration)
 			{
-				t = timeSinceBeat / 0.25;
-				t = 1 - (--t) * t * t * t;
+				t = FlxEase.cubeOut(timeSinceBeat / beatDuration);
 			}
 			else
 			{
