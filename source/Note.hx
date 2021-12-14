@@ -297,8 +297,8 @@ class Note extends FlxSprite
 		//	flipY = true;
 		// This snippet ^ now done in when spawning in note
 
-		
-		var stepHeight = (((0.45 * Conductor.stepCrochet)) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed, 2));
+		// In PlayState, when creating sustain notes, we revert the multiplier set for Crochet, we need to do that here as well
+		var stepHeight = (((0.45 * (Conductor.stepCrochet * PlayState.songMultiplier))) * FlxMath.roundDecimal((PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed), 2));
 
 		// we can't divide step height cuz if we do uh it'll fucking lag the shit out of the game
 

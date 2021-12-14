@@ -2009,6 +2009,7 @@ class PlayState extends MusicBeatState
 
 		var trinketNotes:Array<Note> = [];
 
+		var stepCrochetUnscaled:Float = Conductor.stepCrochet * songMultiplier;
 		for (section in noteData)
 		{
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
@@ -2074,7 +2075,7 @@ class PlayState extends MusicBeatState
 					continue;
 
 				var susLength:Float = swagNote.sustainLength;
-				susLength = susLength / Conductor.stepCrochet;				
+				susLength = susLength / stepCrochetUnscaled; // Keep SusLength consistent, regardless of rate
 
 				if (susLength > 0)
 					swagNote.isParent = true;
@@ -2085,7 +2086,7 @@ class PlayState extends MusicBeatState
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true);
+					var sustainNote:Note = new Note(daStrumTime + (stepCrochetUnscaled * susNote) + stepCrochetUnscaled, daNoteData, oldNote, true);
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
 					sustainNote.isAlt = songNotes[3];
@@ -3348,6 +3349,7 @@ class PlayState extends MusicBeatState
 
 		//FlxG.watch.addQuick("curBPM", Conductor.bpm);
 		FlxG.watch.addQuick("curBPM (multiplied)", Conductor.bpm * songMultiplier);
+		FlxG.watch.addQuick("stepCrochet", Conductor.stepCrochet);
 		FlxG.watch.addQuick("curStep", curStep);
 		FlxG.watch.addQuick("curBeat", curBeat);
 		//FlxG.watch.addQuick('curBeatNow', getCurBeatNow()); // curBeat should now match up to this with recent changes to fix songMultiplier
