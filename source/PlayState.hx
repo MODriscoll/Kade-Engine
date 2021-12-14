@@ -338,6 +338,9 @@ class PlayState extends MusicBeatState
 	public static var wtfMode:Bool = false;
 	private static var wtfTimer:Float = 0;
 
+	// Hardcoded :(
+	var isPushingOnwards:Bool = false;
+
 	// API stuff
 
 	public function addObject(object:FlxBasic)
@@ -402,8 +405,7 @@ class PlayState extends MusicBeatState
 				songLowercase = 'pushingonwards';
 		}
 
-		// For some hardcoded crap
-		var isPushingOnwards:Bool = songLowercase == 'pushingonwards';
+		isPushingOnwards = songLowercase == 'pushingonwards';
 
 		removedVideo = false;
 
@@ -2582,9 +2584,10 @@ class PlayState extends MusicBeatState
 							wasProcessed = true;
 						}
 					case "Idle Beat":
+						// Deprecated (for now...)
 						if (curDecimalBeat >= i.position && !pastIdleBeats.contains(i))
 						{
-							idleBeat = Math.floor(i.value > 0 ? i.value : 1);
+							//idleBeat = Math.floor(i.value > 0 ? i.value : 1);
 							pastIdleBeats.push(i);
 
 							wasProcessed = true;
@@ -3021,19 +3024,21 @@ class PlayState extends MusicBeatState
 				}
 				
 				// I'm too lazy to add another event for this
-				// (iconsBeatWithCharacters ~ if Pushing Onwards)
-				if (iconsBeatWithCharacters)
+				if (isPushingOnwards)
 				{
+					// First rush section
 					if (getCurBeatNow() >= 104 && getCurBeatNow() < 200)
 					{
 						additionalZoomMultiplier = 1.15;
 					}
+					// Second rush section and the bit after
 					else if (getCurBeatNow() >= 264 && getCurBeatNow() < 424)
 					{
 						forceZoomNow = getCurBeatNow() < 392; // Second rush section, have the cam zoom every beat
 						if (getCurBeatNow() >= 392 || (getCurBeatNowPlusOne()) % 2 == 0)
 							additionalZoomMultiplier = 1.3;
 					}
+					// Have remainder zoomed in slightly more
 					else if (getCurBeatNow() >= 424)
 					{
 						additionalZoomMultiplier = 1.15;
@@ -5727,6 +5732,22 @@ class PlayState extends MusicBeatState
 			{
 				gfIsCheering = false;
 			}	
+		}
+
+		if (isPushingOnwards)
+		{
+			// First rush section
+			if (getCurBeatNow() == 104)
+				idleBeat = 1;
+			// First rush section finished
+			else if (getCurBeatNow() == 200)
+				idleBeat = 2;
+			// Second rush section
+			else if (curBeat == 264)
+				idleBeat = 1;
+			// A bit after the second rush (the final segment)
+			else if (curBeat == 456)
+				idleBeat = 2;
 		}
 
 		if (currentSection != null && !endingSong)
