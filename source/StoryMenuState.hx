@@ -13,6 +13,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
+import flixel.tweens.FlxEase;
 
 #if desktop
 import Discord.DiscordClient;
@@ -252,6 +253,25 @@ class StoryMenuState extends MusicBeatState
 		{
 			lock.y = grpWeekText.members[lock.ID].y;
 		});
+
+		// Add some animation to the scene
+		if (FlxG.save.data.animatedMenus)
+		{
+			// Cam zoom
+			{
+				var camZoomOnBeatDuration = 0.5; // In seconds
+	
+				// Same as FreePlay
+				var beatTime:Float = 4;
+				var t:Float = ((curDecimalBeat + 1.0) % beatTime) / ((camZoomOnBeatDuration * 1000) / Conductor.crochet);
+				t = t < 0 ? 0 : t > 1 ? 1 : t;
+				t = FlxEase.quadOut(t);
+	
+				FlxG.camera.zoom = FlxMath.lerp(1.02, 1, t);
+			}
+		}
+
+		Conductor.songPosition = FlxG.sound.music.time;
 
 		if (!movedBack)
 		{

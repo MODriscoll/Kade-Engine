@@ -149,6 +149,26 @@ class OptionsMenu extends MusicBeatState
 	{
 		super.update(elapsed);
 
+		// Add some animation to the scene
+		if (FlxG.save.data.animatedMenus)
+		{
+			// Cam zoom
+			{
+				var camZoomOnBeatDuration = 0.5; // In seconds
+	
+				// Same as FreePlay
+				var beatTime:Float = 4;
+				var t:Float = ((curDecimalBeat + 1.0) % beatTime) / ((camZoomOnBeatDuration * 1000) / Conductor.crochet);
+				t = t < 0 ? 0 : t > 1 ? 1 : t;
+				t = FlxEase.quadOut(t);
+	
+				// 1.01, lot of text on this screen
+				FlxG.camera.zoom = FlxMath.lerp(1.01, 1, t);
+			}
+		}
+
+		Conductor.songPosition = FlxG.sound.music.time;
+
 		if (acceptInput)
 		{
 			if (controls.BACK && !isCat)
@@ -283,6 +303,8 @@ class OptionsMenu extends MusicBeatState
 				changeSelection();
 			}
 		}
+		
+		// ...
 		FlxG.save.flush();
 	}
 

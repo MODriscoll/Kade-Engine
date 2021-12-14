@@ -466,6 +466,7 @@ class FreeplayState extends MusicBeatState
 
 				FlxG.camera.zoom = FlxMath.lerp(1.02, 1, t);
 			}
+			
 
 			for (i in 0...iconArray.length)
 			{
