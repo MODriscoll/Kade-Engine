@@ -3699,21 +3699,26 @@ class PlayState extends MusicBeatState
 
 					if (daNote.isSustainNote)
 					{
+						var isPixel:Bool = SONG.noteStyle == 'pixel';
+						var isEnd:Bool = daNote.animation.curAnim.name.endsWith("end");
 						if (isDownScrollNow)
 						{
-							// Remember = minus makes notes go up, plus makes them go down (This was ripped from a pull request, look for it again :/)
-							if (daNote.animation.curAnim.name.endsWith("end") && daNote.prevNote != null)
+							if (isPixel && isEnd)
 							{
-								daNote.y += daNote.prevNote.height;
+								daNote.y += (daNote.prevNote.height * 0.5);
 							}
 							else
 							{
-								daNote.y += daNote.height / 2;
+								var scale:Float = isEnd ? daNote.scale.y : 1;
+								daNote.y += (daNote.height * scale) / 2;
+								if (isEnd)
+									daNote.y += daNote.prevNote.height * 0.5;
 							}
 						}
 						else
 						{
-							daNote.y -= daNote.height / 2;
+							var scale:Float = (isEnd && !isPixel) ? daNote.scale.y : 1;
+							daNote.y -= (daNote.height * scale) / 2;
 						}
 						
 						var passesThisStatement:Bool = false;
