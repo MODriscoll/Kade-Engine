@@ -820,7 +820,7 @@ class PlayState extends MusicBeatState
 				boyfriend.y += 220;
 				gf.x += 180;
 				gf.y += 300;
-			case 'spaceship':
+			case 'spaceStation' | 'laboratory':
 				boyfriend.x += 200;
 				//gf.x += 75;
 		}
@@ -832,7 +832,7 @@ class PlayState extends MusicBeatState
 
 		switch (Stage.curStage)
 		{
-			case 'spaceship':
+			case 'spaceStation' | 'laboratory':
 				boyfriend.offsetFlipPosition(0, -700);
 				dad.offsetFlipPosition(0, -575);
 			default:
@@ -5910,7 +5910,7 @@ class PlayState extends MusicBeatState
 							trainStart();
 						}
 					}
-				case 'spaceship':
+				case 'spaceStation':
 					if (FlxG.save.data.distractions)
 					{
 						if (getCurBeatNowPlusOne() % idleBeat == 0)

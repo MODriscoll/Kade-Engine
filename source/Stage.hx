@@ -9,6 +9,8 @@ import flixel.addons.effects.chainable.FlxWaveEffect;
 import flixel.math.FlxRandom;
 import flixel.util.FlxColor;
 
+import SpaceStar.LaboratoryBGBox;
+
 class Stage
 {
     public var curStage:String = '';
@@ -27,6 +29,13 @@ class Stage
 
     public function new(daStage:String)
     {
+		// spaceStation was previously spaceship (which is an idea for a different stage)
+		if (daStage == 'spaceship')
+			daStage = 'spaceStation';
+
+		if (PlayStateChangeables.VVVVVV && daStage == 'spaceStation')
+			daStage = 'laboratory';
+
         this.curStage = daStage;
         camZoom = 1.05; // Don't change zoom here, unless you want to change zoom of every stage that doesn't have custom one
         halloweenLevel = false;
@@ -398,13 +407,14 @@ class Stage
 							add(waveSpriteFG);
 						 */
 					}
-				case 'spaceship':
+				case 'spaceStation':
 					{
 						camZoom = 0.65;
 						flippedCamZoom = 0.5;
-						curStage = 'spaceship';
+						curStage = 'spaceStation';
 
-						var bg:FlxSprite = new FlxSprite(FlxG.width, FlxG.height).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
+						var bg:FlxSprite = new FlxSprite(-1500, -1500).makeGraphic(4500, 4500, FlxColor.BLACK);
+						swagBacks['bg'] = bg;
 						toAdd.push(bg);
 
 						// Not considering stars in the background a 'distraction' (except for the beat animation)
@@ -461,7 +471,7 @@ class Stage
 							}
 						}
 
-						var altSuffix = PlayStateChangeables.VVVVVV ? '_alt' : '';
+						var altSuffix = '';//'_alt';
 
 						var panel1:FlxSprite = new FlxSprite(1050, -675).loadGraphic(Paths.image('backdrop_panel' + altSuffix, 'week7'));
 						panel1.updateHitbox();
@@ -493,6 +503,58 @@ class Stage
                         toAdd.push(top);
 
 						var bottom:FlxSprite = new FlxSprite(-1350, 700).loadGraphic(Paths.image('stage_floor_roof' + altSuffix, 'week7'));
+						bottom.setGraphicSize(Std.int(bottom.width), Std.int(bottom.height * 1.1));
+						bottom.updateHitbox();
+						bottom.antialiasing = FlxG.save.data.antialiasing;
+						bottom.scrollFactor.set(1.0, 1.0);
+						bottom.active = false;
+						bottom.flipY = false;
+
+						swagBacks['bottom'] = bottom;
+                        toAdd.push(bottom);
+					}
+				case 'laboratory':
+					{
+						camZoom = 0.6;
+						flippedCamZoom = 0.5;
+						curStage = 'laboratory';
+
+						var bg:FlxSprite = new FlxSprite(-1500, -1500).makeGraphic(4500, 4500, 0xFF040440);
+						swagBacks['bg'] = bg;
+						toAdd.push(bg);
+
+						// Boxes layer
+						{
+							var boxesLayer = new FlxTypedGroup<LaboratoryBGBox>();
+							boxesLayer.active = !PlayStateChangeables.Optimize;
+							swagGroup['bgBoxes'] = boxesLayer;
+                            toAdd.push(boxesLayer);
+
+							var speed:Float = 2600;
+
+							var amountToAdd:Int = PlayStateChangeables.Optimize ? 8 : 20;
+							for (i in 0...amountToAdd)
+							{
+								// X and Y handled by constructor here
+								var box:LaboratoryBGBox = new LaboratoryBGBox(-3000, -3000, speed);
+								box.scrollFactor.set(0.85, 0.85);
+
+								boxesLayer.add(box);
+							}
+						}
+
+						var top:FlxSprite = new FlxSprite(-1350, -700).loadGraphic(Paths.image('laboratory_floor_roof', 'week7'));
+						top.setGraphicSize(Std.int(top.width), Std.int(top.height * 1.1));
+						top.updateHitbox();
+						top.antialiasing = FlxG.save.data.antialiasing;
+						top.scrollFactor.set(1.0, 1.0);
+						top.active = false;
+						top.flipY = true;
+
+						swagBacks['top'] = top;
+                        toAdd.push(top);
+
+						var bottom:FlxSprite = new FlxSprite(-1350, 700).loadGraphic(Paths.image('laboratory_floor_roof', 'week7'));
 						bottom.setGraphicSize(Std.int(bottom.width), Std.int(bottom.height * 1.1));
 						bottom.updateHitbox();
 						bottom.antialiasing = FlxG.save.data.antialiasing;

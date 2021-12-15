@@ -6,15 +6,16 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
+import flixel.math.FlxPoint;
 
 class SpaceStar extends FlxSprite
 {
 	// This is half the limit (-Half, Half)
-	public static var spaceshipLimitX:Float = 1700;
+	public static var spaceshipLimitX:Float = 2000;
 	public static var spaceshipLimitY:Float = 750;
 
 	// Stage offset for spaceship (specifically stars)
-	public static var spaceshipOffsetX:Float = 800;
+	public static var spaceshipOffsetX:Float = 1000;
 	public static var spaceshipOffsetY:Float = 300;
 
 	private var beatTime:Float = -1.0;
@@ -89,5 +90,88 @@ class SpaceStar extends FlxSprite
 		beatTime = songTime;
 		timeSinceBeat = 0.0;
 		setGraphicSize(Std.int(beatWidth), Std.int(beatHeight));
+	}
+}
+
+class LaboratoryBGBox extends FlxSprite
+{
+	// This is half the limit (-Half, Half)
+	public static var limitX:Float = 2500;
+	public static var limitY:Float = 1500;
+
+	public var speed:Float = 2400;
+
+	public function new(x:Float, y:Float, speed:Float)
+	{
+		super(x, y);
+		this.speed = speed;
+
+		loadGraphic(Paths.image('laboratory_bg_box', 'week7'));
+
+		// To be on the safe side (I'm not sure if this engine does collision detection automatically)
+		allowCollisions = 0;
+
+		resetBox();
+	}
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		if (isOutOfBounds())
+			resetBox();
+	}
+
+	function resetBox()
+	{
+		var dir = FlxG.random.int(0, 3);
+		switch (dir)
+		{
+			case 0: // Left
+			{
+				angle = 0;
+				updateHitbox();
+
+				x = limitX - (width * 0.6);
+				y = FlxG.random.float(-limitY * 0.8, limitY * 0.8);
+				velocity.set(-speed, 0);
+			}
+			case 1: // Right
+			{
+				angle = 0;
+				updateHitbox();
+
+				x = -limitX - (width * 0.4);
+				y = FlxG.random.float(-limitY * 0.8, limitY * 0.8);
+				velocity.set(speed, 0);
+			}
+			case 2: // Up
+			{
+				angle = 90;
+				updateHitbox();
+
+				x = FlxG.random.float(-limitX * 0.8, limitX * 0.8);
+				y = limitY - (height * 0.6);
+				velocity.set(0, -speed);
+			}
+			case 3: // Down
+			{
+				angle = 90;
+				updateHitbox();
+
+				x = FlxG.random.float(-limitX * 0.8, limitX * 0.8);
+				y = -limitY - (height * 0.4);
+				velocity.set(0, speed);
+				
+				if (isOutOfBounds())
+					trace('down');
+			}
+		}
+	}
+
+	function isOutOfBounds():Bool
+	{
+		var midPoint:FlxPoint = getMidpoint();
+		return Math.abs(midPoint.x) > limitX || Math.abs(midPoint.y) > limitY;
 	}
 }
