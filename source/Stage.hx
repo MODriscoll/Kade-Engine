@@ -437,7 +437,7 @@ class Stage
 								var star:SpaceStar = new SpaceStar(randX, randY + SpaceStar.spaceshipOffsetY);
 								star.scrollFactor.set(0.9, 0.9);
 								star.alpha = 0.3;
-								star.velocity.x = -FlxG.random.float(800, 900);
+								star.velocity.x = -FlxG.random.float(800, 900) * PlayState.songMultiplier;
 
 								star.initStar(FlxG.random.float(0.8, 1.2), beatScale, false);
 
@@ -463,7 +463,7 @@ class Stage
 								var star:SpaceStar = new SpaceStar(randX, randY + SpaceStar.spaceshipOffsetY);
 								star.scrollFactor.set(0.85, 0.85);
 								star.alpha = 0.75;
-								star.velocity.x = -FlxG.random.float(1300, 1500);
+								star.velocity.x = -FlxG.random.float(1300, 1500) * PlayState.songMultiplier;
 
 								star.initStar(FlxG.random.float(1.4, 1.8), beatScale, true);
 
@@ -534,7 +534,7 @@ class Stage
 							swagGroup['bgBoxes'] = boxesLayer;
                             toAdd.push(boxesLayer);
 
-							var speed:Float = 2600;
+							var speed:Float = 2600 * PlayState.songMultiplier;
 
 							var amountToAdd:Int = PlayStateChangeables.Optimize ? 8 : 16;
 							for (i in 0...amountToAdd)
