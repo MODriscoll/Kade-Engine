@@ -519,12 +519,16 @@ class Stage
 						flippedCamZoom = 0.5;
 						curStage = 'laboratory';
 
-						var bg:FlxSprite = new FlxSprite(-1500, -1500).makeGraphic(4500, 4500, 0xFF040440);
+						// Base Color: 0xFF040440, Beat Color: 0xFF0F0B49
+						var bg:FlxSprite = new FlxSprite(-1500, -1500).makeGraphic(4500, 4500, FlxColor.WHITE);
+						bg.color = 0xFF040440;
 						swagBacks['bg'] = bg;
 						toAdd.push(bg);
 
 						// Boxes layer
 						{
+							var beatScale:Float = 1.4;
+
 							var boxesLayer = new FlxTypedGroup<LaboratoryBGBox>();
 							boxesLayer.active = !PlayStateChangeables.Optimize;
 							swagGroup['bgBoxes'] = boxesLayer;
@@ -532,12 +536,14 @@ class Stage
 
 							var speed:Float = 2600;
 
-							var amountToAdd:Int = PlayStateChangeables.Optimize ? 8 : 20;
+							var amountToAdd:Int = PlayStateChangeables.Optimize ? 8 : 16;
 							for (i in 0...amountToAdd)
 							{
-								// X and Y handled by constructor here
+								// X and Y handled by constructor
 								var box:LaboratoryBGBox = new LaboratoryBGBox(-3000, -3000, speed);
 								box.scrollFactor.set(0.85, 0.85);
+
+								box.initBox(beatScale);
 
 								boxesLayer.add(box);
 							}

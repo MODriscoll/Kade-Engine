@@ -87,6 +87,7 @@ import flixel.system.debug.log.LogStyle;
 using StringTools;
 
 import Note.NoteGhost;
+import SpaceStar.LaboratoryBGBox;
 
 class PlayState extends MusicBeatState
 {
@@ -1144,6 +1145,15 @@ class PlayState extends MusicBeatState
 			add(botPlayState);
 			botPlayState.cameras = [camHUD];
 		}
+
+		/*
+		{
+			var startX = cpuStrums.members[3].x + cpuStrums.members[3].width;
+			var endX = playerStrums.members[0].x;
+
+			botPlayState.x = startX + ((endX - startX) - botPlayState.width) * 0.5;
+		}
+		*/
 
 		var iconScale:Float = helperHasFlipEvents() ? 0.70 : 1;
 
@@ -3089,6 +3099,31 @@ class PlayState extends MusicBeatState
 
 			if (camFlipVFX != null)
 				camFlipVFX.zoom = camHUD.zoom;
+		}
+
+		// Stage.update()
+		{
+			if (Stage.curStage == 'laboratory')
+			{
+				if (!PlayStateChangeables.Optimize && FlxG.save.data.flashing)
+				{
+					// Copied from health icons
+					var t:Float = 1;
+					if (songStarted && !endingSong)
+					{
+						if (getCurBeatNowPlusOne() % (idleBeat * 2) == 0)
+							t = FlxEase.quadOut(getCurBeatTime());
+					}
+
+					var bg:FlxSprite = cast(Stage.swagBacks['bg'], FlxSprite);
+					if (bg != null)
+					{
+						var bgColor:FlxColor = 0xFF040440;
+						bgColor = bgColor.getLightened(0.1 * (1 - t));
+						bg.color = bgColor;
+					}
+				}
+			}
 		}
 
 		if (startingSong)
@@ -5923,6 +5958,17 @@ class PlayState extends MusicBeatState
 							Stage.swagGroup['starsL2'].forEach(function(star:SpaceStar)
 							{
 								star.beatHit(songTime);
+							});
+						}
+					}
+				case 'laboratory':
+					if (FlxG.save.data.distractions)
+					{
+						if (getCurBeatNowPlusOne() % idleBeat == 0)
+						{
+							Stage.swagGroup['bgBoxes'].forEach(function(box:LaboratoryBGBox)
+							{
+								box.beatHit(songTime);
 							});
 						}
 					}

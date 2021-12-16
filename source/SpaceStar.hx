@@ -101,25 +101,87 @@ class LaboratoryBGBox extends FlxSprite
 
 	public var speed:Float = 2400;
 
+	// FlxTimer seems to be paused when game over ends (prob due to entering a sub-state)
+	// I still want these to be active during the game over screen
+	private var resetTimer:Float = -1.0;
+
+	private var beatTime:Float = -1.0;
+	private var timeSinceBeat:Float = 0.0;
+	private var baseWidth:Float;
+	private var baseHeight:Float;
+	private var beatScale:Float = 1.2;
+
+	private var velCustom:FlxPoint = new FlxPoint(0, 0);
+
 	public function new(x:Float, y:Float, speed:Float)
 	{
 		super(x, y);
 		this.speed = speed;
 
 		loadGraphic(Paths.image('laboratory_bg_box', 'week7'));
+		baseWidth = width;
+		baseHeight = height * 1.25; // resetBox call will properly update our size
 
 		// To be on the safe side (I'm not sure if this engine does collision detection automatically)
 		allowCollisions = 0;
 
 		resetBox();
+
+		// We handle this ourselves
+		moves = false;
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		if (isOutOfBounds())
-			resetBox();
+		if (resetTimer > 0)
+		{
+			resetTimer -= elapsed;
+			if (resetTimer <= 0)
+			{
+				alpha = 1;
+				resetBox();
+
+				resetTimer = -1;
+			}
+		}
+		else if (isOutOfBounds())
+		{
+			alpha = 0; // This actually disables drawing, it doesn't just draw transparent pixels
+			resetTimer = FlxG.random.float(0.1, 0.6);
+		}
+
+		if (beatTime >= 0)
+		{
+			var t:Float = 1.0;
+			var beatDuration:Float = Conductor.crochet * 0.001;
+		
+			timeSinceBeat += elapsed;
+			if (timeSinceBeat < beatDuration)
+			{
+				t = FlxEase.cubeOut(timeSinceBeat / beatDuration);
+			}
+			else
+			{
+				beatTime = -1.0;
+			}
+		
+			var curScale:Float = FlxMath.lerp(beatScale, 1, t);
+			var newWidth:Int = Std.int(baseWidth * curScale);
+			var newHeight:Int = Std.int(baseHeight * curScale);
+			setGraphicSize(newWidth, newHeight);
+		}
+
+		// Would normally use velocity, but we to move ourselves based off the center point
+		{
+			var curPos = getMidpoint();
+			var curX:Float = curPos.x + (velCustom.x * elapsed);
+			var curY:Float = curPos.y + (velCustom.y * elapsed);
+
+			x = curX - (width * 0.5);
+			y = curY - (height * 0.5);
+		}
 	}
 
 	function resetBox()
@@ -132,18 +194,18 @@ class LaboratoryBGBox extends FlxSprite
 				angle = 0;
 				updateHitbox();
 
-				x = limitX - (width * 0.6);
+				x = limitX - (baseWidth * 0.6);
 				y = FlxG.random.float(-limitY * 0.8, limitY * 0.8);
-				velocity.set(-speed, 0);
+				velCustom.set(-speed, 0);
 			}
 			case 1: // Right
 			{
 				angle = 0;
 				updateHitbox();
 
-				x = -limitX - (width * 0.4);
+				x = -limitX - (baseWidth * 0.4);
 				y = FlxG.random.float(-limitY * 0.8, limitY * 0.8);
-				velocity.set(speed, 0);
+				velCustom.set(speed, 0);
 			}
 			case 2: // Up
 			{
@@ -151,8 +213,8 @@ class LaboratoryBGBox extends FlxSprite
 				updateHitbox();
 
 				x = FlxG.random.float(-limitX * 0.8, limitX * 0.8);
-				y = limitY - (height * 0.6);
-				velocity.set(0, -speed);
+				y = limitY - (baseHeight * 0.6);
+				velCustom.set(0, -speed);
 			}
 			case 3: // Down
 			{
@@ -160,18 +222,30 @@ class LaboratoryBGBox extends FlxSprite
 				updateHitbox();
 
 				x = FlxG.random.float(-limitX * 0.8, limitX * 0.8);
-				y = -limitY - (height * 0.4);
-				velocity.set(0, speed);
-				
-				if (isOutOfBounds())
-					trace('down');
+				y = -limitY - (baseHeight * 0.4);
+				velCustom.set(0, speed);
 			}
 		}
+
+		beatTime = -1;
+		setGraphicSize(Std.int(baseWidth), Std.int(baseHeight));
 	}
 
 	function isOutOfBounds():Bool
 	{
 		var midPoint:FlxPoint = getMidpoint();
 		return Math.abs(midPoint.x) > limitX || Math.abs(midPoint.y) > limitY;
+	}
+
+	public function initBox(beatScale:Float)
+	{
+		this.beatScale = beatScale;
+	}
+
+	public function beatHit(songTime:Float)
+	{
+		beatTime = songTime;
+		timeSinceBeat = 0.0;
+		setGraphicSize(Std.int(baseWidth), Std.int(baseHeight));
 	}
 }
