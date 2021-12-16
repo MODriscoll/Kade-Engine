@@ -335,6 +335,9 @@ class PlayState extends MusicBeatState
 	// (So don't adjust zoom based on flip state)
 	private var camZoomManuallyControlled:Bool = false;
 
+	// If sing cam offset is enabled, how much we should offset
+	private var singCamOffset:Float = 20;
+
 	// 0-0
 	public static var wtfMode:Bool = false;
 	private static var wtfTimer:Float = 0;
@@ -3903,6 +3906,21 @@ class PlayState extends MusicBeatState
 
 							if (SONG.needsVoices && !boyfriend.newStunned)
 								vocals.volume = 1;
+
+							if (FlxG.save.data.singCamOffset && !currentSection.mustHitSection)
+							{
+								switch (singData)
+								{
+									case 0:
+										FlxG.camera.targetOffset.set(-singCamOffset, 0);
+									case 1:
+										FlxG.camera.targetOffset.set(0, singCamOffset);
+									case 2:
+										FlxG.camera.targetOffset.set(0, -singCamOffset);
+									case 3:
+										FlxG.camera.targetOffset.set(singCamOffset, 0);
+								}
+							}
 						}
 					}
 					else
@@ -3937,6 +3955,21 @@ class PlayState extends MusicBeatState
 
 							if (SONG.needsVoices && !boyfriend.newStunned)
 								vocals.volume = 1;
+
+							if (FlxG.save.data.singCamOffset && !currentSection.mustHitSection)
+							{
+								switch (singData)
+								{
+									case 0:
+										FlxG.camera.targetOffset.set(-singCamOffset, 0);
+									case 1:
+										FlxG.camera.targetOffset.set(0, singCamOffset);
+									case 2:
+										FlxG.camera.targetOffset.set(0, -singCamOffset);
+									case 3:
+										FlxG.camera.targetOffset.set(singCamOffset, 0);
+								}
+							}
 					}
 					daNote.active = false;
 
@@ -5507,7 +5540,23 @@ class PlayState extends MusicBeatState
 				}
 
 			if (!note.isTrinket() && !note.isSpike())
+			{
 				boyfriend.playAnim('sing' + dataSuffix[note.noteData] + altAnim, true);
+				if (FlxG.save.data.singCamOffset && currentSection.mustHitSection)
+				{
+					switch (note.noteData)
+					{
+						case 0:
+							FlxG.camera.targetOffset.set(-singCamOffset, 0);
+						case 1:
+							FlxG.camera.targetOffset.set(0, singCamOffset);
+						case 2:
+							FlxG.camera.targetOffset.set(0, -singCamOffset);
+						case 3:
+							FlxG.camera.targetOffset.set(singCamOffset, 0);
+					}
+				}
+			}
 
 			vocals.volume = 1;
 			boyfriend.newStunned = false;
@@ -6147,6 +6196,8 @@ class PlayState extends MusicBeatState
 		// Some sprite sheets may not have a hey animation
 		if (boyfriend.animation.getByName('hey') == null)
 			return;
+
+		FlxG.camera.targetOffset.set(0, 0);
 
 		// Focus on boyfriend
 		camFollow.setPosition(boyfriend.getMidpoint().x, boyfriend.getMidpoint().y);

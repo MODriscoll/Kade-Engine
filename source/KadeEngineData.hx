@@ -154,6 +154,9 @@ class KadeEngineData
 		if (FlxG.save.data.animatedMenus == null)
 			FlxG.save.data.animatedMenus = true;
 
+		if (FlxG.save.data.singCamOffset == null)
+			FlxG.save.data.singCamOffset = false;
+
 		Unlocks.initUnlocks();
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;

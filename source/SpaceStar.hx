@@ -133,8 +133,6 @@ class LaboratoryBGBox extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
-		super.update(elapsed);
-
 		if (resetTimer > 0)
 		{
 			resetTimer -= elapsed;
@@ -182,6 +180,8 @@ class LaboratoryBGBox extends FlxSprite
 			x = curX - (width * 0.5);
 			y = curY - (height * 0.5);
 		}
+
+		super.update(elapsed);
 	}
 
 	function resetBox(fullReset:Bool = false)

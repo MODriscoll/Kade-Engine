@@ -60,7 +60,8 @@ class OptionsMenu extends MusicBeatState
 			new WorldSpaceRatingsOption("If ratings (combo text) should be displayed in World Space or Screen Space."),
 			new OriginalRatingsAnimOption("Use the original animation for ratings instead of the new one."),
 			new SongBannersOption("Show song banners that contain details of a song when the song starts."),
-			new AnimatedMenusOption("Animate the contents of menus. (not all menus utilize this)")
+			new AnimatedMenusOption("Animate the contents of menus. (not all menus utilize this)"),
+			new SingCamOffsetOption("Camera offsets when a character hits a note")
 		]),
 		
 		new OptionCategory("Misc", [
