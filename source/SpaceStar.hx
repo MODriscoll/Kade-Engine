@@ -125,7 +125,7 @@ class LaboratoryBGBox extends FlxSprite
 		// To be on the safe side (I'm not sure if this engine does collision detection automatically)
 		allowCollisions = 0;
 
-		resetBox();
+		resetBox(true);
 
 		// We handle this ourselves
 		moves = false;
@@ -184,7 +184,7 @@ class LaboratoryBGBox extends FlxSprite
 		}
 	}
 
-	function resetBox()
+	function resetBox(fullReset:Bool = false)
 	{
 		var dir = FlxG.random.int(0, 3);
 		switch (dir)
@@ -194,7 +194,7 @@ class LaboratoryBGBox extends FlxSprite
 				angle = 0;
 				updateHitbox();
 
-				x = limitX - (baseWidth * 0.6);
+				x = fullReset ? FlxG.random.float(-limitX * 0.8, limitX * 0.8) : (limitX - (baseWidth * 0.6));
 				y = FlxG.random.float(-limitY * 0.8, limitY * 0.8);
 				velCustom.set(-speed, 0);
 			}
@@ -203,7 +203,7 @@ class LaboratoryBGBox extends FlxSprite
 				angle = 0;
 				updateHitbox();
 
-				x = -limitX - (baseWidth * 0.4);
+				x = fullReset ? FlxG.random.float(-limitX * 0.8, limitX * 0.8) : (-limitX - (baseWidth * 0.4));
 				y = FlxG.random.float(-limitY * 0.8, limitY * 0.8);
 				velCustom.set(speed, 0);
 			}
@@ -213,7 +213,7 @@ class LaboratoryBGBox extends FlxSprite
 				updateHitbox();
 
 				x = FlxG.random.float(-limitX * 0.8, limitX * 0.8);
-				y = limitY - (baseHeight * 0.6);
+				y = fullReset ? FlxG.random.float(-limitY * 0.8, limitY * 0.8) : (limitY - (baseHeight * 0.6));
 				velCustom.set(0, -speed);
 			}
 			case 3: // Down
@@ -222,7 +222,7 @@ class LaboratoryBGBox extends FlxSprite
 				updateHitbox();
 
 				x = FlxG.random.float(-limitX * 0.8, limitX * 0.8);
-				y = -limitY - (baseHeight * 0.4);
+				y = fullReset ? FlxG.random.float(-limitY * 0.8, limitY * 0.8) : (-limitY - (baseHeight * 0.4));
 				velCustom.set(0, speed);
 			}
 		}
