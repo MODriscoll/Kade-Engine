@@ -205,6 +205,10 @@ class MainMenuState extends MusicBeatState
 
 							// Unlock extra hard immediately
 							Unlocks.unlockDiffForSong('pushing onwards', 3);
+
+							// Unlock alt stage immediately
+							Unlocks.unlockLaboratory();
+							
 							trace('vvvvvv');
 						}			
 					}

@@ -381,6 +381,9 @@ class StoryMenuState extends MusicBeatState
 			// Disable versus for story mode
 			PlayState.versusMode = false;
 
+			// Disbale alt stages
+			Stage.overrideStage = null;
+
 			// no
 			PlayState.wtfMode = false;
 

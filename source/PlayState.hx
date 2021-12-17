@@ -4445,6 +4445,13 @@ class PlayState extends MusicBeatState
 
 				FlxG.sound.music.stop();
 				vocals.stop();
+			
+				if (storyDifficulty == 3 && isPushingOnwards)
+				{
+					// Hardcoded cause at this point i've done it too many times
+					if (!PlayStateChangeables.botPlay && songMultiplier == 1 && songScore > 160000)
+						Unlocks.unlockLaboratory();
+				}
 
 				if (FlxG.save.data.scoreScreen) 
 				{

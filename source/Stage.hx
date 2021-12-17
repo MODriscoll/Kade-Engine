@@ -27,14 +27,16 @@ class Stage
     public var layInFront:Array<Array<FlxSprite>> = [[], [], []]; // BG layering, format: first [0] - in front of GF, second [1] - in front of opponent, third [2] - in front of boyfriend(and techincally also opponent since Haxe layering moment)
     public var slowBacks:Map<Int, Array<FlxSprite>> = []; // Change/add/remove backgrounds mid song! Format: "slowBacks[StepToBeActivated] = [Sprites,To,Be,Changed,Or,Added];"
 
+	public static var overrideStage:Null<String> = null;
+
     public function new(daStage:String)
     {
 		// spaceStation was previously spaceship (which is an idea for a different stage)
 		if (daStage == 'spaceship')
 			daStage = 'spaceStation';
 
-		if (PlayStateChangeables.VVVVVV && daStage == 'spaceStation')
-			daStage = 'laboratory';
+		if (overrideStage != null && overrideStage != '')
+			daStage = overrideStage;
 
         this.curStage = daStage;
         camZoom = 1.05; // Don't change zoom here, unless you want to change zoom of every stage that doesn't have custom one
@@ -471,7 +473,7 @@ class Stage
 							}
 						}
 
-						var altSuffix = '';//'_alt';
+						var altSuffix = PlayStateChangeables.VVVVVV ? '_alt' : '';
 
 						var panel1:FlxSprite = new FlxSprite(1050, -675).loadGraphic(Paths.image('backdrop_panel' + altSuffix, 'week7'));
 						panel1.updateHitbox();

@@ -39,6 +39,7 @@ class FreeplayState extends MusicBeatState
 	public static var curSelected:Int = 0;
 	public static var curDifficulty:Int = 1;
 	public static var versusEnabled:Bool = false;
+	public static var altStageEnabled:Bool = false;
 
 	var scoreText:FlxText;
 	var comboText:FlxText;
@@ -46,6 +47,7 @@ class FreeplayState extends MusicBeatState
 	var diffCalcText:FlxText;
 	var previewtext:FlxText;
 	var versusText:FlxText;
+	var altStageText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
 	var combo:String = '';
@@ -241,7 +243,7 @@ class FreeplayState extends MusicBeatState
 		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
 		// scoreText.alignment = RIGHT;
 
-		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 163, 0xFF000000);
+		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 191, 0xFF000000);
 		scoreBG.alpha = 0.6;
 		add(scoreBG);
 
@@ -261,8 +263,14 @@ class FreeplayState extends MusicBeatState
 		versusText.font = scoreText.font;
 		add(versusText);
 
+		altStageText = new FlxText(scoreText.x, scoreText.y + 150, 0, "Alt Stage: N/A", 24);
+		altStageText.font = scoreText.font;
+		add(altStageText);
+
 		// This updates the text for versusText
-		setVersusEnabled(versusEnabled);
+		setVersusEnabled(versusEnabled && canEnableVsForSong(songs[curSelected].songName));
+		// This updates the text for altStageText
+		setAltStageEnabled(altStageEnabled, songs[curSelected].songName);
 
 		comboText = new FlxText(diffText.x + diffText.width + 50, diffText.y, 0, "", 24);
 		comboText.font = diffText.font;
@@ -423,6 +431,8 @@ class FreeplayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.V)
 			setVersusEnabled(!versusEnabled && canEnableVsForSong(songs[curSelected].songName));
+		if (FlxG.keys.justPressed.ALT)
+			setAltStageEnabled(!altStageEnabled, songs[curSelected].songName);
 
 		// 0-0
 		if (PlayState.wtfMode)
@@ -557,8 +567,12 @@ class FreeplayState extends MusicBeatState
 				#end
 
 				PlayState.songMultiplier = rate;
-
 				PlayState.versusMode = versusEnabled;
+
+				if (altStageEnabled && hasUnlockedAltStageForSong(songs[curSelected].songName))
+					Stage.overrideStage = getAltStageName(songs[curSelected].songName);
+				else
+					Stage.overrideStage = null;
 
 				// Manually disable voices
 				if (songs[curSelected].instVer)
@@ -728,6 +742,9 @@ class FreeplayState extends MusicBeatState
 		}
 
 		setVersusEnabled(versusEnabled && canEnableVsForSong(songs[curSelected].songName));
+
+		// This handles check if alt stage applies for this song
+		setAltStageEnabled(altStageEnabled, songs[curSelected].songName);
 	}
 
 	function setVersusEnabled(enable:Bool)
@@ -736,9 +753,47 @@ class FreeplayState extends MusicBeatState
 		versusText.text = 'Versus (V): ' + (versusEnabled ? 'Enabled' : 'Disabled');
 	}
 
+	function setAltStageEnabled(enable:Bool, songName:String)
+	{
+		var state:Null<Bool> = hasUnlockedAltStageForSong(songName);
+		if (state != null)
+		{
+			if (state)
+			{
+				altStageEnabled = enable;
+				altStageText.text = 'Alt Stage (Alt): ' + (altStageEnabled ? "Enabled" : "Disabled");
+			}
+			else
+			{
+				altStageText.text = 'Alt Stage (Alt): Locked';
+			}
+		}
+		else
+		{
+			altStageText.text = 'Alt Stage (Alt): N/A';
+		}
+	}
+
 	static public function canEnableVsForSong(songName:String):Bool
 	{
 		return songName != 'Tutorial';
+	}
+
+	// Return null if non-applicable
+	static public function hasUnlockedAltStageForSong(songName:String):Null<Bool>
+	{
+		if (songName == 'Pushing Onwards' || songName == 'Pushing Onwards-Inst')
+			return Unlocks.hasUnlockedLaboratory();
+		else
+			return null;
+	}
+
+	static public function getAltStageName(songName:String):String
+	{
+		if (songName == 'Pushing Onwards' || songName == 'Pushing Onwards Inst')
+			return 'laboratory';
+		
+		return '';
 	}
 }
 
