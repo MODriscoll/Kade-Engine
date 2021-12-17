@@ -519,9 +519,9 @@ class Stage
 						flippedCamZoom = 0.5;
 						curStage = 'laboratory';
 
-						// Base Color: 0xFF040440, Beat Color: 0xFF0F0B49
+						// Base Color: 0xFF00010E, Beat Color: 0xFF040440
 						var bg:FlxSprite = new FlxSprite(-1500, -1500).makeGraphic(4500, 4500, FlxColor.WHITE);
-						bg.color = 0xFF040440;
+						bg.color = 0xFF040414;
 						swagBacks['bg'] = bg;
 						toAdd.push(bg);
 
@@ -549,7 +549,7 @@ class Stage
 							}
 						}
 
-						var top:FlxSprite = new FlxSprite(-1350, -700).loadGraphic(Paths.image('laboratory_floor_roof', 'week7'));
+						var top:FlxSprite = new FlxSprite(-2350, -800).loadGraphic(Paths.image('laboratory_floor_roof', 'week7'));
 						top.setGraphicSize(Std.int(top.width), Std.int(top.height * 1.1));
 						top.updateHitbox();
 						top.antialiasing = FlxG.save.data.antialiasing;
@@ -560,7 +560,7 @@ class Stage
 						swagBacks['top'] = top;
                         toAdd.push(top);
 
-						var bottom:FlxSprite = new FlxSprite(-1350, 700).loadGraphic(Paths.image('laboratory_floor_roof', 'week7'));
+						var bottom:FlxSprite = new FlxSprite(-350, 700).loadGraphic(Paths.image('laboratory_floor_roof', 'week7'));
 						bottom.setGraphicSize(Std.int(bottom.width), Std.int(bottom.height * 1.1));
 						bottom.updateHitbox();
 						bottom.antialiasing = FlxG.save.data.antialiasing;

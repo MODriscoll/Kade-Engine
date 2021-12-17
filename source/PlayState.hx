@@ -836,9 +836,12 @@ class PlayState extends MusicBeatState
 
 		switch (Stage.curStage)
 		{
-			case 'spaceStation' | 'laboratory':
+			case 'spaceStation':
 				boyfriend.offsetFlipPosition(0, -700);
 				dad.offsetFlipPosition(0, -575);
+			case 'laboratory':
+				boyfriend.offsetFlipPosition(0, -800);
+				dad.offsetFlipPosition(0, -675);
 			default:
 				boyfriend.offsetFlipPosition(0, -500);
 				dad.offsetFlipPosition(0, -500);
@@ -3121,7 +3124,7 @@ class PlayState extends MusicBeatState
 					var bg:FlxSprite = cast(Stage.swagBacks['bg'], FlxSprite);
 					if (bg != null)
 					{
-						var bgColor:FlxColor = 0xFF040440;
+						var bgColor:FlxColor = 0xFF040414;
 						bgColor = bgColor.getLightened(0.1 * (1 - t));
 						bg.color = bgColor;
 					}
