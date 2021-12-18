@@ -790,7 +790,7 @@ class FreeplayState extends MusicBeatState
 
 	static public function getAltStageName(songName:String):String
 	{
-		if (songName == 'Pushing Onwards' || songName == 'Pushing Onwards Inst')
+		if (songName == 'Pushing Onwards' || songName == 'Pushing Onwards-Inst')
 			return 'laboratory';
 		
 		return '';
