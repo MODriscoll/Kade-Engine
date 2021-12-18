@@ -3127,8 +3127,17 @@ class PlayState extends MusicBeatState
 					{
 						var bgColor:FlxColor = 0xFF040414;
 						bgColor = bgColor.getLightened(0.1 * (1 - t));
+
 						bg.color = bgColor;
 					}
+
+					var characterColor:FlxColor = 0xFFA9A9FF;
+					characterColor = characterColor.getLightened(0.4 * (1 - t));
+
+					dad.color = characterColor;
+					boyfriend.color = characterColor;
+					if (gf != null)
+						gf.color = characterColor;
 				}
 			}
 		}
