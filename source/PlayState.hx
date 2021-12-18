@@ -3377,14 +3377,22 @@ class PlayState extends MusicBeatState
 							case 'schoolEvil':
 								camFollow.x = boyfriend.getMidpoint().x - 200;
 								camFollow.y = boyfriend.getMidpoint().y - 200;
-						}
+						}		
 					}
 				}
 
 				if (dad.isFlipped != boyfriend.isFlipped)
 				{
 					var halfwayPos:Float = (dad.getMidpoint().y - 100) + (boyfriend.getMidpoint().y - 100) * 0.5;
-					camFollow.setPosition(camFollow.x, halfwayPos);
+
+					if (Stage.curStage == 'laboratory')
+							if (boyfriend.isFlipped)
+								halfwayPos -= 75;
+							else
+								halfwayPos += 75;
+
+
+					camFollow.setPosition(camFollow.x, halfwayPos);			
 				}
 			}
 		}
