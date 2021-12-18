@@ -174,6 +174,7 @@ class OptionsMenu extends MusicBeatState
 		{
 			if (controls.BACK && !isCat)
 			{
+				FlxG.save.flush();
 				FlxG.switchState(new MainMenuState());
 			}
 			else if (controls.BACK)
@@ -306,7 +307,7 @@ class OptionsMenu extends MusicBeatState
 		}
 		
 		// ...
-		FlxG.save.flush();
+		//FlxG.save.flush();
 	}
 
 	var isSettingControl:Bool = false;
