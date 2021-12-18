@@ -1397,11 +1397,12 @@ class PlayState extends MusicBeatState
 
 		talking = false;
 		startedCountdown = true;
-		Conductor.songPosition = 0;
-		Conductor.songPosition -= Conductor.crochet * 5;
+		// We revert crochet back to normal, since in Update we increase songPosition by Elapsed * songMultiplier
+		Conductor.songPosition = -((Conductor.crochet * songMultiplier) * 5);
 
 		var swagCounter:Int = 0;
 
+		// For this timer, we want to keep the crochet scaled by songMultiplier
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
 			gf.dance();
@@ -3144,7 +3145,7 @@ class PlayState extends MusicBeatState
 
 			if (startedCountdown)
 			{
-				Conductor.songPosition += FlxG.elapsed * 1000;
+				Conductor.songPosition += FlxG.elapsed * 1000 * songMultiplier;
 				Conductor.rawPosition = Conductor.songPosition;
 				if (Conductor.songPosition >= 0)
 					startSong();
