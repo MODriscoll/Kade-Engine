@@ -1033,8 +1033,9 @@ class PlayState extends MusicBeatState
 			songPosBG.scrollFactor.set();
 			add(songPosBG);
 
-			songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
-				'songPositionBar', 0, 1);
+			songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), null,
+				'', 0, 1);
+			songPosBar.numDivisions = 750;
 			songPosBar.scrollFactor.set();
 			songPosBar.createFilledBar(FlxColor.GRAY, songPosBarColorFlip);
 			add(songPosBar);
@@ -1952,9 +1953,9 @@ class PlayState extends MusicBeatState
 
 			songPosBar = new FlxBar(songPosBG.x
 				+ 4, songPosBG.y
-				+ 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
-				'songPositionBar', 0, 1);
-			songPosBar.numDivisions = 250;
+				+ 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), null,
+				'', 0, 1);
+			songPosBar.numDivisions = 750;
 			songPosBar.scrollFactor.set();
 			songPosBar.createFilledBar(FlxColor.GRAY, songPosBarColorFlip);
 			add(songPosBar);
@@ -3169,6 +3170,7 @@ class PlayState extends MusicBeatState
 				{
 					FlxG.sound.music._channel.
 			}*/
+
 			songPositionBar = 1 - ((FlxG.sound.music.length - Conductor.songPosition) / FlxG.sound.music.length);
 
 			currentSection = getSectionByTime(Conductor.songPosition);
@@ -5768,6 +5770,8 @@ class PlayState extends MusicBeatState
 			vocals.play();
 		}
 
+		refreshCamFollowLerp();
+
 		if (!PlayStateChangeables.Optimize)
 		for (step in Stage.slowBacks.keys())
 		{
@@ -6063,6 +6067,7 @@ class PlayState extends MusicBeatState
 
 		if (songPosBar != null)
 		{
+			songPosBar.value = songPositionBar;
 			if (songStarted && !endingSong)
 			{
 				// This assumes LEFT_TO_RIGHT as the fill direction (songPosBar.fillDirection)
@@ -6078,8 +6083,6 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
-
-		refreshCamFollowLerp();
 	}
 
 	public var cleanedSong:SwagSong;
